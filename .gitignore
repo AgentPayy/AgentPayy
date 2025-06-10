@@ -34,6 +34,11 @@ cache/
 typechain/
 typechain-types/
 
+# Foundry artifacts (NEW)
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
 # Private keys (NEVER commit these)
 private-key.txt
 *.pem

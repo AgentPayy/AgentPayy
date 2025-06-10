@@ -3,12 +3,14 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract AgentPayKit is ReentrancyGuard, Ownable {
     using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
 
     struct Model {
         address owner;
@@ -31,10 +33,27 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         bytes32 s;
     }
 
+    // NEW: Comprehensive Receipt System
+    struct APIReceipt {
+        bytes32 inputHash;           // Hash of request data
+        bytes32 outputHash;          // Hash of response data  
+        bytes32 executionProof;      // Gateway signature proving execution
+        uint256 executedAt;          // When API was actually called
+        uint256 responseSize;        // Size of response (for billing/limits)
+        bool success;                // Whether API call succeeded
+        uint256 httpStatus;          // HTTP status code
+        address gateway;             // Which gateway processed this
+    }
+
     mapping(string => Model) public models;
     mapping(address => mapping(address => uint256)) public balances; // user => token => amount
     mapping(address => mapping(address => uint256)) public userBalances; // NEW: Prepaid balances
     mapping(bytes32 => bool) public processedPayments;
+    
+    // NEW: Receipt storage and verification
+    mapping(bytes32 => APIReceipt) public receipts;           // txHash => receipt
+    mapping(address => bool) public authorizedGateways;       // Authorized gateway addresses
+    mapping(bytes32 => bool) public usedExecutionProofs;      // Prevent replay attacks
     
     uint256 public platformFee = 1000; // 10%
     uint256 public constant FEE_DENOMINATOR = 10000;
@@ -45,14 +64,31 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         string indexed modelId,
         address indexed payer,
         uint256 amount,
-        bytes32 inputHash,
+        bytes32 indexed inputHash,
         uint256 timestamp
     );
+    
+    // NEW: Receipt events for full transparency
+    event APIExecutionReceipt(
+        bytes32 indexed txHash,
+        string indexed modelId,
+        address indexed payer,
+        bytes32 inputHash,
+        bytes32 outputHash,
+        bytes32 executionProof,
+        uint256 executedAt,
+        uint256 responseSize,
+        bool success,
+        uint256 httpStatus,
+        address gateway
+    );
+    
     event PaymentWithdrawn(address indexed recipient, address indexed token, uint256 amount);
     event BalanceDeposited(address indexed user, address indexed token, uint256 amount); // NEW
     event BalanceUsed(address indexed user, address indexed token, uint256 amount, string modelId); // NEW
+    event GatewayAuthorized(address indexed gateway, bool authorized);
 
-    constructor(address _treasury) {
+    constructor(address _treasury) Ownable(msg.sender) {
         require(_treasury != address(0), "Invalid treasury");
         treasury = _treasury;
     }
@@ -247,5 +283,129 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
     function setTreasury(address _treasury) external onlyOwner {
         require(_treasury != address(0), "Invalid treasury");
         treasury = _treasury;
+    }
+
+    // NEW: Submit execution receipt (called by authorized gateways)
+    function submitExecutionReceipt(
+        bytes32 txHash,
+        string calldata modelId,
+        address payer,
+        bytes32 inputHash,
+        bytes32 outputHash,
+        bytes32 executionProof,
+        uint256 executedAt,
+        uint256 responseSize,
+        bool success,
+        uint256 httpStatus
+    ) external {
+        require(authorizedGateways[msg.sender], "Unauthorized gateway");
+        require(receipts[txHash].executedAt == 0, "Receipt already exists");
+        require(!usedExecutionProofs[executionProof], "Execution proof already used");
+        require(executedAt <= block.timestamp, "Invalid execution time");
+        
+        // Verify execution proof signature
+        bytes32 messageHash = keccak256(abi.encodePacked(
+            txHash,
+            modelId,
+            payer,
+            inputHash,
+            outputHash,
+            executedAt,
+            responseSize,
+            success,
+            httpStatus
+        ));
+        
+        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
+        address signer = ethSignedMessageHash.recover(abi.encodePacked(executionProof));
+        require(signer == msg.sender, "Invalid execution proof");
+        
+        // Store receipt
+        receipts[txHash] = APIReceipt({
+            inputHash: inputHash,
+            outputHash: outputHash,
+            executionProof: executionProof,
+            executedAt: executedAt,
+            responseSize: responseSize,
+            success: success,
+            httpStatus: httpStatus,
+            gateway: msg.sender
+        });
+        
+        usedExecutionProofs[executionProof] = true;
+        
+        emit APIExecutionReceipt(
+            txHash,
+            modelId,
+            payer,
+            inputHash,
+            outputHash,
+            executionProof,
+            executedAt,
+            responseSize,
+            success,
+            httpStatus,
+            msg.sender
+        );
+    }
+    
+    // NEW: Verify receipt authenticity
+    function verifyReceipt(
+        bytes32 txHash,
+        bytes calldata inputData,
+        bytes calldata outputData
+    ) external view returns (bool valid, string memory reason) {
+        APIReceipt memory receipt = receipts[txHash];
+        
+        if (receipt.executedAt == 0) {
+            return (false, "Receipt not found");
+        }
+        
+        // Verify input hash
+        if (keccak256(inputData) != receipt.inputHash) {
+            return (false, "Input data doesn't match hash");
+        }
+        
+        // Verify output hash  
+        if (keccak256(outputData) != receipt.outputHash) {
+            return (false, "Output data doesn't match hash");
+        }
+        
+        // Verify gateway authorization
+        if (!authorizedGateways[receipt.gateway]) {
+            return (false, "Gateway not authorized");
+        }
+        
+        return (true, "Receipt verified");
+    }
+    
+    // NEW: Get receipt for dispute resolution
+    function getReceipt(bytes32 txHash) external view returns (APIReceipt memory) {
+        return receipts[txHash];
+    }
+    
+    // NEW: Admin functions for gateway management
+    function authorizeGateway(address gateway, bool authorized) external onlyOwner {
+        authorizedGateways[gateway] = authorized;
+        emit GatewayAuthorized(gateway, authorized);
+    }
+    
+    // NEW: Get execution statistics for API model
+    function getModelStats(string calldata modelId) external view returns (
+        uint256 totalCalls,
+        uint256 totalRevenue,
+        uint256 successfulCalls,
+        uint256 failedCalls,
+        uint256 avgResponseSize
+    ) {
+        Model memory model = models[modelId];
+        totalCalls = model.totalCalls;
+        totalRevenue = model.totalRevenue;
+        
+        // Note: In production, these would be tracked more efficiently
+        // For now, returning basic stats
+        successfulCalls = totalCalls; // Simplified
+        failedCalls = 0;
+        avgResponseSize = 0;
     }
 } 

@@ -5,6 +5,7 @@ import axios from 'axios';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -17,9 +18,27 @@ interface PaymentEvent {
   txHash: string;
 }
 
+// NEW: Receipt interface
+interface APIExecutionReceipt {
+  txHash: string;
+  modelId: string;
+  payer: string;
+  inputHash: string;
+  outputHash: string;
+  executionProof: string;
+  executedAt: number;
+  responseSize: number;
+  success: boolean;
+  httpStatus: number;
+  gateway: string;
+}
+
 const CONTRACT_ABI = [
   "event PaymentProcessed(string indexed modelId, address indexed payer, uint256 amount, bytes32 inputHash, uint256 timestamp)",
-  "function getModel(string modelId) view returns (tuple(address owner, string endpoint, uint256 price, address token, bool active, uint256 totalCalls, uint256 totalRevenue))"
+  "function getModel(string modelId) view returns (tuple(address owner, string endpoint, uint256 price, address token, bool active, uint256 totalCalls, uint256 totalRevenue))",
+  // NEW: Receipt functions
+  "function submitExecutionReceipt(bytes32 txHash, string modelId, address payer, bytes32 inputHash, bytes32 outputHash, bytes32 executionProof, uint256 executedAt, uint256 responseSize, bool success, uint256 httpStatus)",
+  "function authorizedGateways(address) view returns (bool)"
 ];
 
 class AgentPayGateway {
@@ -27,8 +46,16 @@ class AgentPayGateway {
   private redis = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
   private providers: { [key: string]: ethers.JsonRpcProvider } = {};
   private contracts: { [key: string]: ethers.Contract } = {};
+  private gatewayWallet: ethers.Wallet; // NEW: Gateway's signing wallet
 
   constructor() {
+    // Initialize gateway wallet for signing receipts
+    const privateKey = process.env.GATEWAY_PRIVATE_KEY;
+    if (!privateKey) {
+      throw new Error('GATEWAY_PRIVATE_KEY environment variable required');
+    }
+    this.gatewayWallet = new ethers.Wallet(privateKey);
+    
     this.setupProviders();
     this.setupMiddleware();
     this.setupRoutes();
@@ -53,7 +80,8 @@ class AgentPayGateway {
       }
       
       this.providers[name] = new ethers.JsonRpcProvider(config.rpc);
-      this.contracts[name] = new ethers.Contract(config.contract, CONTRACT_ABI, this.providers[name]);
+      const connectedWallet = this.gatewayWallet.connect(this.providers[name]);
+      this.contracts[name] = new ethers.Contract(config.contract, CONTRACT_ABI, connectedWallet);
     }
   }
 
@@ -83,10 +111,14 @@ class AgentPayGateway {
 
   private setupRoutes() {
     this.app.get('/health', (req, res) => {
-      res.json({ status: 'ok', networks: Object.keys(this.contracts) });
+      res.json({ 
+        status: 'ok', 
+        networks: Object.keys(this.contracts),
+        gatewayAddress: this.gatewayWallet.address 
+      });
     });
 
-    // MOCK MODE ENDPOINT - New feature for development
+    // MOCK MODE ENDPOINT - Enhanced with receipt generation
     this.app.post('/api/mock/:modelId', async (req, res) => {
       try {
         const { modelId } = req.params;
@@ -97,6 +129,10 @@ class AgentPayGateway {
         }
 
         console.log(`Mock API call: ${modelId}`);
+        
+        // Generate input hash for consistency
+        const inputData = JSON.stringify(input);
+        const inputHash = this.hashData(inputData);
         
         // Try to forward to actual API endpoint for realistic testing
         try {
@@ -110,10 +146,21 @@ class AgentPayGateway {
               timeout: 10000
             });
             
+            // Generate mock receipt
+            const outputData = JSON.stringify(response.data);
+            const outputHash = this.hashData(outputData);
+            
             return res.json({
               mock: true,
               data: response.data,
-              timestamp: Date.now()
+              timestamp: Date.now(),
+              receipt: {
+                inputHash,
+                outputHash,
+                success: true,
+                httpStatus: response.status,
+                responseSize: outputData.length
+              }
             });
           }
         } catch (error) {
@@ -122,7 +169,19 @@ class AgentPayGateway {
 
         // Return mock data based on model type
         const mockResponse = this.generateMockResponse(modelId, input);
-        res.json(mockResponse);
+        const outputData = JSON.stringify(mockResponse);
+        const outputHash = this.hashData(outputData);
+        
+        res.json({
+          ...mockResponse,
+          receipt: {
+            inputHash,
+            outputHash,
+            success: true,
+            httpStatus: 200,
+            responseSize: outputData.length
+          }
+        });
         
       } catch (error) {
         console.error('Mock API error:', error);
@@ -146,11 +205,39 @@ class AgentPayGateway {
           return res.status(413).json({ error: 'Data too large' });
         }
 
+        // Verify hash matches data
+        const computedHash = this.hashData(data);
+        if (computedHash !== hash) {
+          return res.status(400).json({ error: 'Hash does not match data' });
+        }
+
         // Store with 1 hour expiration
         await this.redis.setEx(`input:${hash}`, 3600, data);
         res.json({ success: true });
       } catch (error) {
         console.error('Store input error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+
+    // NEW: Get receipt endpoint
+    this.app.get('/receipt/:txHash', async (req, res) => {
+      try {
+        const { txHash } = req.params;
+        
+        if (!txHash || !/^0x[a-fA-F0-9]{64}$/.test(txHash)) {
+          return res.status(400).json({ error: 'Invalid transaction hash' });
+        }
+
+        const receipt = await this.redis.get(`receipt:${txHash}`);
+        
+        if (!receipt) {
+          return res.status(404).json({ error: 'Receipt not found' });
+        }
+
+        res.json(JSON.parse(receipt));
+      } catch (error) {
+        console.error('Get receipt error:', error);
         res.status(500).json({ error: 'Internal server error' });
       }
     });
@@ -224,10 +311,74 @@ class AgentPayGateway {
     return generator(input);
   }
 
+  // NEW: Hash data consistently
+  private hashData(data: string): string {
+    return ethers.keccak256(ethers.toUtf8Bytes(data));
+  }
+
+  // NEW: Generate execution proof signature
+  private async generateExecutionProof(receipt: Omit<APIExecutionReceipt, 'executionProof' | 'gateway'>): Promise<string> {
+    const messageHash = ethers.keccak256(ethers.solidityPacked(
+      ['bytes32', 'string', 'address', 'bytes32', 'bytes32', 'uint256', 'uint256', 'bool', 'uint256'],
+      [
+        receipt.txHash,
+        receipt.modelId,
+        receipt.payer,
+        receipt.inputHash,
+        receipt.outputHash,
+        receipt.executedAt,
+        receipt.responseSize,
+        receipt.success,
+        receipt.httpStatus
+      ]
+    ));
+
+    const signature = await this.gatewayWallet.signMessage(ethers.getBytes(messageHash));
+    return signature;
+  }
+
+  // NEW: Submit receipt to blockchain
+  private async submitReceipt(receipt: APIExecutionReceipt, network: string): Promise<void> {
+    try {
+      const contract = this.contracts[network];
+      if (!contract) {
+        console.warn(`No contract for network: ${network}`);
+        return;
+      }
+
+      // Check if gateway is authorized
+      const isAuthorized = await contract.authorizedGateways(this.gatewayWallet.address);
+      if (!isAuthorized) {
+        console.warn(`Gateway not authorized on ${network}`);
+        return;
+      }
+
+      const tx = await contract.submitExecutionReceipt(
+        receipt.txHash,
+        receipt.modelId,
+        receipt.payer,
+        receipt.inputHash,
+        receipt.outputHash,
+        receipt.executionProof,
+        receipt.executedAt,
+        receipt.responseSize,
+        receipt.success,
+        receipt.httpStatus
+      );
+
+      console.log(`Receipt submitted to ${network}: ${tx.hash}`);
+      await tx.wait();
+      console.log(`Receipt confirmed on ${network}`);
+    } catch (error) {
+      console.error(`Failed to submit receipt to ${network}:`, error);
+    }
+  }
+
   async start() {
     try {
       await this.redis.connect();
       console.log('Connected to Redis');
+      console.log(`Gateway address: ${this.gatewayWallet.address}`);
       
       // Listen for payment events
       for (const [network, contract] of Object.entries(this.contracts)) {
@@ -267,8 +418,13 @@ class AgentPayGateway {
         return;
       }
 
+      const executedAt = Math.floor(Date.now() / 1000);
+      let response: any;
+      let success = false;
+      let httpStatus = 0;
+      let outputData = '';
+      
       // Make API call with timeout and retries
-      let response;
       const maxRetries = 2;
       
       for (let i = 0; i <= maxRetries; i++) {
@@ -282,35 +438,99 @@ class AgentPayGateway {
             timeout: 30000,
             maxRedirects: 0
           });
+          
+          success = true;
+          httpStatus = response.status;
+          outputData = JSON.stringify(response.data);
           break;
-        } catch (error) {
-          if (i === maxRetries) throw error;
-          await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+        } catch (error: any) {
+          httpStatus = error.response?.status || 500;
+          outputData = JSON.stringify({ error: error.message });
+          if (i === maxRetries) {
+            console.error(`API call failed after ${maxRetries + 1} attempts`);
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+          }
         }
       }
 
-      // Store response with 1 hour expiration
+      // Generate hashes
+      const inputHash = this.hashData(inputData);
+      const outputHash = this.hashData(outputData);
+
+      // Create receipt
+      const receiptData: Omit<APIExecutionReceipt, 'executionProof' | 'gateway'> = {
+        txHash: payment.txHash,
+        modelId: payment.modelId,
+        payer: payment.payer,
+        inputHash,
+        outputHash,
+        executedAt,
+        responseSize: outputData.length,
+        success,
+        httpStatus
+      };
+
+      // Generate execution proof
+      const executionProof = await this.generateExecutionProof(receiptData);
+
+      const fullReceipt: APIExecutionReceipt = {
+        ...receiptData,
+        executionProof,
+        gateway: this.gatewayWallet.address
+      };
+
+      // Store receipt locally
+      await this.redis.setEx(
+        `receipt:${payment.txHash}`, 
+        86400, // 24 hours
+        JSON.stringify(fullReceipt)
+      );
+
+      // Store response data  
       await this.redis.setEx(
         `response:${payment.txHash}`, 
-        3600, 
+        3600, // 1 hour
         JSON.stringify({
-          data: response.data,
-          status: response.status,
-          timestamp: Date.now()
+          data: success ? response.data : { error: outputData },
+          status: httpStatus,
+          timestamp: Date.now(),
+          receipt: fullReceipt
         })
       );
+
+      // Submit receipt to blockchain
+      await this.submitReceipt(fullReceipt, network);
       
       console.log(`Payment processed successfully: ${payment.txHash}`);
+      console.log(`Receipt generated and submitted: ${fullReceipt.executionProof.slice(0, 10)}...`);
+      
     } catch (error) {
       console.error(`Payment processing failed for ${payment.txHash}:`, error);
       
-      // Store error response
+      // Store error response with receipt
+      const errorOutputData = JSON.stringify({ error: 'Processing failed' });
+      const errorReceipt: APIExecutionReceipt = {
+        txHash: payment.txHash,
+        modelId: payment.modelId,
+        payer: payment.payer,
+        inputHash: payment.inputHash,
+        outputHash: this.hashData(errorOutputData),
+        executionProof: '', // Could sign error case too
+        executedAt: Math.floor(Date.now() / 1000),
+        responseSize: errorOutputData.length,
+        success: false,
+        httpStatus: 500,
+        gateway: this.gatewayWallet.address
+      };
+
       await this.redis.setEx(
         `response:${payment.txHash}`, 
         3600, 
         JSON.stringify({
           error: 'API call failed',
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          receipt: errorReceipt
         })
       );
     }

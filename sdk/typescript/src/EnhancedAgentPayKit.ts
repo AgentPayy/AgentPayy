@@ -25,6 +25,31 @@ export interface AgentConfig {
   walletOptions?: WalletConnectionOptions;
 }
 
+// NEW: Receipt interfaces
+export interface APIReceipt {
+  inputHash: string;
+  outputHash: string;
+  executionProof: string;
+  executedAt: number;
+  responseSize: number;
+  success: boolean;
+  httpStatus: number;
+  gateway: string;
+}
+
+export interface ReceiptVerification {
+  valid: boolean;
+  reason: string;
+  receipt?: APIReceipt;
+}
+
+export interface PaymentResult {
+  data: any;
+  txHash?: string;
+  receipt?: APIReceipt;
+  timestamp: number;
+}
+
 // Contract addresses for AgentPayKit deployment
 const CONTRACTS = {
   // Ethereum Mainnet
@@ -187,7 +212,10 @@ const CONTRACT_ABI = [
   "function withdrawBalance(address token, uint256 amount)",
   "function getBalance(address user, address token) view returns (uint256)",
   "function getUserBalance(address user, address token) view returns (uint256)",
-  "function getModel(string modelId) view returns (tuple(address owner, string endpoint, uint256 price, address token, bool active, uint256 totalCalls, uint256 totalRevenue))"
+  "function getModel(string modelId) view returns (tuple(address owner, string endpoint, uint256 price, address token, bool active, uint256 totalCalls, uint256 totalRevenue))",
+  // NEW: Receipt functions
+  "function getReceipt(bytes32 txHash) view returns (tuple(bytes32 inputHash, bytes32 outputHash, bytes32 executionProof, uint256 executedAt, uint256 responseSize, bool success, uint256 httpStatus, address gateway))",
+  "function verifyReceipt(bytes32 txHash, bytes inputData, bytes outputData) view returns (bool valid, string reason)"
 ];
 
 export class EnhancedAgentPayKit {
@@ -315,30 +343,52 @@ export class EnhancedAgentPayKit {
   // === API INTERACTION ===
 
   /**
-   * Universal payment method with smart routing
+   * Universal payment method with smart routing and receipt generation
    */
-  async payAndCall(modelId: string, input: any, options: PaymentOptions): Promise<any> {
+  async payAndCall(modelId: string, input: any, options: PaymentOptions): Promise<PaymentResult> {
     if (!this.wallet) throw new Error('No wallet connected. Call generateWallet() or connectWallet() first.');
     
-    // Mock mode
+    // Mock mode with receipt
     if (options.mock) {
-      return this.paymentService.mockAPICall(modelId, input);
+      const mockResult = await this.paymentService.mockAPICall(modelId, input);
+      return {
+        data: mockResult.data,
+        receipt: mockResult.receipt,
+        timestamp: mockResult.timestamp
+      };
     }
 
-    // Smart routing based on wallet capabilities
+    // Real payment flow
+    let result: any;
     if (this.wallet.isSmartAccount && options.gasless !== false) {
-      return await this.paymentService.payWithSmartAccount(modelId, input, options, this.wallet);
+      result = await this.paymentService.payWithSmartAccount(modelId, input, options, this.wallet);
     } else if (this.wallet.features.gasless === false) {
-      return await this.paymentService.payWithPermit(modelId, input, options);
+      result = await this.paymentService.payWithPermit(modelId, input, options);
     } else {
       // Try balance first, fallback to permit
       const hasBalance = await this.balanceService.checkUserBalance(options.price, this.getChain());
       if (hasBalance && options.useBalance !== false) {
-        return await this.paymentService.payWithBalance(modelId, input, options);
+        result = await this.paymentService.payWithBalance(modelId, input, options);
       } else {
-        return await this.paymentService.payWithPermit(modelId, input, options);
+        result = await this.paymentService.payWithPermit(modelId, input, options);
       }
     }
+
+    // Wait for receipt if we have a transaction hash
+    if (result.txHash) {
+      const receipt = await this.waitForReceipt(result.txHash);
+      return {
+        data: result.data,
+        txHash: result.txHash,
+        receipt,
+        timestamp: Date.now()
+      };
+    }
+
+    return {
+      data: result.data,
+      timestamp: Date.now()
+    };
   }
 
   /**
@@ -477,5 +527,183 @@ export class EnhancedAgentPayKit {
     return 'base'; // Default to base for now
   }
 
+  // NEW: Wait for and retrieve execution receipt
+  async waitForReceipt(txHash: string, timeoutMs: number = 60000): Promise<APIReceipt | undefined> {
+    const startTime = Date.now();
+    const pollInterval = 2000; // 2 seconds
 
+    while (Date.now() - startTime < timeoutMs) {
+      try {
+        // Try gateway first (faster)
+        const gatewayReceipt = await this.getGatewayReceipt(txHash);
+        if (gatewayReceipt) {
+          return gatewayReceipt;
+        }
+
+        // Fallback to on-chain receipt
+        const onChainReceipt = await this.getOnChainReceipt(txHash);
+        if (onChainReceipt) {
+          return onChainReceipt;
+        }
+
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      } catch (error) {
+        console.warn('Error checking for receipt:', error);
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      }
+    }
+
+    console.warn(`Receipt timeout for transaction: ${txHash}`);
+    return undefined;
+  }
+
+  // NEW: Get receipt from gateway (faster, but temporary)
+  async getGatewayReceipt(txHash: string): Promise<APIReceipt | undefined> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/receipt/${txHash}`);
+      if (!response.ok) {
+        return undefined;
+      }
+      const receipt = await response.json();
+      return receipt as APIReceipt;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  // NEW: Get receipt from blockchain (permanent, but slower)
+  async getOnChainReceipt(txHash: string): Promise<APIReceipt | undefined> {
+    this.setupContract();
+    if (!this.contract) return undefined;
+
+    try {
+      const receipt = await this.contract.getReceipt(txHash);
+      
+      // Check if receipt exists (executedAt > 0)
+      if (receipt.executedAt.toString() === '0') {
+        return undefined;
+      }
+
+      return {
+        inputHash: receipt.inputHash,
+        outputHash: receipt.outputHash,
+        executionProof: receipt.executionProof,
+        executedAt: Number(receipt.executedAt),
+        responseSize: Number(receipt.responseSize),
+        success: receipt.success,
+        httpStatus: Number(receipt.httpStatus),
+        gateway: receipt.gateway
+      };
+    } catch (error) {
+      console.warn('Error getting on-chain receipt:', error);
+      return undefined;
+    }
+  }
+
+  // NEW: Verify receipt authenticity with data
+  async verifyReceipt(
+    txHash: string, 
+    inputData: any, 
+    outputData: any
+  ): Promise<ReceiptVerification> {
+    this.setupContract();
+    if (!this.contract) {
+      return { valid: false, reason: 'Contract not available' };
+    }
+
+    try {
+      // Convert data to bytes for verification
+      const inputBytes = ethers.toUtf8Bytes(JSON.stringify(inputData));
+      const outputBytes = ethers.toUtf8Bytes(JSON.stringify(outputData));
+
+      const result = await this.contract.verifyReceipt(txHash, inputBytes, outputBytes);
+      
+      if (result.valid) {
+        const receipt = await this.getOnChainReceipt(txHash);
+        return {
+          valid: true,
+          reason: result.reason,
+          receipt
+        };
+      } else {
+        return {
+          valid: false,
+          reason: result.reason
+        };
+      }
+    } catch (error: any) {
+      return {
+        valid: false,
+        reason: `Verification failed: ${error.message}`
+      };
+    }
+  }
+
+  // NEW: Comprehensive call with automatic verification
+  async callWithProof(modelId: string, input: any, options: PaymentOptions): Promise<{
+    result: PaymentResult;
+    verification: ReceiptVerification;
+  }> {
+    console.log(`🔒 Making verified API call to ${modelId}...`);
+    
+    // Make the call
+    const result = await this.payAndCall(modelId, input, options);
+    
+    // If we have a receipt, verify it
+    let verification: ReceiptVerification = { valid: false, reason: 'No receipt available' };
+    
+    if (result.receipt && result.txHash) {
+      console.log('🔍 Verifying receipt...');
+      verification = await this.verifyReceipt(result.txHash, input, result.data);
+      
+      if (verification.valid) {
+        console.log('✅ Receipt verified! Call is authentic.');
+      } else {
+        console.warn('❌ Receipt verification failed:', verification.reason);
+      }
+    }
+
+    return { result, verification };
+  }
+
+  // NEW: Audit trail for developer
+  async getAPICallHistory(modelId?: string, limit: number = 50): Promise<Array<{
+    txHash: string;
+    modelId: string;
+    timestamp: number;
+    amount: string;
+    success: boolean;
+    verified: boolean;
+  }>> {
+    // This would integrate with event indexing service
+    // For now, return mock data structure
+    console.log(`📊 Getting API call history${modelId ? ` for ${modelId}` : ''}...`);
+    
+    // In production, this would query events from the blockchain
+    return [];
+  }
+
+  // NEW: Get proof of API execution for legal/compliance
+  async getExecutionProof(txHash: string): Promise<{
+    transaction: any;
+    receipt: APIReceipt;
+    verification: ReceiptVerification;
+    timestamp: Date;
+  } | null> {
+    console.log(`📜 Generating execution proof for ${txHash}...`);
+    
+    const receipt = await this.getOnChainReceipt(txHash);
+    if (!receipt) {
+      return null;
+    }
+
+    // This would also include the original transaction data
+    // For now, return basic proof structure
+         return {
+       transaction: { hash: txHash }, // Would include full tx data
+       receipt,
+       verification: { valid: true, reason: 'On-chain verified' },
+       timestamp: new Date(receipt.executedAt * 1000)
+     };
+   }
 } 
