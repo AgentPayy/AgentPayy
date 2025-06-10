@@ -504,6 +504,10 @@ export class EnhancedAgentPayKit {
     
     const contractAddress = this.getContractAddress();
     this.contract = new Contract(contractAddress, CONTRACT_ABI, this.wallet.client);
+    
+    // Initialize PaymentService with wallet and contract address
+    this.paymentService = new PaymentService(this.gatewayUrl, contractAddress);
+    this.paymentService.initialize(this.wallet);
   }
 
   private setupBalance() {
