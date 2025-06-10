@@ -7,8 +7,37 @@
     "build": "npm run build --workspaces",
     "dev": "npm run dev --workspaces",
     "clean": "npm run clean --workspaces",
-    "test": "npm run test --workspaces",
-    "start": "cd gateway && npm start"
+    "start": "cd gateway && npm start",
+    
+    "test:all": "npm run test:contracts && npm run test:sdk && npm run test:gateway && npm run test:cli && npm run test:integration && npm run test:e2e",
+    "test:contracts": "cd contracts && forge test",
+    "test:contracts:verbose": "cd contracts && forge test -vvv",
+    "test:contracts:gas": "cd contracts && forge test --gas-report",
+    "test:contracts:comprehensive": "cd contracts && forge test --match-path '*comprehensive*'",
+    
+    "test:sdk": "npm run test --workspace=sdk/typescript && npm run test --workspace=packages/core && npm run test --workspace=packages/consumer-sdk && npm run test --workspace=packages/paywall-sdk",
+    "test:gateway": "npm run test --workspace=gateway",
+    "test:cli": "npm run test --workspace=cli",
+    
+    "test:integration": "npm run test:integration:contracts && npm run test:integration:sdk && npm run test:integration:gateway",
+    "test:integration:contracts": "cd tests/integration && npx vitest run contract-sdk",
+    "test:integration:sdk": "cd tests/integration && npx vitest run sdk-gateway", 
+    "test:integration:gateway": "cd tests/integration && npx vitest run full-stack",
+    
+    "test:e2e": "npm run test:e2e:workflows && npm run test:e2e:multichain",
+    "test:e2e:workflows": "cd tests/e2e && npx playwright test workflows",
+    "test:e2e:multichain": "cd tests/e2e && npx playwright test multichain",
+    
+    "test:performance": "cd tests/e2e/performance && npm run load-test",
+    "test:coverage": "npm run test:all && npm run coverage:report",
+    "coverage:report": "nyc report --reporter=html --reporter=text",
+    
+    "test:multichain:local": "anvil --fork-url https://mainnet.base.org & npm run test:contracts && kill %1",
+    "test:multichain:testnet": "npm run test:integration:contracts -- --network=testnet",
+    
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    "type-check": "npm run type-check --workspaces"
   },
   "workspaces": [
     "packages/core",
@@ -21,7 +50,12 @@
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.2.2",
-    "@types/node": "^20.8.0"
+    "@types/node": "^20.8.0",
+    "vitest": "^1.0.0",
+    "@playwright/test": "^1.40.0",
+    "artillery": "^2.0.0",
+    "nyc": "^15.1.0",
+    "concurrently": "^8.2.0"
   },
   "repository": {
     "type": "git",

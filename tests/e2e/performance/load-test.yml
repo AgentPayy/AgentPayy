@@ -1,0 +1,223 @@
+config:
+  target: 'http://localhost:3000'
+  phases:
+    # Warm-up phase
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    
+    # Ramp up load
+    - duration: 120
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp up load"
+    
+    # Sustained load
+    - duration: 300
+      arrivalRate: 50
+      name: "Sustained load"
+    
+    # Spike test
+    - duration: 60
+      arrivalRate: 100
+      name: "Spike test"
+    
+    # Cool down
+    - duration: 60
+      arrivalRate: 5
+      name: "Cool down"
+
+  environments:
+    production:
+      target: 'https://api.agentpaykit.com'
+    staging:
+      target: 'https://staging.agentpaykit.com'
+    
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+    
+  variables:
+    testUser:
+      - "user1"
+      - "user2" 
+      - "user3"
+    apiModel:
+      - "gpt-4o"
+      - "claude-3-opus"
+      - "gemini-pro"
+
+scenarios:
+  - name: "Browse Models"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/models"
+          name: "List models"
+          capture:
+            - json: "$[0].id"
+              as: "modelId"
+      
+      - get:
+          url: "/api/models/{{ modelId }}"
+          name: "Get model details"
+      
+      - think: 2
+
+  - name: "User Registration & Wallet Connection"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/connect"
+          name: "Connect wallet"
+          json:
+            address: "0x{{ $randomString(40) }}"
+            signature: "0x{{ $randomString(130) }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - get:
+          url: "/api/user/profile"
+          name: "Get user profile"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 1
+
+  - name: "Deposit Balance"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/auth/connect"
+          name: "Connect wallet"
+          json:
+            address: "0x{{ $randomString(40) }}"
+            signature: "0x{{ $randomString(130) }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - post:
+          url: "/api/wallet/deposit"
+          name: "Deposit USDC"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            amount: "{{ $randomInt(1, 100) }}.{{ $randomInt(10, 99) }}"
+            token: "USDC"
+            txHash: "0x{{ $randomString(64) }}"
+      
+      - get:
+          url: "/api/wallet/balance"
+          name: "Check balance"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 3
+
+  - name: "API Payment & Execution"
+    weight: 25
+    flow:
+      - post:
+          url: "/api/auth/connect"
+          name: "Connect wallet"
+          json:
+            address: "0x{{ $randomString(40) }}"
+            signature: "0x{{ $randomString(130) }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - get:
+          url: "/api/models"
+          name: "List models"
+          capture:
+            - json: "$[0].id"
+              as: "modelId"
+      
+      - post:
+          url: "/api/payments/process"
+          name: "Process payment"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            modelId: "{{ modelId }}"
+            input: "What is the weather like today?"
+            paymentMethod: "balance"
+          capture:
+            - json: "$.transactionId"
+              as: "txId"
+      
+      - get:
+          url: "/api/payments/{{ txId }}/status"
+          name: "Check payment status"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 1
+
+  - name: "Model Registration (Provider)"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/connect"
+          name: "Connect wallet"
+          json:
+            address: "0x{{ $randomString(40) }}"
+            signature: "0x{{ $randomString(130) }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      
+      - post:
+          url: "/api/models/register"
+          name: "Register model"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            modelId: "model-{{ $randomString(8) }}"
+            endpoint: "https://api.example.com/v1/chat"
+            price: "0.{{ $randomInt(1, 999) }}"
+            description: "Test model for load testing"
+          capture:
+            - json: "$.modelId"
+              as: "newModelId"
+      
+      - get:
+          url: "/api/models/{{ newModelId }}/analytics"
+          name: "Get model analytics"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      
+      - think: 5
+
+# Custom metrics and assertions
+expect:
+  - statusCode: 200
+  - contentType: json
+  - hasProperty: success
+
+# Performance thresholds
+thresholds:
+  http_req_duration:
+    - threshold: percentile(95) < 500  # 95% of requests under 500ms
+    - threshold: percentile(99) < 1000 # 99% of requests under 1s
+  
+  http_req_failed:
+    - threshold: rate < 0.01  # Error rate under 1%
+  
+  http_reqs:
+    - threshold: rate > 10    # At least 10 requests per second
+
+# Custom functions for realistic test data
+functions:
+  generateEthAddress: |
+    function() {
+      return '0x' + Math.random().toString(16).substr(2, 40);
+    }
+  
+  generateTxHash: |
+    function() {
+      return '0x' + Math.random().toString(16).substr(2, 64);
+    } 

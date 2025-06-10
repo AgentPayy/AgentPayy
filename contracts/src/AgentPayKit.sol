@@ -49,8 +49,10 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         uint256 timestamp
     );
     event PaymentWithdrawn(address indexed recipient, address indexed token, uint256 amount);
-    event BalanceDeposited(address indexed user, address indexed token, uint256 amount); // NEW
-    event BalanceUsed(address indexed user, address indexed token, uint256 amount, string modelId); // NEW
+    event BalanceDeposited(address indexed user, address indexed token, uint256 amount);
+    event BalanceUsed(address indexed user, address indexed token, uint256 amount, string modelId);
+    event PlatformFeeUpdated(uint256 oldFee, uint256 newFee);
+    event TreasuryUpdated(address oldTreasury, address newTreasury);
 
     constructor(address _treasury) Ownable(msg.sender) {
         require(_treasury != address(0), "Invalid treasury");
@@ -98,18 +100,18 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         model.active = active;
     }
 
-    // NEW: Deposit funds to prepaid balance
     function depositBalance(address token, uint256 amount) external nonReentrant {
         require(token != address(0), "Invalid token");
         require(amount > 0, "Invalid amount");
         
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
         userBalances[msg.sender][token] += amount;
+        
+        bool success = IERC20(token).transferFrom(msg.sender, address(this), amount);
+        require(success, "Transfer failed");
         
         emit BalanceDeposited(msg.sender, token, amount);
     }
 
-    // ENHANCED: Dual payment model - balance first, fallback to permit
     function payAndCall(PaymentData calldata payment) external nonReentrant {
         Model storage model = models[payment.modelId];
         require(model.owner != address(0), "Model not found");
@@ -124,29 +126,25 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
             payment.deadline
         ));
         require(!processedPayments[paymentId], "Payment processed");
+        
         processedPayments[paymentId] = true;
+        model.totalCalls++;
+        model.totalRevenue += payment.amount;
 
-        // DUAL PAYMENT MODEL: Check balance first, fallback to permit
         uint256 userBalance = userBalances[msg.sender][model.token];
         
         if (userBalance >= payment.amount) {
-            // Use prepaid balance
             userBalances[msg.sender][model.token] -= payment.amount;
             _distributeFunds(model, payment.amount);
             
             emit BalanceUsed(msg.sender, model.token, payment.amount, payment.modelId);
         } else {
-            // Fallback to permit/smart wallet payment
             if (payment.smartWalletSig.length > 0) {
                 _processSmartWalletPayment(model, payment);
             } else {
                 _processPermitPayment(model, payment);
             }
         }
-
-        // Update model stats
-        model.totalCalls++;
-        model.totalRevenue += payment.amount;
 
         emit PaymentProcessed(
             payment.modelId,
@@ -172,7 +170,9 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         address signer = ECDSA.recover(ethSignedMessageHash, payment.smartWalletSig);
         require(signer == msg.sender, "Invalid signature");
 
-        IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        bool success = IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        require(success, "Transfer failed");
+        
         _distributeFunds(model, payment.amount);
     }
 
@@ -190,7 +190,9 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
             payment.s
         );
 
-        IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        bool success = IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        require(success, "Transfer failed");
+        
         _distributeFunds(model, payment.amount);
     }
 
@@ -214,7 +216,6 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         emit PaymentWithdrawn(msg.sender, token, amount);
     }
 
-    // NEW: Withdraw prepaid balance
     function withdrawBalance(address token, uint256 amount) external nonReentrant {
         require(userBalances[msg.sender][token] >= amount, "Insufficient balance");
         
@@ -230,7 +231,6 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         return balances[user][token];
     }
 
-    // NEW: Get prepaid balance
     function getUserBalance(address user, address token) external view returns (uint256) {
         return userBalances[user][token];
     }
@@ -239,13 +239,17 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         return models[modelId];
     }
 
-    function setPlatformFee(uint256 _platformFee) external onlyOwner {
-        require(_platformFee <= 2000, "Fee too high"); // Max 20%
-        platformFee = _platformFee;
+    function setPlatformFee(uint256 newFee) external onlyOwner {
+        require(newFee <= 2000, "Fee too high"); // Max 20%
+        uint256 oldFee = platformFee;
+        platformFee = newFee;
+        emit PlatformFeeUpdated(oldFee, newFee);
     }
 
-    function setTreasury(address _treasury) external onlyOwner {
-        require(_treasury != address(0), "Invalid treasury");
-        treasury = _treasury;
+    function setTreasury(address newTreasury) external onlyOwner {
+        require(newTreasury != address(0), "Invalid treasury");
+        address oldTreasury = treasury;
+        treasury = newTreasury;
+        emit TreasuryUpdated(oldTreasury, newTreasury);
     }
 } 
