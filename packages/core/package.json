@@ -1,0 +1,24 @@
+{
+  "name": "@agentpay/core",
+  "version": "1.0.0",
+  "description": "Shared utilities for AgentPayKit ecosystem",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "ethers": "^6.8.0",
+    "viem": "^1.19.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@types/node": "^20.8.0"
+  },
+  "files": [
+    "dist"
+  ]
+} 

@@ -1,0 +1,37 @@
+{
+  "name": "@agentpay/contracts",
+  "version": "0.1.0",
+  "description": "AgentPayKit smart contracts",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    
+    "deploy:ethereum": "hardhat run scripts/deploy.ts --network ethereum",
+    "deploy:base": "hardhat run scripts/deploy.ts --network base",
+    "deploy:arbitrum": "hardhat run scripts/deploy.ts --network arbitrum",
+    "deploy:optimism": "hardhat run scripts/deploy.ts --network optimism",
+    "deploy:unichain": "hardhat run scripts/deploy.ts --network unichain",
+    "deploy:worldchain": "hardhat run scripts/deploy.ts --network worldchain",
+    "deploy:linea": "hardhat run scripts/deploy.ts --network linea",
+    "deploy:blast": "hardhat run scripts/deploy.ts --network blast",
+    "deploy:scroll": "hardhat run scripts/deploy.ts --network scroll",
+    "deploy:polygon-zkevm": "hardhat run scripts/deploy.ts --network polygonZkEvm",
+    "deploy:mantle": "hardhat run scripts/deploy.ts --network mantle",
+    
+    "deploy:tier1": "npm run deploy:base && npm run deploy:arbitrum && npm run deploy:optimism && npm run deploy:ethereum",
+    "deploy:tier2": "npm run deploy:unichain && npm run deploy:worldchain && npm run deploy:linea && npm run deploy:blast",
+    "deploy:tier3": "npm run deploy:scroll && npm run deploy:polygon-zkevm && npm run deploy:mantle",
+    "deploy:all": "npm run deploy:tier1 && npm run deploy:tier2 && npm run deploy:tier3",
+    
+    "verify:base": "hardhat verify --network base",
+    "verify:arbitrum": "hardhat verify --network arbitrum",
+    "verify:optimism": "hardhat verify --network optimism",
+    "verify:ethereum": "hardhat verify --network ethereum"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "hardhat": "^2.19.0",
+    "dotenv": "^16.0.0"
+  }
+} 

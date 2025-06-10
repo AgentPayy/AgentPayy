@@ -1,0 +1,41 @@
+{
+  "name": "agentpaykit",
+  "version": "1.0.0",
+  "description": "Universal wallet infrastructure for the API economy",
+  "private": true,
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --workspaces",
+    "clean": "npm run clean --workspaces",
+    "test": "npm run test --workspaces",
+    "start": "cd gateway && npm start"
+  },
+  "workspaces": [
+    "packages/core",
+    "packages/consumer-sdk", 
+    "packages/paywall-sdk",
+    "sdk/typescript",
+    "cli",
+    "gateway"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@types/node": "^20.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentpay/agentpay"
+  },
+  "keywords": [
+    "ai",
+    "api",
+    "payments",
+    "crypto",
+    "ethereum",
+    "base",
+    "wallet",
+    "smart-accounts"
+  ],
+  "license": "MIT"
+} 
