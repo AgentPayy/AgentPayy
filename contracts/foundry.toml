@@ -1,0 +1,46 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.20"
+
+# Remappings
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/"
+]
+
+# Optimizer settings
+optimizer = true
+optimizer_runs = 200
+
+# Testing
+gas_reports = ["*"]
+gas_reports_ignore = ["*Test*"]
+
+# RPC endpoints for multichain deployment
+[rpc_endpoints]
+ethereum = "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+base = "https://mainnet.base.org"
+arbitrum = "https://arb1.arbitrum.io/rpc"
+optimism = "https://mainnet.optimism.io"
+unichain = "https://rpc.unichain.org"
+worldchain = "https://worldchain-mainnet.g.alchemy.com/public"
+linea = "https://rpc.linea.build"
+blast = "https://rpc.blast.io"
+scroll = "https://rpc.scroll.io"
+polygon_zkevm = "https://zkevm-rpc.com"
+mantle = "https://rpc.mantle.xyz"
+
+# Etherscan API keys for verification
+[etherscan]
+ethereum = { key = "${ETHERSCAN_API_KEY}" }
+base = { key = "${BASESCAN_API_KEY}", url = "https://api.basescan.org/api" }
+arbitrum = { key = "${ARBISCAN_API_KEY}", url = "https://api.arbiscan.io/api" }
+optimism = { key = "${OPTIMISTIC_ETHERSCAN_API_KEY}", url = "https://api-optimistic.etherscan.io/api" }
+linea = { key = "${LINEA_API_KEY}", url = "https://api.lineascan.build/api" }
+blast = { key = "${BLAST_API_KEY}", url = "https://api.blastscan.io/api" }
+scroll = { key = "${SCROLL_API_KEY}", url = "https://api.scrollscan.com/api" }
+polygon_zkevm = { key = "${POLYGON_ZKEVM_API_KEY}", url = "https://api-zkevm.polygonscan.com/api" }
+mantle = { key = "${MANTLE_API_KEY}", url = "https://api.mantlescan.xyz/api" }
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

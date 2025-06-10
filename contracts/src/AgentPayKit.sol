@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract AgentPayKit is ReentrancyGuard, Ownable {
-    using ECDSA for bytes32;
 
     struct Model {
         address owner;
@@ -52,7 +52,7 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
     event BalanceDeposited(address indexed user, address indexed token, uint256 amount); // NEW
     event BalanceUsed(address indexed user, address indexed token, uint256 amount, string modelId); // NEW
 
-    constructor(address _treasury) {
+    constructor(address _treasury) Ownable(msg.sender) {
         require(_treasury != address(0), "Invalid treasury");
         treasury = _treasury;
     }
@@ -168,8 +168,8 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
             payment.deadline
         ));
         
-        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-        address signer = ethSignedMessageHash.recover(payment.smartWalletSig);
+        bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
+        address signer = ECDSA.recover(ethSignedMessageHash, payment.smartWalletSig);
         require(signer == msg.sender, "Invalid signature");
 
         IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);

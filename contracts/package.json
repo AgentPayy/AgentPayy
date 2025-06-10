@@ -3,35 +3,35 @@
   "version": "0.1.0",
   "description": "AgentPayKit smart contracts",
   "scripts": {
-    "compile": "hardhat compile",
-    "test": "hardhat test",
+    "build": "forge build",
+    "test": "forge test",
+    "test:verbose": "forge test -vvv",
+    "test:gas": "forge test --gas-report",
+    "clean": "forge clean",
     
-    "deploy:ethereum": "hardhat run scripts/deploy.ts --network ethereum",
-    "deploy:base": "hardhat run scripts/deploy.ts --network base",
-    "deploy:arbitrum": "hardhat run scripts/deploy.ts --network arbitrum",
-    "deploy:optimism": "hardhat run scripts/deploy.ts --network optimism",
-    "deploy:unichain": "hardhat run scripts/deploy.ts --network unichain",
-    "deploy:worldchain": "hardhat run scripts/deploy.ts --network worldchain",
-    "deploy:linea": "hardhat run scripts/deploy.ts --network linea",
-    "deploy:blast": "hardhat run scripts/deploy.ts --network blast",
-    "deploy:scroll": "hardhat run scripts/deploy.ts --network scroll",
-    "deploy:polygon-zkevm": "hardhat run scripts/deploy.ts --network polygonZkEvm",
-    "deploy:mantle": "hardhat run scripts/deploy.ts --network mantle",
+    "deploy:ethereum": "forge script script/Deploy.s.sol:DeployScript --rpc-url ethereum --broadcast --verify",
+    "deploy:base": "forge script script/Deploy.s.sol:DeployScript --rpc-url base --broadcast --verify",
+    "deploy:arbitrum": "forge script script/Deploy.s.sol:DeployScript --rpc-url arbitrum --broadcast --verify",
+    "deploy:optimism": "forge script script/Deploy.s.sol:DeployScript --rpc-url optimism --broadcast --verify",
+    "deploy:unichain": "forge script script/Deploy.s.sol:DeployScript --rpc-url unichain --broadcast --verify",
+    "deploy:worldchain": "forge script script/Deploy.s.sol:DeployScript --rpc-url worldchain --broadcast --verify",
+    "deploy:linea": "forge script script/Deploy.s.sol:DeployScript --rpc-url linea --broadcast --verify",
+    "deploy:blast": "forge script script/Deploy.s.sol:DeployScript --rpc-url blast --broadcast --verify",
+    "deploy:scroll": "forge script script/Deploy.s.sol:DeployScript --rpc-url scroll --broadcast --verify",
+    "deploy:polygon-zkevm": "forge script script/Deploy.s.sol:DeployScript --rpc-url polygon_zkevm --broadcast --verify",
+    "deploy:mantle": "forge script script/Deploy.s.sol:DeployScript --rpc-url mantle --broadcast --verify",
     
-    "deploy:tier1": "npm run deploy:base && npm run deploy:arbitrum && npm run deploy:optimism && npm run deploy:ethereum",
-    "deploy:tier2": "npm run deploy:unichain && npm run deploy:worldchain && npm run deploy:linea && npm run deploy:blast",
-    "deploy:tier3": "npm run deploy:scroll && npm run deploy:polygon-zkevm && npm run deploy:mantle",
-    "deploy:all": "npm run deploy:tier1 && npm run deploy:tier2 && npm run deploy:tier3",
+    "deploy:tier1": "./script/DeployMultichain.sh tier1",
+    "deploy:tier2": "./script/DeployMultichain.sh tier2",
+    "deploy:tier3": "./script/DeployMultichain.sh tier3",
+    "deploy:all": "./script/DeployMultichain.sh all",
     
-    "verify:base": "hardhat verify --network base",
-    "verify:arbitrum": "hardhat verify --network arbitrum",
-    "verify:optimism": "hardhat verify --network optimism",
-    "verify:ethereum": "hardhat verify --network ethereum"
+    "verify:base": "forge verify-contract --chain base",
+    "verify:arbitrum": "forge verify-contract --chain arbitrum",
+    "verify:optimism": "forge verify-contract --chain optimism",
+    "verify:ethereum": "forge verify-contract --chain ethereum"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
-    "@openzeppelin/contracts": "^5.0.0",
-    "hardhat": "^2.19.0",
-    "dotenv": "^16.0.0"
+    "@openzeppelin/contracts": "^5.0.0"
   }
 } 
