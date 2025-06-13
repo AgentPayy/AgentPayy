@@ -9,6 +9,49 @@ export interface PaymentOptions {
   useBalance?: boolean;
   gasless?: boolean;
   chain?: ChainType;
+  attributions?: Attribution[]; // NEW: Multi-party attribution
+}
+
+// NEW: Attribution interface
+export interface Attribution {
+  recipient: string;
+  basisPoints: number; // out of 10000 (100%)
+}
+
+// NEW: Task interfaces
+export interface TaskOptions {
+  worker: string;
+  amount: string;
+  token?: string;
+  escrowType?: 'timeout' | 'hash' | 'mutual' | null;
+  rules?: any;
+  timeout?: number; // minutes
+}
+
+export interface Task {
+  id: string;
+  payer: string;
+  worker: string;
+  amount: string;
+  token: string;
+  escrowType: string | null;
+  rules: any;
+  status: 'pending' | 'completed' | 'refunded' | 'disputed';
+  createdAt: number;
+  completedAt?: number;
+  result?: any;
+}
+
+export interface ReputationData {
+  address: string;
+  totalCalls: number;
+  totalRevenue: string;
+  successRate: number;
+  avgResponseTime: number;
+  uniqueModelsUsed: number;
+  recentCalls: number;
+  rating: number;
+  specialties: string[];
 }
 
 export interface ModelConfig {

@@ -9,6 +9,49 @@ export interface PaymentOptions {
   mock?: boolean;
   useBalance?: boolean;
   gasless?: boolean; // For smart accounts
+  attributions?: Attribution[]; // NEW: Multi-party attribution
+}
+
+// NEW: Attribution interface
+export interface Attribution {
+  recipient: string;
+  basisPoints: number; // out of 10000 (100%)
+}
+
+// NEW: Task interfaces
+export interface TaskOptions {
+  worker: string;
+  amount: string;
+  token?: string;
+  escrowType?: 'timeout' | 'hash' | 'mutual' | null;
+  rules?: any;
+  timeout?: number; // minutes
+}
+
+export interface Task {
+  id: string;
+  payer: string;
+  worker: string;
+  amount: string;
+  token: string;
+  escrowType: string | null;
+  rules: any;
+  status: 'pending' | 'completed' | 'refunded' | 'disputed';
+  createdAt: number;
+  completedAt?: number;
+  result?: any;
+}
+
+export interface ReputationData {
+  address: string;
+  totalCalls: number;
+  totalRevenue: string;
+  successRate: number;
+  avgResponseTime: number;
+  uniqueModelsUsed: number;
+  recentCalls: number;
+  rating: number;
+  specialties: string[];
 }
 
 export interface ModelConfig {
@@ -206,6 +249,8 @@ const CHAIN_CONFIGS = {
 
 const CONTRACT_ABI = [
   "function payAndCall(tuple(string modelId, bytes32 inputHash, uint256 amount, uint256 deadline, bytes smartWalletSig, uint8 v, bytes32 r, bytes32 s) payment)",
+  // NEW: Attribution function
+  "function payAndCallWithAttribution(tuple(string modelId, bytes32 inputHash, uint256 amount, uint256 deadline, tuple(address recipient, uint256 basisPoints)[] attributions, bytes smartWalletSig, uint8 v, bytes32 r, bytes32 s) payment)",
   "function registerModel(string modelId, string endpoint, uint256 price, address token)",
   "function depositBalance(address token, uint256 amount)",
   "function withdraw(address token)",
@@ -710,4 +755,223 @@ export class EnhancedAgentPayKit {
        timestamp: new Date(receipt.executedAt * 1000)
      };
    }
+
+  // === NEW: ATTRIBUTION FEATURES ===
+
+  /**
+   * Pay with multi-party attribution splits
+   */
+  async payWithAttribution(
+    modelId: string, 
+    input: any, 
+    attributions: Attribution[], 
+    options: Omit<PaymentOptions, 'attributions'>
+  ): Promise<PaymentResult> {
+    if (!this.wallet) throw new Error('No wallet connected');
+    
+    // Validate attribution splits
+    const totalBasisPoints = attributions.reduce((sum, attr) => sum + attr.basisPoints, 0);
+    if (totalBasisPoints !== 10000) {
+      throw new Error('Attribution splits must sum to 100% (10000 basis points)');
+    }
+
+    console.log(`💰 Payment with ${attributions.length} attribution splits`);
+    
+    // Store attribution data in gateway
+    const response = await fetch(`${this.gatewayUrl}/pay-with-attribution`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        modelId,
+        input,
+        attributions,
+        payer: this.wallet.address,
+        amount: options.price
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Attribution setup failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log(`✅ Attribution recorded: ${result.inputHash}`);
+
+    // Now make the payment with attribution flag
+    return this.payAndCall(modelId, input, { ...options, attributions });
+  }
+
+  // === NEW: REPUTATION FEATURES ===
+
+  /**
+   * Get reputation data for an address
+   */
+  async getReputation(address?: string): Promise<ReputationData> {
+    const targetAddress = address || this.wallet?.address;
+    if (!targetAddress) throw new Error('No address provided and no wallet connected');
+
+    const response = await fetch(`${this.gatewayUrl}/reputation/${targetAddress}`);
+    if (!response.ok) {
+      throw new Error(`Failed to get reputation: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Get leaderboard of top agents
+   */
+  async getLeaderboard(limit: number = 10): Promise<ReputationData[]> {
+    const response = await fetch(`${this.gatewayUrl}/leaderboard?limit=${limit}`);
+    if (!response.ok) {
+      throw new Error(`Failed to get leaderboard: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  // === NEW: TASK ESCROW FEATURES ===
+
+  /**
+   * Create an escrowed task
+   */
+  async createTask(options: TaskOptions): Promise<string> {
+    if (!this.wallet) throw new Error('No wallet connected');
+
+    const taskData = {
+      worker: options.worker,
+      amount: options.amount,
+      token: options.token || USDC_ADDRESSES[this.getChain()],
+      escrowType: options.escrowType,
+      rules: options.rules || {},
+      payer: this.wallet.address
+    };
+
+    // Add timeout to rules if provided
+    if (options.timeout) {
+      taskData.rules.timeoutMinutes = options.timeout;
+    }
+
+    const response = await fetch(`${this.gatewayUrl}/tasks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(taskData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Task creation failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log(`📋 Task created: ${result.taskId}`);
+    
+    return result.taskId;
+  }
+
+  /**
+   * Complete a task
+   */
+  async completeTask(taskId: string, result: any): Promise<boolean> {
+    if (!this.wallet) throw new Error('No wallet connected');
+
+    const response = await fetch(`${this.gatewayUrl}/tasks/${taskId}/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        result,
+        worker: this.wallet.address
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Task completion failed: ${error.error}`);
+    }
+
+    const responseData = await response.json();
+    console.log(`✅ Task completed: ${taskId}`);
+    
+    return responseData.success;
+  }
+
+  /**
+   * Approve a task (for mutual escrow)
+   */
+  async approveTask(taskId: string): Promise<boolean> {
+    if (!this.wallet) throw new Error('No wallet connected');
+
+    const response = await fetch(`${this.gatewayUrl}/tasks/${taskId}/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        approver: this.wallet.address
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Task approval failed: ${response.statusText}`);
+    }
+
+    console.log(`👍 Task approved: ${taskId}`);
+    return true;
+  }
+
+  /**
+   * Get task details
+   */
+  async getTask(taskId: string): Promise<Task> {
+    const response = await fetch(`${this.gatewayUrl}/tasks/${taskId}`);
+    
+    if (!response.ok) {
+      throw new Error(`Task not found: ${taskId}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Create simple timeout task (convenience method)
+   */
+  async createTimeoutTask(
+    worker: string, 
+    amount: string, 
+    timeoutMinutes: number = 30
+  ): Promise<string> {
+    return this.createTask({
+      worker,
+      amount,
+      escrowType: 'timeout',
+      timeout: timeoutMinutes
+    });
+  }
+
+  /**
+   * Create hash validation task (convenience method)
+   */
+  async createHashTask(
+    worker: string, 
+    amount: string, 
+    expectedHash: string
+  ): Promise<string> {
+    return this.createTask({
+      worker,
+      amount,
+      escrowType: 'hash',
+      rules: { expectedHash }
+    });
+  }
+
+  /**
+   * Create mutual approval task (convenience method)
+   */
+  async createMutualTask(
+    worker: string, 
+    amount: string
+  ): Promise<string> {
+    return this.createTask({
+      worker,
+      amount,
+      escrowType: 'mutual'
+    });
+  }
 } 

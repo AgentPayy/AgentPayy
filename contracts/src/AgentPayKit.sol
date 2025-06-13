@@ -22,11 +22,30 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         uint256 totalRevenue;
     }
 
+    // NEW: Attribution structure for revenue splits
+    struct Attribution {
+        address recipient;
+        uint256 basisPoints; // out of 10000 (100%)
+    }
+
     struct PaymentData {
         string modelId;
         bytes32 inputHash;
         uint256 amount;
         uint256 deadline;
+        bytes smartWalletSig;
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+    }
+
+    // NEW: Enhanced payment data with attribution
+    struct AttributedPaymentData {
+        string modelId;
+        bytes32 inputHash;
+        uint256 amount;
+        uint256 deadline;
+        Attribution[] attributions; // Multi-party splits
         bytes smartWalletSig;
         uint8 v;
         bytes32 r;
@@ -408,4 +427,148 @@ contract AgentPayKit is ReentrancyGuard, Ownable {
         failedCalls = 0;
         avgResponseSize = 0;
     }
+
+    // NEW: Pay with attribution splits
+    function payAndCallWithAttribution(AttributedPaymentData calldata payment) external nonReentrant {
+        Model storage model = models[payment.modelId];
+        require(model.owner != address(0), "Model not found");
+        require(model.active, "Model inactive");
+        require(payment.amount >= model.price, "Insufficient payment");
+        require(block.timestamp <= payment.deadline, "Payment expired");
+        
+        // Validate attribution splits
+        _validateAttributions(payment.attributions);
+
+        bytes32 paymentId = keccak256(abi.encodePacked(
+            payment.modelId,
+            payment.inputHash,
+            msg.sender,
+            payment.deadline,
+            _hashAttributions(payment.attributions)
+        ));
+        require(!processedPayments[paymentId], "Payment processed");
+        processedPayments[paymentId] = true;
+
+        // Handle dual payment model
+        uint256 userBalance = userBalances[msg.sender][model.token];
+        
+        if (userBalance >= payment.amount) {
+            userBalances[msg.sender][model.token] -= payment.amount;
+            _distributeFundsWithAttribution(model, payment.amount, payment.attributions);
+            emit BalanceUsed(msg.sender, model.token, payment.amount, payment.modelId);
+        } else {
+            // Fallback to permit/smart wallet payment
+            if (payment.smartWalletSig.length > 0) {
+                _processSmartWalletPaymentWithAttribution(model, payment);
+            } else {
+                _processPermitPaymentWithAttribution(model, payment);
+            }
+        }
+
+        // Update model stats
+        model.totalCalls++;
+        model.totalRevenue += payment.amount;
+
+        emit PaymentProcessed(
+            payment.modelId,
+            msg.sender,
+            payment.amount,
+            payment.inputHash,
+            block.timestamp
+        );
+        
+        // NEW: Attribution event
+        emit AttributedPayment(
+            payment.modelId,
+            msg.sender,
+            payment.amount,
+            payment.attributions
+        );
+    }
+
+    function _distributeFundsWithAttribution(
+        Model storage model, 
+        uint256 amount, 
+        Attribution[] calldata attributions
+    ) internal {
+        uint256 fee = (amount * platformFee) / FEE_DENOMINATOR;
+        uint256 distributionAmount = amount - fee;
+        
+        // Add platform fee
+        balances[treasury][model.token] += fee;
+        
+        if (attributions.length == 0) {
+            // Default: All to model owner
+            balances[model.owner][model.token] += distributionAmount;
+        } else {
+            // Distribute according to attribution
+            for (uint i = 0; i < attributions.length; i++) {
+                uint256 recipientAmount = (distributionAmount * attributions[i].basisPoints) / 10000;
+                balances[attributions[i].recipient][model.token] += recipientAmount;
+            }
+        }
+    }
+
+    function _validateAttributions(Attribution[] calldata attributions) internal pure {
+        require(attributions.length <= 10, "Too many attributions");
+        
+        uint256 totalBasisPoints = 0;
+        for (uint i = 0; i < attributions.length; i++) {
+            require(attributions[i].recipient != address(0), "Invalid recipient");
+            require(attributions[i].basisPoints > 0, "Invalid basis points");
+            totalBasisPoints += attributions[i].basisPoints;
+        }
+        
+        require(totalBasisPoints == 10000, "Attribution must sum to 100%");
+    }
+
+    function _hashAttributions(Attribution[] calldata attributions) internal pure returns (bytes32) {
+        return keccak256(abi.encode(attributions));
+    }
+
+    function _processSmartWalletPaymentWithAttribution(
+        Model storage model,
+        AttributedPaymentData calldata payment
+    ) internal {
+        bytes32 messageHash = keccak256(abi.encodePacked(
+            payment.modelId,
+            payment.inputHash,
+            payment.amount,
+            payment.deadline,
+            _hashAttributions(payment.attributions)
+        ));
+        
+        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
+        address signer = ethSignedMessageHash.recover(payment.smartWalletSig);
+        require(signer == msg.sender, "Invalid signature");
+
+        IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        _distributeFundsWithAttribution(model, payment.amount, payment.attributions);
+    }
+
+    function _processPermitPaymentWithAttribution(
+        Model storage model,
+        AttributedPaymentData calldata payment
+    ) internal {
+        IERC20Permit(model.token).permit(
+            msg.sender,
+            address(this),
+            payment.amount,
+            payment.deadline,
+            payment.v,
+            payment.r,
+            payment.s
+        );
+
+        IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        _distributeFundsWithAttribution(model, payment.amount, payment.attributions);
+    }
+
+    // NEW: Attribution event
+    event AttributedPayment(
+        string indexed modelId,
+        address indexed payer,
+        uint256 amount,
+        Attribution[] attributions
+    );
 } 
