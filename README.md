@@ -93,24 +93,31 @@ console.log(`Balance: $${balance} USDC`);
 // Automatic balance usage (no wallet popups)
 const result = await agentPay.callAPI(endpoint, data, modelId);
 
-// Withdraw earnings
-await agentPay.withdraw();
+// Withdraw from prepaid balance (specific amount)
+await agentPay.withdrawBalance('5.0'); // Withdraw $5 from balance
+
+// Withdraw all earnings from API sales
+await agentPay.withdraw(); // Withdraw all earnings to wallet
 ```
 
 ### Reputation System
 Built-in agent discovery and reliability scoring:
 
 ```typescript
+import { ReputationModule } from '@agentpay/sdk';
+
+const reputation = new ReputationModule(gatewayUrl);
+
 // Get agent reputation
-const reputation = await agentPay.getReputation(agentAddress);
-console.log(`Rating: ${reputation.rating}/5.0`);
-console.log(`Success rate: ${reputation.successRate}%`);
+const agentRep = await reputation.getReputation(agentAddress);
+console.log(`Rating: ${agentRep.rating}/5.0`);
+console.log(`Success rate: ${agentRep.successRate}%`);
 
 // Find specialists
-const specialists = await agentPay.findAgentsBySpecialty('weather-data', 4.0);
+const specialists = await reputation.findAgentsBySpecialty('weather-data', 4.0);
 
 // Get leaderboard
-const topAgents = await agentPay.getLeaderboard(10);
+const topAgents = await reputation.getLeaderboard(10);
 ```
 
 ## Architecture
@@ -227,9 +234,9 @@ console.log(`${stats.totalAPIs} APIs available`);
 
 ## Getting Started
 
-1. **[Installation Guide](./docs/getting-started.md)** - Set up SDK in 5 minutes
-2. **[Integration Examples](./examples/)** - Framework-specific guides
-3. **[API Reference](./sdk/typescript/)** - Complete SDK documentation
+1. **[TypeScript SDK Guide](./sdk/typescript/README.md)** - Set up SDK in 5 minutes
+2. **[Python SDK Guide](./sdk/python/README.md)** - Python integration guide
+3. **[Integration Examples](./examples/)** - Framework-specific guides
 4. **[AI Agent Guide](./AI_AGENT_GUIDE.md)** - Quick reference for AI agents
 
 ## Community

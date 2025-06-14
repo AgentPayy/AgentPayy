@@ -489,9 +489,6 @@ export class AgentPayKit {
 
 export default AgentPayKit;
 
-// Enhanced SDK
-export { EnhancedAgentPayKit } from './EnhancedAgentPayKit';
-
 // Wallet Infrastructure
 export { UniversalWalletAdapter } from './wallet/UniversalWalletAdapter';
 export { SmartWalletFactory } from './wallet/SmartWalletFactory';
@@ -500,6 +497,10 @@ export { SmartWalletFactory } from './wallet/SmartWalletFactory';
 export { PaymentService } from './services/PaymentService';
 export { BalanceService } from './services/BalanceService';
 
+// Modules
+export { ReputationModule } from './ReputationModule';
+export { AttributionModule } from './AttributionModule';
+
 // Additional Types
 export type {
   WalletInfo,
@@ -507,10 +508,6 @@ export type {
   WalletType,
   ChainType
 } from './wallet/UniversalWalletAdapter';
-
-export type {
-  AgentConfig
-} from './EnhancedAgentPayKit';
 
 export type {
   SmartAccountProvider,

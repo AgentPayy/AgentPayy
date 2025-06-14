@@ -1,7 +1,7 @@
 import { ethers, Contract } from 'ethers';
 import axios from 'axios';
 import type { WalletInfo } from '../wallet/UniversalWalletAdapter';
-import type { PaymentOptions } from '../EnhancedAgentPayKit';
+import type { PaymentOptions } from '../index';
 
 // AgentPayKit contract ABI (essential functions only)
 const AGENTPAY_ABI = [
