@@ -41,7 +41,9 @@
     "test:multichain:testnet": "npm run test:integration:contracts -- --network=testnet",
     
     "ci": "npm run type-check && npm run lint && npm run test:all",
-    "ci:quick": "npm run type-check && npm run test:contracts"
+    "ci:quick": "npm run type-check && npm run test:contracts",
+    
+    "release:dry-run": "npx semantic-release --dry-run"
   },
   "workspaces": [
     "sdk/typescript",
@@ -56,7 +58,12 @@
     "@playwright/test": "^1.40.0",
     "artillery": "^2.0.0",
     "nyc": "^15.1.0",
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "semantic-release": "^22.0.0",
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/exec": "^6.0.0",
+    "@semantic-release/npm": "^11.0.0"
   },
   "repository": {
     "type": "git",
