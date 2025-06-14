@@ -1,11 +1,58 @@
-# AgentPay Deployment
+# AgentPay Integration Guide
 
-## Deploy Smart Contracts
+## For Developers (Recommended)
+
+### Install SDK
+```bash
+npm install @agentpay/sdk
+```
+
+### Connect to Network
+```typescript
+import { AgentPayKit } from '@agentpay/sdk';
+
+const agentPay = new AgentPayKit({
+  network: 'base', // Uses deployed AgentPay contracts
+  privateKey: process.env.PRIVATE_KEY
+});
+```
+
+### Available Networks
+- **base**: 0x... (recommended - lowest fees)
+- **arbitrum**: 0x... (fast finality)
+- **optimism**: 0x... (Ethereum-compatible)
+- **polygon**: 0x... (high throughput)
+
+## For API Providers
+
+### Validate Payments
+```typescript
+// In your API endpoint
+const isValid = await agentPay.validatePayment(txHash, inputData);
+```
+
+### Integration Examples
+- Express middleware
+- FastAPI decorators
+- Next.js API routes
+
+---
+
+## Contract Deployment (Advanced)
+
+For those who need custom contract deployment:
 
 ```bash
 cd contracts
 forge build
 forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast --verify
+```
+
+### Environment Variables
+```bash
+PRIVATE_KEY=0x...
+ETHERSCAN_API_KEY=...
+BASE_RPC_URL=...
 ```
 
 ## Environment Variables

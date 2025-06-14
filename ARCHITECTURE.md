@@ -1,26 +1,42 @@
 # AgentPay Architecture
 
-Privacy-first payment protocol for API monetization.
+## Overview
+Privacy-first payment protocol for API monetization using deployed smart contracts.
 
-## Core Components
+## Components
 
-### Smart Contracts
-- `AgentPayCore.sol` - Payment processing
-- `AttributionEngine.sol` - Revenue sharing
-- `ReceiptManager.sol` - Payment verification
+### AgentPay SDK
+- **Purpose**: Connect to deployed AgentPay contracts
+- **Languages**: TypeScript, Python
+- **Networks**: Base, Arbitrum, Optimism, Polygon
 
-### SDK
-- `@agentpay/sdk` - TypeScript/JavaScript client
-- Direct API calls (no gateway)
+### Smart Contracts (Deployed)
+- **AgentPayCore**: Payment processing
+- **AttributionEngine**: Revenue sharing
+- **ReceiptManager**: Payment verification
+
+## Integration Flow
+```
+Developer → AgentPay SDK → Deployed Contracts → API Provider
+```
+
+## Network Addresses
+- **Base**: 0x... (recommended)
+- **Arbitrum**: 0x...
+- **Optimism**: 0x...
+- **Polygon**: 0x...
+
+## Key Features
+- No contract deployment required
 - Privacy-preserving (only hashes on-chain)
+- Sub-cent transaction fees
+- Direct client-to-API communication
 
-## Flow
-```
-Client → Smart Contract (payment + hash) → API Provider (direct call) → Validation
-```
-
-## Networks
-Base, Arbitrum, Optimism, Polygon supported.
+## For AI Agents
+- Simple SDK integration
+- Automatic payment handling
+- Built-in validation
+- Multi-network support
 
 # AgentPay Architecture Documentation
 

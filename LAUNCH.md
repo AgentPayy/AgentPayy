@@ -33,11 +33,15 @@ Built AgentPay after seeing AI agents everywhere but no good payment infrastruct
 
 **The problem:** APIs need monetization, but traditional payments don't work for $0.01 calls.
 
-**The solution:** Privacy-first crypto payments on L2s.
+**The solution:** Privacy-first crypto payments using deployed smart contracts.
 
 **How it works:**
 ```typescript
-// Pay for API call
+import { AgentPayKit } from '@agentpay/sdk';
+
+const agentPay = new AgentPayKit({ network: 'base' });
+
+// Pay for API call (connects to deployed contracts)
 const result = await agentPay.callAPI(
   'https://api.weather.com',
   { city: 'NYC' },
@@ -46,13 +50,13 @@ const result = await agentPay.callAPI(
 ```
 
 **Key features:**
+- No contract deployment needed
 - Sub-cent fees (~$0.001 on Base)
 - Privacy-first (only hashes on-chain)
-- No gateway/middleware needed
 - Direct client-to-API calls
 
 **Architecture:**
-Client → Smart Contract (payment) → API Provider (validation)
+SDK → Deployed AgentPay Contracts → API Provider
 
 Open source, MIT license. Built for the API economy.
 

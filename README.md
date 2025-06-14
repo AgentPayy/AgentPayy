@@ -6,36 +6,52 @@
 
 Privacy-first API payments with crypto. Sub-cent fees on L2s.
 
-## Install
+## Quick Start
+
 ```bash
 npm install @agentpay/sdk
 ```
 
-## Usage
 ```typescript
 import { AgentPayKit } from '@agentpay/sdk';
 
 const agentPay = new AgentPayKit({
-  network: 'base',
+  network: 'base', // Uses deployed AgentPay contracts
   privateKey: process.env.PRIVATE_KEY
 });
 
-// Direct API call with payment proof
+// Pay for API call
 const result = await agentPay.callAPI(
   'https://api.example.com',
   { data: 'input' },
   'model-id'
 );
+```
 
-// Validate payment (for API providers)
+## For API Providers
+
+```typescript
+// Validate payments from AgentPay network
 const isValid = await agentPay.validatePayment(txHash, inputData);
 ```
 
-## Architecture
-Client → Smart Contract (payment + hash) → API Provider (validation)
+## Integrations
+
+- **CrewAI**: `@agentpay/crewai`
+- **LangChain**: `@agentpay/langchain` 
+- **FastAPI**: `@agentpay/fastapi`
+- **Express**: `@agentpay/express`
+
+## Networks
+
+AgentPay contracts deployed on:
+- Base (8453)
+- Arbitrum (42161)
+- Optimism (10)
+- Polygon (137)
 
 ## Links
-- [Contracts](./contracts/)
-- [SDK](./sdk/typescript/)
-- [Examples](./examples/)
-- [Discord](https://discord.gg/agentpay) 
+
+- [SDK Documentation](./sdk/typescript/)
+- [Integration Examples](./examples/)
+- [Getting Started](./docs/getting-started.md) 

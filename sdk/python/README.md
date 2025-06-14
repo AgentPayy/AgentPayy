@@ -1,37 +1,51 @@
 # AgentPay Python SDK
 
-Privacy-first API payments with crypto.
+Connect to the AgentPay payment network. No contract deployment needed.
 
 ## Install
 ```bash
 pip install agentpay
 ```
 
-## Usage
+## Basic Usage
 ```python
 from agentpay import AgentPayKit
 
 agentpay = AgentPayKit(
     private_key="0x...", 
-    chain="base"
+    chain="base"  # Uses deployed AgentPay contracts
 )
 
-# Direct API call with payment
+# Pay for API call
 result = agentpay.call_api(
     "https://api.example.com",
     {"input": "data"},
     "model-id"
 )
-
-# Validate payment (for API providers)
-is_valid = agentpay.validate_payment(tx_hash, input_data)
 ```
 
-## Features
+## API Provider Integration
+```python
+# Validate payments in your API
+is_valid = agentpay.validate_payment(tx_hash, input_data)
+if not is_valid:
+    return {"error": "Invalid payment"}
+
+# Process request
+```
+
+## Available Networks
+- **base**: Base mainnet (recommended)
+- **arbitrum**: Arbitrum One
+- **optimism**: Optimism mainnet
+- **polygon**: Polygon mainnet
+
+## Key Features
+- Uses deployed AgentPay contracts (no setup required)
 - Privacy-first (only hashes on-chain)
 - Sub-cent fees on L2s
-- Direct client-to-API calls
-- Multi-chain support (Base, Arbitrum, Optimism)
+- Direct client-to-API communication
+- Built-in payment validation
 
 ## Quick Start
 
