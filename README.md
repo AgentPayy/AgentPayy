@@ -234,7 +234,7 @@ console.log(`${stats.totalAPIs} APIs available`);
 
 ## Getting Started
 
-1. **[Setup & Deployment Guide](./SETUP_GUIDE.md)** - Complete deployment and publishing guide
+1. **[Deployment Status](./DEPLOYMENT_STEPS.md)** - ✅ Live on Base network!
 2. **[TypeScript SDK Guide](./sdk/typescript/README.md)** - Single package installation
 3. **[Python SDK Guide](./sdk/python/README.md)** - Python integration guide  
 4. **[Integration Examples](./examples/)** - Framework-specific guides
