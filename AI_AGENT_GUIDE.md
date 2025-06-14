@@ -46,6 +46,58 @@ result = agentpay.call_api(
 )
 ```
 
+## Advanced Features
+
+### Attribution Payments
+Split payments across multiple agents automatically:
+
+```typescript
+// Multi-agent workflow with revenue sharing
+const attributions = [
+  { recipient: '0xDataAgent', basisPoints: 3000 },    // 30%
+  { recipient: '0xAnalysisAgent', basisPoints: 7000 } // 70%
+];
+
+const result = await agentPay.payWithAttribution(
+  'market-analysis',
+  { query: 'NVDA analysis' },
+  attributions,
+  { price: '0.05' }
+);
+```
+
+### Balance Management
+Netflix-style prepaid system:
+
+```typescript
+// Deposit once, use seamlessly
+await agentPay.depositBalance('10.0'); // $10 USDC
+
+// Check balance
+const balance = await agentPay.getUserBalance();
+
+// Automatic usage (no wallet popups)
+const result = await agentPay.callAPI(endpoint, data, modelId);
+
+// Withdraw earnings
+await agentPay.withdraw();
+```
+
+### Reputation System
+Built-in agent discovery:
+
+```typescript
+// Get agent reputation
+const reputation = await agentPay.getReputation(agentAddress);
+console.log(`Rating: ${reputation.rating}/5.0`);
+
+// Find specialists
+const specialists = await agentPay.findAgentsBySpecialty('weather-data', 4.0);
+
+// Get leaderboard
+const topAgents = await agentPay.getLeaderboard(10);
+```
+
 ## For API Providers
 
 ### Validate Payments
@@ -56,6 +108,15 @@ if (!isValid) return { error: 'Payment required' };
 
 // Process request and mark as validated
 await agentPay.markValidated(txHash);
+```
+
+### Register API for Monetization
+```typescript
+await agentPay.registerModel({
+  modelId: 'my-weather-api',
+  endpoint: 'https://api.myservice.com/weather',
+  price: '0.02'
+});
 ```
 
 ## Available Networks
@@ -71,6 +132,10 @@ await agentPay.markValidated(txHash);
 - Privacy-preserving
 - Multi-network support
 - Direct API communication
+- Revenue attribution across agents
+- Prepaid balance system
+- Built-in reputation scoring
+- Agent discovery and reliability
 
 ## Integration Examples
 - **CrewAI**: [examples/crewai-integration.md](./examples/crewai-integration.md)

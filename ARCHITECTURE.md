@@ -1,42 +1,135 @@
 # AgentPay Architecture
 
 ## Overview
-Privacy-first payment protocol for API monetization using deployed smart contracts.
+Privacy-first payment protocol for API monetization using deployed smart contracts on Layer 2 networks.
 
-## Components
-
-### AgentPay SDK
-- **Purpose**: Connect to deployed AgentPay contracts
-- **Languages**: TypeScript, Python
-- **Networks**: Base, Arbitrum, Optimism, Polygon
+## Core Components
 
 ### Smart Contracts (Deployed)
-- **AgentPayCore**: Payment processing
-- **AttributionEngine**: Revenue sharing
-- **ReceiptManager**: Payment verification
+- **AgentPayCore**: Payment processing and model registration
+- **AttributionEngine**: Multi-party revenue splitting
+- **ReputationSystem**: Agent scoring and discovery
 
-## Integration Flow
+### SDK Layer
+- **TypeScript SDK**: Browser and Node.js integration
+- **Python SDK**: AI agent and API server integration
+- **Payment Validation**: Direct client-to-API verification
+
+### Privacy Architecture
 ```
-Developer → AgentPay SDK → Deployed Contracts → API Provider
+Client → SDK → Smart Contract (hash only) → API Provider
+         ↓
+    Direct Data Transfer (off-chain)
 ```
 
-## Network Addresses
-- **Base**: 0x... (recommended)
-- **Arbitrum**: 0x...
-- **Optimism**: 0x...
-- **Polygon**: 0x...
+## Advanced Features
 
-## Key Features
-- No contract deployment required
-- Privacy-preserving (only hashes on-chain)
-- Sub-cent transaction fees
-- Direct client-to-API communication
+### Attribution Engine
+Automatic revenue splitting across multiple agents:
+- Basis points system (10000 = 100%)
+- Up to 10 recipients per payment
+- Automatic distribution on payment
+- Withdrawal system for recipients
 
-## For AI Agents
-- Simple SDK integration
-- Automatic payment handling
-- Built-in validation
-- Multi-network support
+### Balance Management
+Netflix-style prepaid system:
+- Deposit USDC to contract balance
+- Automatic deduction on API calls
+- No wallet popups for users
+- Separate earnings withdrawal
+
+### Reputation System
+Built-in agent discovery and reliability:
+- Success rate tracking
+- Response time monitoring
+- Specialty categorization
+- Leaderboard rankings
+- Reliability scoring
+
+## Payment Flow
+
+### Standard Payment
+1. Client calls `agentPay.callAPI()`
+2. SDK generates input hash
+3. Payment sent to AgentPayCore contract
+4. API validates payment via SDK
+5. Response returned directly to client
+
+### Attribution Payment
+1. Client specifies attribution splits
+2. Payment sent to AttributionEngine
+3. Funds automatically distributed
+4. Recipients can withdraw earnings
+
+### Balance Payment
+1. User deposits USDC to balance
+2. API calls deduct from balance
+3. No transaction signing required
+4. Seamless user experience
+
+## Privacy Guarantees
+- Only payment hashes stored on-chain
+- Input/output data transmitted directly
+- No middleware can access raw data
+- Cryptographic payment verification
+
+## Network Support
+Deployed on all major L2 networks:
+- Base (recommended)
+- Arbitrum
+- Optimism
+- Polygon
+
+## Security Model
+- EIP-712 signature validation
+- Reentrancy protection
+- Access control for admin functions
+- Permit-based token approvals
+- Smart wallet compatibility
+
+## Integration Patterns
+
+### AI Agent Integration
+```typescript
+// CrewAI agent with paid tools
+const agent = new Agent({
+  tools: [
+    (input) => agentPay.callAPI(endpoint, input, modelId)
+  ]
+});
+```
+
+### API Provider Integration
+```typescript
+// Express middleware
+app.use('/api', validatePayment);
+app.post('/api/data', (req, res) => {
+  // Payment already validated
+  res.json(processData(req.body));
+});
+```
+
+### Multi-Agent Workflows
+```typescript
+// Automatic revenue sharing
+const result = await agentPay.payWithAttribution(
+  modelId, input, attributions, options
+);
+```
+
+## Scalability
+- L2 networks for low fees
+- Direct client-API communication
+- Minimal on-chain storage
+- Batch payment processing
+- Reputation caching system
+
+## Future Enhancements
+- Cross-chain payment routing
+- Advanced reputation algorithms
+- Subscription payment models
+- Gasless transaction support
+- Enhanced privacy features
 
 # AgentPay Architecture Documentation
 

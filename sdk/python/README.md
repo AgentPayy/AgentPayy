@@ -24,6 +24,54 @@ result = agentpay.call_api(
 )
 ```
 
+## Advanced Features
+
+### Attribution Payments
+```python
+# Split payment across multiple agents
+attributions = [
+    {"recipient": "0xAgent1", "basisPoints": 6000},  # 60%
+    {"recipient": "0xAgent2", "basisPoints": 4000}   # 40%
+]
+
+result = agentpay.pay_with_attribution(
+    "complex-analysis",
+    {"data": "input"},
+    attributions,
+    {"price": "0.10"}
+)
+```
+
+### Balance Management
+```python
+# Deposit to prepaid balance
+agentpay.deposit_balance("25.0")  # $25 USDC
+
+# Check balance
+balance = agentpay.get_user_balance()
+print(f"Balance: ${balance} USDC")
+
+# Withdraw earnings
+agentpay.withdraw()
+
+# Get financial overview
+overview = agentpay.get_financial_overview()
+print(f"Net position: ${overview['netPosition']}")
+```
+
+### Reputation System
+```python
+# Get agent reputation
+reputation = agentpay.get_reputation(agent_address)
+print(f"Rating: {reputation['rating']}/5.0")
+
+# Find specialists
+weather_experts = agentpay.find_agents_by_specialty("weather", 4.0)
+
+# Get top performers
+leaderboard = agentpay.get_leaderboard(10)
+```
+
 ## API Provider Integration
 ```python
 # Validate payments in your API
@@ -31,7 +79,15 @@ is_valid = agentpay.validate_payment(tx_hash, input_data)
 if not is_valid:
     return {"error": "Invalid payment"}
 
-# Process request
+# Mark payment as processed
+agentpay.mark_validated(tx_hash)
+
+# Register your API for monetization
+agentpay.register_model({
+    "modelId": "my-api",
+    "endpoint": "https://api.myservice.com",
+    "price": "0.05"
+})
 ```
 
 ## Available Networks
@@ -46,6 +102,9 @@ if not is_valid:
 - Sub-cent fees on L2s
 - Direct client-to-API communication
 - Built-in payment validation
+- Attribution engine for revenue sharing
+- Prepaid balance system
+- Reputation scoring and agent discovery
 
 ## Quick Start
 

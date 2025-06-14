@@ -59,6 +59,60 @@ await agentPay.markValidated(txHash);
 return response;
 ```
 
+## Advanced Features
+
+### Attribution Payments
+Split payments across multiple agents automatically:
+
+```typescript
+// Multi-agent workflow with revenue sharing
+const attributions = [
+  { recipient: '0xDataAgent', basisPoints: 3000 },    // 30%
+  { recipient: '0xAnalysisAgent', basisPoints: 7000 } // 70%
+];
+
+const result = await agentPay.payWithAttribution(
+  'market-analysis',
+  { query: 'NVDA analysis' },
+  attributions,
+  { price: '0.05' }
+);
+```
+
+### Balance Management
+Netflix-style prepaid balance system:
+
+```typescript
+// Deposit to balance (one-time setup)
+await agentPay.depositBalance('10.0'); // $10 USDC
+
+// Check balance
+const balance = await agentPay.getUserBalance();
+console.log(`Balance: $${balance} USDC`);
+
+// Automatic balance usage (no wallet popups)
+const result = await agentPay.callAPI(endpoint, data, modelId);
+
+// Withdraw earnings
+await agentPay.withdraw();
+```
+
+### Reputation System
+Built-in agent discovery and reliability scoring:
+
+```typescript
+// Get agent reputation
+const reputation = await agentPay.getReputation(agentAddress);
+console.log(`Rating: ${reputation.rating}/5.0`);
+console.log(`Success rate: ${reputation.successRate}%`);
+
+// Find specialists
+const specialists = await agentPay.findAgentsBySpecialty('weather-data', 4.0);
+
+// Get leaderboard
+const topAgents = await agentPay.getLeaderboard(10);
+```
+
 ## Architecture
 
 ```
@@ -109,6 +163,21 @@ trading_agent = Agent(
 )
 ```
 
+### Multi-Agent Revenue Sharing
+```typescript
+// Research pipeline with automatic attribution
+const researchPipeline = await agentPay.payWithAttribution(
+  'comprehensive-analysis',
+  { topic: 'AI market trends' },
+  [
+    { recipient: '0xDataCollector', basisPoints: 2000 },  // 20%
+    { recipient: '0xAnalyzer', basisPoints: 5000 },      // 50%
+    { recipient: '0xSummarizer', basisPoints: 3000 }     // 30%
+  ],
+  { price: '0.25' }
+);
+```
+
 ### API Monetization
 ```typescript
 // Express API with payment validation
@@ -125,6 +194,9 @@ app.post('/api/analysis', validatePayment, async (req, res) => {
 - **Privacy-First**: Input/output data never stored on-chain
 - **Sub-Cent Costs**: Enable $0.001-$0.01 API calls economically
 - **Multi-Chain**: Deploy once, work across L2 networks
+- **Attribution Engine**: Automatic revenue splitting across agents
+- **Balance System**: Prepaid usage like Netflix/Spotify
+- **Reputation Scoring**: Built-in agent discovery and reliability
 - **Framework Ready**: Integrations for popular AI/web frameworks
 - **Open Source**: MIT license, community-driven development
 
@@ -133,6 +205,7 @@ app.post('/api/analysis', validatePayment, async (req, res) => {
 1. **[Installation Guide](./docs/getting-started.md)** - Set up SDK in 5 minutes
 2. **[Integration Examples](./examples/)** - Framework-specific guides
 3. **[API Reference](./sdk/typescript/)** - Complete SDK documentation
+4. **[AI Agent Guide](./AI_AGENT_GUIDE.md)** - Quick reference for AI agents
 
 ## Community
 
