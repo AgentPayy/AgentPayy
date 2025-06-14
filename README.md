@@ -234,10 +234,11 @@ console.log(`${stats.totalAPIs} APIs available`);
 
 ## Getting Started
 
-1. **[TypeScript SDK Guide](./sdk/typescript/README.md)** - Single package installation
-2. **[Python SDK Guide](./sdk/python/README.md)** - Python integration guide  
-3. **[Integration Examples](./examples/)** - Framework-specific guides
-4. **[AI Agent Guide](./AI_AGENT_GUIDE.md)** - Quick reference for AI agents
+1. **[Setup & Deployment Guide](./SETUP_GUIDE.md)** - Complete deployment and publishing guide
+2. **[TypeScript SDK Guide](./sdk/typescript/README.md)** - Single package installation
+3. **[Python SDK Guide](./sdk/python/README.md)** - Python integration guide  
+4. **[Integration Examples](./examples/)** - Framework-specific guides
+5. **[AI Agent Guide](./AI_AGENT_GUIDE.md)** - Quick reference for AI agents
 
 ## Quick Install
 
