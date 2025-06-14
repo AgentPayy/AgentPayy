@@ -2,10 +2,14 @@
 pragma solidity ^0.8.20;
 
 import {Script, console} from "forge-std/Script.sol";
-import {AgentPayKit} from "../src/AgentPayKit.sol";
+import {AgentPayCore} from "../src/AgentPayCore.sol";
+import {AttributionEngine} from "../src/AttributionEngine.sol";
+import {ReceiptManager} from "../src/ReceiptManager.sol";
 
 contract DeployScript is Script {
-    AgentPayKit public agentPayKit;
+    AgentPayCore public agentPayCore;
+    AttributionEngine public attributionEngine;
+    ReceiptManager public receiptManager;
     
     // USDC addresses by chain
     mapping(uint256 => address) public usdcAddresses;
@@ -30,7 +34,7 @@ contract DeployScript is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         uint256 chainId = block.chainid;
         
-        console.log("=== AgentPayKit Deployment ===");
+        console.log("=== AgentPay Modular Deployment ===");
         console.log("Chain ID:", chainId);
         console.log("Network:", getNetworkName(chainId));
         console.log("Treasury:", treasuryAddress);
@@ -40,23 +44,66 @@ contract DeployScript is Script {
         // Start broadcasting transactions
         vm.startBroadcast(deployerPrivateKey);
         
-        // Deploy AgentPayKit
-        console.log("\nDeploying AgentPayKit...");
-        agentPayKit = new AgentPayKit(treasuryAddress);
+        // Deploy core contracts
+        console.log("\n=== Deploying Core Contracts ===");
+        
+        console.log("1. Deploying AgentPayCore...");
+        agentPayCore = new AgentPayCore(treasuryAddress);
+        console.log("   [OK] AgentPayCore deployed:", address(agentPayCore));
+        
+        console.log("2. Deploying AttributionEngine...");
+        attributionEngine = new AttributionEngine(address(agentPayCore), treasuryAddress);
+        console.log("   [OK] AttributionEngine deployed:", address(attributionEngine));
+        
+        console.log("3. Deploying ReceiptManager...");
+        receiptManager = new ReceiptManager(vm.addr(deployerPrivateKey));
+        console.log("   [OK] ReceiptManager deployed:", address(receiptManager));
+        
+        // Link contracts
+        console.log("\n=== Linking Contracts ===");
+        
+        console.log("4. Setting AttributionEngine in AgentPayCore...");
+        agentPayCore.setAttributionEngine(address(attributionEngine));
+        console.log("   [OK] AttributionEngine linked");
+        
+        console.log("5. Setting ReceiptManager in AgentPayCore...");
+        agentPayCore.setReceiptManager(address(receiptManager));
+        console.log("   [OK] ReceiptManager linked");
         
         vm.stopBroadcast();
         
-        console.log("AgentPayKit deployed to:", address(agentPayKit));
+        console.log("\n=== Deployment Summary ===");
+        console.log("AgentPayCore:      ", address(agentPayCore));
+        console.log("AttributionEngine: ", address(attributionEngine));
+        console.log("ReceiptManager:    ", address(receiptManager));
+        console.log("Treasury:          ", treasuryAddress);
         
         // Network-specific setup
         handleNetworkSpecificSetup(chainId);
         
-        // Generate environment variable
-        string memory envVarName = string.concat("AGENTPAY_", toUpper(getNetworkName(chainId)), "_CONTRACT");
-        console.log("\nAdd to your .env:");
-        console.log(string.concat(envVarName, "=", vm.toString(address(agentPayKit))));
+        // Generate environment variables
+        string memory networkName = getNetworkName(chainId);
+        string memory upperNetworkName = toUpper(networkName);
+        
+        console.log("\n=== Environment Variables ===");
+        console.log("Add these to your .env file:");
+        console.log(string.concat("AGENTPAY_", upperNetworkName, "_CORE=", vm.toString(address(agentPayCore))));
+        console.log(string.concat("AGENTPAY_", upperNetworkName, "_ATTRIBUTION=", vm.toString(address(attributionEngine))));
+        console.log(string.concat("AGENTPAY_", upperNetworkName, "_RECEIPTS=", vm.toString(address(receiptManager))));
+        
+        // Generate deployment JSON for gateway
+        console.log("\n=== Gateway Configuration ===");
+        console.log("Add this to your gateway config:");
+        console.log("{");
+        console.log(string.concat('  "', networkName, '": {'));
+        console.log(string.concat('    "agentPayCore": "', vm.toString(address(agentPayCore)), '",'));
+        console.log(string.concat('    "attributionEngine": "', vm.toString(address(attributionEngine)), '",'));
+        console.log(string.concat('    "receiptManager": "', vm.toString(address(receiptManager)), '"'));
+        console.log("  }");
+        console.log("}");
         
         console.log("\n=== Deployment Complete ===");
+        console.log("SUCCESS: All contracts deployed and linked successfully!");
     }
     
     function getNetworkName(uint256 chainId) public pure returns (string memory) {
@@ -81,44 +128,64 @@ contract DeployScript is Script {
         if (chainId == 1) {
             console.log("Ethereum mainnet - Higher gas costs expected");
             console.log("Consider setting platform fee to 5% for mainnet");
+            console.log("Recommended: Enable premium features for mainnet users");
         } else if (chainId == 8453) {
             console.log("Base - Coinbase's L2, great for consumer apps");
             console.log("Consider reaching out to Base team for ecosystem support");
+            console.log("Recommended: Integrate with Coinbase Smart Wallet");
         } else if (chainId == 42161) {
             console.log("Arbitrum - Leading L2 by TVL");
             console.log("Consider integrating with major Arbitrum DeFi protocols");
+            console.log("Recommended: Leverage Arbitrum's fast finality");
         } else if (chainId == 10) {
             console.log("Optimism - Part of Superchain ecosystem");
             console.log("Consider applying for Optimism grants");
+            console.log("Recommended: Integrate with OP Stack features");
         } else if (chainId == 1301) {
             console.log("Unichain - Uniswap's dedicated L2");
             console.log("Perfect for DeFi integrations and DEX functionality");
+            console.log("Recommended: Integrate with Uniswap V4 hooks");
         } else if (chainId == 480) {
             console.log("World Chain - World ID integration available");
             console.log("Consider human verification features");
+            console.log("Recommended: Implement World ID for reputation");
         } else if (chainId == 59144) {
             console.log("Linea - ConsenSys zkEVM");
             console.log("Strong developer tooling ecosystem");
+            console.log("Recommended: Leverage zkEVM privacy features");
         } else if (chainId == 81457) {
             console.log("Blast - Native yield for ETH and stablecoins");
             console.log("Leverage native yield features for enhanced UX");
+            console.log("Recommended: Auto-compound user balances");
         } else if (chainId == 534352) {
             console.log("Scroll - Security-focused zkEVM");
             console.log("Emphasize security in marketing");
+            console.log("Recommended: Highlight zero-knowledge proofs");
         } else if (chainId == 1101) {
             console.log("Polygon zkEVM - Ethereum equivalent");
             console.log("Tap into large Polygon ecosystem");
+            console.log("Recommended: Cross-chain with Polygon PoS");
         } else if (chainId == 5000) {
             console.log("Mantle - Modular architecture");
             console.log("Focus on high-throughput applications");
+            console.log("Recommended: Utilize modular DA layer");
         }
         
         // Show USDC address if available
         address usdcAddress = usdcAddresses[chainId];
         if (usdcAddress != address(0)) {
             console.log("USDC available at:", usdcAddress);
+            console.log("Recommended: Pre-register USDC models");
         } else {
             console.log("WARNING: USDC address not configured for this network");
+            console.log("Action required: Update USDC address when available");
+        }
+        
+        // Gas optimization recommendations
+        if (chainId == 1) {
+            console.log("Gas optimization: Consider batch operations");
+        } else {
+            console.log("Low gas costs: Can afford more complex operations");
         }
     }
     

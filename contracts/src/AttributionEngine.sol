@@ -63,6 +63,7 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
         uint256 amount,
         string modelId
     );
+    event PaymentWithdrawn(address indexed recipient, address indexed token, uint256 amount);
 
     /**
      * @notice Initialize the attribution engine
@@ -190,7 +191,7 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
         bool success = IERC20(token).transfer(msg.sender, amount);
         require(success, "Transfer failed");
         
-        emit IAgentPayCore.PaymentWithdrawn(msg.sender, token, amount);
+        emit PaymentWithdrawn(msg.sender, token, amount);
     }
 
     /**

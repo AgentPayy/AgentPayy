@@ -12,6 +12,7 @@ remappings = [
 # Optimizer settings
 optimizer = true
 optimizer_runs = 200
+via_ir = true
 
 # Testing
 gas_reports = ["*"]

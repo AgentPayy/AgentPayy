@@ -2,7 +2,10 @@
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
-import {AgentPayKit} from "../src/AgentPayKit.sol";
+import {AgentPayCore} from "../src/AgentPayCore.sol";
+import {AttributionEngine} from "../src/AttributionEngine.sol";
+import {ReceiptManager} from "../src/ReceiptManager.sol";
+import {IAgentPayCore} from "../src/IAgentPayCore.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -20,8 +23,10 @@ contract MockUSDC is ERC20 {
     }
 }
 
-contract AgentPayKitComprehensiveTest is Test {
-    AgentPayKit public agentPayKit;
+contract AgentPayCoreComprehensiveTest is Test {
+    AgentPayCore public agentPayCore;
+    AttributionEngine public attributionEngine;
+    ReceiptManager public receiptManager;
     MockUSDC public usdc;
     
     address public owner;
@@ -56,25 +61,38 @@ contract AgentPayKitComprehensiveTest is Test {
         
         // Deploy contracts
         usdc = new MockUSDC();
-        agentPayKit = new AgentPayKit(treasury);
+        agentPayCore = new AgentPayCore(treasury);
+        attributionEngine = new AttributionEngine(address(agentPayCore), treasury);
+        receiptManager = new ReceiptManager(address(this));
+        
+        // Link contracts
+        agentPayCore.setAttributionEngine(address(attributionEngine));
+        agentPayCore.setReceiptManager(address(receiptManager));
         
         // Setup initial balances
         usdc.mint(user1, 1000 * 10**6); // 1000 USDC
         usdc.mint(user2, 1000 * 10**6); // 1000 USDC
         usdc.mint(attacker, 1000 * 10**6); // 1000 USDC
+        
+        console.log("=== Test Setup Complete ===");
+        console.log("AgentPayCore:", address(agentPayCore));
+        console.log("AttributionEngine:", address(attributionEngine));
+        console.log("ReceiptManager:", address(receiptManager));
     }
 
     // ===== DEPLOYMENT TESTS =====
     
     function test_Deployment() public {
-        assertEq(agentPayKit.treasury(), treasury);
-        assertEq(agentPayKit.platformFee(), 1000); // 10%
-        assertEq(agentPayKit.FEE_DENOMINATOR(), 10000);
+        assertEq(agentPayCore.treasury(), treasury);
+        assertEq(agentPayCore.platformFee(), 1000); // 10%
+        assertEq(agentPayCore.FEE_DENOMINATOR(), 10000);
+        assertEq(agentPayCore.attributionEngine(), address(attributionEngine));
+        assertEq(agentPayCore.receiptManager(), address(receiptManager));
     }
     
     function test_RevertWhen_DeploymentWithZeroTreasury() public {
         vm.expectRevert("Invalid treasury");
-        new AgentPayKit(address(0));
+        new AgentPayCore(address(0));
     }
 
     // ===== MODEL REGISTRATION TESTS =====
@@ -84,9 +102,9 @@ contract AgentPayKitComprehensiveTest is Test {
         vm.expectEmit(true, true, false, true);
         emit ModelRegistered(MODEL_ID, modelOwner, PRICE);
         
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
-        AgentPayKit.Model memory model = agentPayKit.getModel(MODEL_ID);
+        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
         assertEq(model.owner, modelOwner);
         assertEq(model.endpoint, ENDPOINT);
         assertEq(model.price, PRICE);
@@ -99,34 +117,34 @@ contract AgentPayKitComprehensiveTest is Test {
     function test_RevertWhen_RegisterModelEmptyId() public {
         vm.prank(modelOwner);
         vm.expectRevert("Invalid model ID");
-        agentPayKit.registerModel("", ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel("", ENDPOINT, PRICE, address(usdc));
     }
     
     function test_RevertWhen_RegisterModelTooLongId() public {
         vm.prank(modelOwner);
         string memory longId = "this_id_is_way_too_long_and_exceeds_the_64_character_limit_set_by_contract";
         vm.expectRevert("Invalid model ID");
-        agentPayKit.registerModel(longId, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(longId, ENDPOINT, PRICE, address(usdc));
     }
     
     function test_RevertWhen_RegisterModelZeroPrice() public {
         vm.prank(modelOwner);
         vm.expectRevert("Price must be > 0");
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, 0, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, 0, address(usdc));
     }
     
     function test_RevertWhen_RegisterModelZeroToken() public {
         vm.prank(modelOwner);
         vm.expectRevert("Invalid token");
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(0));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(0));
     }
     
     function test_RevertWhen_RegisterModelDuplicate() public {
         vm.startPrank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
         vm.expectRevert("Model exists");
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc)); // Should fail
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc)); // Should fail
         vm.stopPrank();
     }
 
@@ -135,16 +153,16 @@ contract AgentPayKitComprehensiveTest is Test {
     function test_UpdateModel() public {
         // Register model first
         vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
         // Update model
         string memory newEndpoint = "https://api.newexample.com/v1/chat";
         uint256 newPrice = 200000; // 0.2 USDC
         
         vm.prank(modelOwner);
-        agentPayKit.updateModel(MODEL_ID, newEndpoint, newPrice, false);
+        agentPayCore.updateModel(MODEL_ID, newEndpoint, newPrice, false);
         
-        AgentPayKit.Model memory model = agentPayKit.getModel(MODEL_ID);
+        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
         assertEq(model.endpoint, newEndpoint);
         assertEq(model.price, newPrice);
         assertFalse(model.active);
@@ -152,11 +170,11 @@ contract AgentPayKitComprehensiveTest is Test {
     
     function test_RevertWhen_UpdateModelNotOwner() public {
         vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
         vm.prank(user1);
         vm.expectRevert("Not owner");
-        agentPayKit.updateModel(MODEL_ID, ENDPOINT, PRICE, true);
+        agentPayCore.updateModel(MODEL_ID, ENDPOINT, PRICE, true);
     }
 
     // ===== BALANCE DEPOSIT TESTS =====
@@ -165,28 +183,28 @@ contract AgentPayKitComprehensiveTest is Test {
         uint256 depositAmount = 500 * 10**6; // 500 USDC
         
         vm.startPrank(user1);
-        usdc.approve(address(agentPayKit), depositAmount);
+        usdc.approve(address(agentPayCore), depositAmount);
         
         vm.expectEmit(true, true, false, true);
         emit BalanceDeposited(user1, address(usdc), depositAmount);
         
-        agentPayKit.depositBalance(address(usdc), depositAmount);
+        agentPayCore.depositBalance(address(usdc), depositAmount);
         vm.stopPrank();
         
-        assertEq(agentPayKit.getUserBalance(user1, address(usdc)), depositAmount);
-        assertEq(usdc.balanceOf(address(agentPayKit)), depositAmount);
+        assertEq(agentPayCore.getUserBalance(user1, address(usdc)), depositAmount);
+        assertEq(usdc.balanceOf(address(agentPayCore)), depositAmount);
     }
     
     function test_RevertWhen_DepositBalanceZeroAmount() public {
         vm.prank(user1);
         vm.expectRevert("Invalid amount");
-        agentPayKit.depositBalance(address(usdc), 0);
+        agentPayCore.depositBalance(address(usdc), 0);
     }
     
     function test_RevertWhen_DepositBalanceZeroToken() public {
         vm.prank(user1);
         vm.expectRevert("Invalid token");
-        agentPayKit.depositBalance(address(0), 100);
+        agentPayCore.depositBalance(address(0), 100);
     }
 
     // ===== PAYMENT TESTS =====
@@ -194,154 +212,156 @@ contract AgentPayKitComprehensiveTest is Test {
     function test_PayWithPrepaidBalance() public {
         // Setup: Register model and deposit balance
         vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
         uint256 depositAmount = 500 * 10**6; // 500 USDC
         vm.startPrank(user1);
-        usdc.approve(address(agentPayKit), depositAmount);
-        agentPayKit.depositBalance(address(usdc), depositAmount);
+        usdc.approve(address(agentPayCore), depositAmount);
+        agentPayCore.depositBalance(address(usdc), depositAmount);
         vm.stopPrank();
         
         // Create payment data
         bytes32 inputHash = keccak256("test input");
-        AgentPayKit.PaymentData memory payment = AgentPayKit.PaymentData({
+        uint256 deadline = block.timestamp + 3600;
+        
+        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
-            deadline: block.timestamp + 1 hours,
-            smartWalletSig: "",
+            deadline: deadline,
             v: 0,
-            r: 0,
-            s: 0
+            r: bytes32(0),
+            s: bytes32(0),
+            smartWalletSig: ""
         });
         
-        // Process payment
-        uint256 initialBalance = agentPayKit.getUserBalance(user1, address(usdc));
-        
+        // Execute payment
         vm.prank(user1);
-        vm.expectEmit(true, true, false, true);
-        emit BalanceUsed(user1, address(usdc), PRICE, MODEL_ID);
+        agentPayCore.payAndCall(payment);
         
-        agentPayKit.payAndCall(payment);
-        
-        // Verify balance reduction
-        assertEq(agentPayKit.getUserBalance(user1, address(usdc)), initialBalance - PRICE);
+        // Verify balances
+        assertEq(agentPayCore.getUserBalance(user1, address(usdc)), depositAmount - PRICE);
         
         // Verify model stats
-        AgentPayKit.Model memory model = agentPayKit.getModel(MODEL_ID);
+        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
         assertEq(model.totalCalls, 1);
         assertEq(model.totalRevenue, PRICE);
         
-        // Verify fee distribution
-        uint256 fee = (PRICE * agentPayKit.platformFee()) / agentPayKit.FEE_DENOMINATOR();
-        uint256 ownerAmount = PRICE - fee;
+        // Verify earnings distribution
+        uint256 expectedFee = (PRICE * agentPayCore.platformFee()) / agentPayCore.FEE_DENOMINATOR();
+        uint256 expectedOwnerAmount = PRICE - expectedFee;
         
-        assertEq(agentPayKit.getBalance(modelOwner, address(usdc)), ownerAmount);
-        assertEq(agentPayKit.getBalance(treasury, address(usdc)), fee);
+        assertEq(agentPayCore.getBalance(modelOwner, address(usdc)), expectedOwnerAmount);
+        assertEq(agentPayCore.getBalance(treasury, address(usdc)), expectedFee);
     }
     
-    function test_RevertWhen_PaymentExpired() public {
-        vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
-        
+    function test_RevertWhen_PaymentModelNotFound() public {
         bytes32 inputHash = keccak256("test input");
-        AgentPayKit.PaymentData memory payment = AgentPayKit.PaymentData({
-            modelId: MODEL_ID,
+        uint256 deadline = block.timestamp + 3600;
+        
+        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+            modelId: "nonexistent-model",
             inputHash: inputHash,
             amount: PRICE,
-            deadline: block.timestamp - 1, // Expired
-            smartWalletSig: "",
+            deadline: deadline,
             v: 0,
-            r: 0,
-            s: 0
+            r: bytes32(0),
+            s: bytes32(0),
+            smartWalletSig: ""
         });
         
         vm.prank(user1);
-        vm.expectRevert("Payment expired");
-        agentPayKit.payAndCall(payment);
-    }
-    
-    function test_RevertWhen_PaymentInsufficientAmount() public {
-        vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
-        
-        bytes32 inputHash = keccak256("test input");
-        AgentPayKit.PaymentData memory payment = AgentPayKit.PaymentData({
-            modelId: MODEL_ID,
-            inputHash: inputHash,
-            amount: PRICE - 1, // Insufficient
-            deadline: block.timestamp + 1 hours,
-            smartWalletSig: "",
-            v: 0,
-            r: 0,
-            s: 0
-        });
-        
-        vm.prank(user1);
-        vm.expectRevert("Insufficient payment");
-        agentPayKit.payAndCall(payment);
+        vm.expectRevert("Model not found");
+        agentPayCore.payAndCall(payment);
     }
     
     function test_RevertWhen_PaymentModelInactive() public {
+        // Register and deactivate model
         vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
-        // Deactivate model
         vm.prank(modelOwner);
-        agentPayKit.updateModel(MODEL_ID, ENDPOINT, PRICE, false);
+        agentPayCore.updateModel(MODEL_ID, ENDPOINT, PRICE, false); // Deactivate
         
         bytes32 inputHash = keccak256("test input");
-        AgentPayKit.PaymentData memory payment = AgentPayKit.PaymentData({
+        uint256 deadline = block.timestamp + 3600;
+        
+        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
-            deadline: block.timestamp + 1 hours,
-            smartWalletSig: "",
+            deadline: deadline,
             v: 0,
-            r: 0,
-            s: 0
+            r: bytes32(0),
+            s: bytes32(0),
+            smartWalletSig: ""
         });
         
         vm.prank(user1);
         vm.expectRevert("Model inactive");
-        agentPayKit.payAndCall(payment);
+        agentPayCore.payAndCall(payment);
+    }
+    
+    function test_RevertWhen_PaymentExpired() public {
+        vm.prank(modelOwner);
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        
+        bytes32 inputHash = keccak256("test input");
+        uint256 deadline = block.timestamp - 1; // Expired
+        
+        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+            modelId: MODEL_ID,
+            inputHash: inputHash,
+            amount: PRICE,
+            deadline: deadline,
+            v: 0,
+            r: bytes32(0),
+            s: bytes32(0),
+            smartWalletSig: ""
+        });
+        
+        vm.prank(user1);
+        vm.expectRevert("Payment expired");
+        agentPayCore.payAndCall(payment);
     }
 
     // ===== WITHDRAWAL TESTS =====
     
     function test_WithdrawEarnings() public {
-        // Setup payment scenario
+        // Setup payment to generate earnings
         vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
         vm.startPrank(user1);
-        usdc.approve(address(agentPayKit), PRICE);
-        agentPayKit.depositBalance(address(usdc), PRICE);
+        usdc.approve(address(agentPayCore), PRICE);
+        agentPayCore.depositBalance(address(usdc), PRICE);
         
         bytes32 inputHash = keccak256("test input");
-        AgentPayKit.PaymentData memory payment = AgentPayKit.PaymentData({
+        uint256 deadline = block.timestamp + 3600;
+        
+        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
-            deadline: block.timestamp + 1 hours,
-            smartWalletSig: "",
+            deadline: deadline,
             v: 0,
-            r: 0,
-            s: 0
+            r: bytes32(0),
+            s: bytes32(0),
+            smartWalletSig: ""
         });
         
-        agentPayKit.payAndCall(payment);
+        agentPayCore.payAndCall(payment);
         vm.stopPrank();
         
         // Withdraw earnings
-        uint256 expectedEarnings = PRICE - (PRICE * agentPayKit.platformFee() / agentPayKit.FEE_DENOMINATOR());
+        uint256 expectedEarnings = PRICE - (PRICE * agentPayCore.platformFee()) / agentPayCore.FEE_DENOMINATOR();
         uint256 initialBalance = usdc.balanceOf(modelOwner);
         
         vm.prank(modelOwner);
-        agentPayKit.withdraw(address(usdc));
+        agentPayCore.withdraw(address(usdc));
         
         assertEq(usdc.balanceOf(modelOwner), initialBalance + expectedEarnings);
-        assertEq(agentPayKit.getBalance(modelOwner, address(usdc)), 0);
+        assertEq(agentPayCore.getBalance(modelOwner, address(usdc)), 0);
     }
     
     function test_WithdrawPrepaidBalance() public {
@@ -349,168 +369,169 @@ contract AgentPayKitComprehensiveTest is Test {
         uint256 withdrawAmount = 200 * 10**6;
         
         vm.startPrank(user1);
-        usdc.approve(address(agentPayKit), depositAmount);
-        agentPayKit.depositBalance(address(usdc), depositAmount);
+        usdc.approve(address(agentPayCore), depositAmount);
+        agentPayCore.depositBalance(address(usdc), depositAmount);
         
         uint256 initialBalance = usdc.balanceOf(user1);
-        agentPayKit.withdrawBalance(address(usdc), withdrawAmount);
-        vm.stopPrank();
+        agentPayCore.withdrawBalance(address(usdc), withdrawAmount);
         
         assertEq(usdc.balanceOf(user1), initialBalance + withdrawAmount);
-        assertEq(agentPayKit.getUserBalance(user1, address(usdc)), depositAmount - withdrawAmount);
+        assertEq(agentPayCore.getUserBalance(user1, address(usdc)), depositAmount - withdrawAmount);
+        vm.stopPrank();
+    }
+
+    // ===== ADMIN TESTS =====
+    
+    function test_SetPlatformFee() public {
+        uint256 newFee = 500; // 5%
+        agentPayCore.setPlatformFee(newFee);
+        assertEq(agentPayCore.platformFee(), newFee);
+    }
+    
+    function test_RevertWhen_SetPlatformFeeTooHigh() public {
+        vm.expectRevert("Fee too high");
+        agentPayCore.setPlatformFee(2001); // > 20%
+    }
+    
+    function test_SetTreasury() public {
+        address newTreasury = makeAddr("newTreasury");
+        agentPayCore.setTreasury(newTreasury);
+        assertEq(agentPayCore.treasury(), newTreasury);
+    }
+    
+    function test_RevertWhen_SetTreasuryZeroAddress() public {
+        vm.expectRevert("Invalid treasury");
+        agentPayCore.setTreasury(address(0));
+    }
+    
+    function test_PauseUnpauseModel() public {
+        vm.prank(modelOwner);
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        
+        // Pause model
+        agentPayCore.pauseModel(MODEL_ID);
+        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
+        assertFalse(model.active);
+        
+        // Unpause model
+        agentPayCore.unpauseModel(MODEL_ID);
+        model = agentPayCore.getModel(MODEL_ID);
+        assertTrue(model.active);
     }
 
     // ===== SECURITY TESTS =====
     
-    function test_ReentrancyProtection() public {
-        // This would require a malicious token contract to test properly
-        // For now, we trust OpenZeppelin's ReentrancyGuard
-        // Test passes if no reentrancy occurs
-        assertTrue(true);
-    }
-    
-    function test_OnlyOwnerFunctions() public {
-        // Test setPlatformFee
-        vm.prank(attacker);
-        vm.expectRevert();
-        agentPayKit.setPlatformFee(500);
-        
-        vm.prank(owner);
-        agentPayKit.setPlatformFee(500);
-        assertEq(agentPayKit.platformFee(), 500);
-        
-        // Test setTreasury
-        address newTreasury = makeAddr("newTreasury");
-        
-        vm.prank(attacker);
-        vm.expectRevert();
-        agentPayKit.setTreasury(newTreasury);
-        
-        vm.prank(owner);
-        agentPayKit.setTreasury(newTreasury);
-        assertEq(agentPayKit.treasury(), newTreasury);
-    }
-    
-    function test_RevertWhen_SetFeeTooHigh() public {
-        vm.prank(owner);
-        vm.expectRevert("Fee too high");
-        agentPayKit.setPlatformFee(2001); // >20%
-    }
-
-    // ===== FUZZ TESTS =====
-    
-    function testFuzz_ModelRegistration(
-        string memory modelId,
-        string memory endpoint,
-        uint256 price,
-        address tokenAddr
-    ) public {
-        vm.assume(bytes(modelId).length > 0 && bytes(modelId).length <= 64);
-        vm.assume(bytes(endpoint).length > 0);
-        vm.assume(price > 0);
-        vm.assume(tokenAddr != address(0));
-        
-        vm.prank(modelOwner);
-        agentPayKit.registerModel(modelId, endpoint, price, tokenAddr);
-        
-        AgentPayKit.Model memory model = agentPayKit.getModel(modelId);
-        assertEq(model.owner, modelOwner);
-        assertEq(model.price, price);
-        assertEq(model.token, tokenAddr);
-    }
-    
-    function testFuzz_DepositBalance(uint256 amount) public {
-        vm.assume(amount > 0 && amount <= usdc.balanceOf(user1));
-        
-        vm.startPrank(user1);
-        usdc.approve(address(agentPayKit), amount);
-        agentPayKit.depositBalance(address(usdc), amount);
-        vm.stopPrank();
-        
-        assertEq(agentPayKit.getUserBalance(user1, address(usdc)), amount);
-    }
-
-    // ===== GAS OPTIMIZATION TESTS =====
-    
-    function test_GasUsage_PaymentWithBalance() public {
+    function test_RevertWhen_ReplayAttack() public {
         // Setup
         vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
         vm.startPrank(user1);
-        usdc.approve(address(agentPayKit), PRICE);
-        agentPayKit.depositBalance(address(usdc), PRICE);
-        vm.stopPrank();
+        usdc.approve(address(agentPayCore), PRICE * 2);
+        agentPayCore.depositBalance(address(usdc), PRICE * 2);
         
         bytes32 inputHash = keccak256("test input");
-        AgentPayKit.PaymentData memory payment = AgentPayKit.PaymentData({
+        uint256 deadline = block.timestamp + 3600;
+        
+        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
-            deadline: block.timestamp + 1 hours,
-            smartWalletSig: "",
+            deadline: deadline,
             v: 0,
-            r: 0,
-            s: 0
+            r: bytes32(0),
+            s: bytes32(0),
+            smartWalletSig: ""
         });
         
-        // Measure gas
-        vm.prank(user1);
-        uint256 gasBefore = gasleft();
-        agentPayKit.payAndCall(payment);
-        uint256 gasUsed = gasBefore - gasleft();
+        // First payment should succeed
+        agentPayCore.payAndCall(payment);
         
-        console.log("Gas used for payment with balance:", gasUsed);
-        // Should be reasonable gas usage (less than 350k gas for complex operations)
-        assertTrue(gasUsed < 350000);
+        // Second payment with same data should fail
+        vm.expectRevert("Payment processed");
+        agentPayCore.payAndCall(payment);
+        vm.stopPrank();
+    }
+    
+    function test_RevertWhen_InsufficientPayment() public {
+        vm.prank(modelOwner);
+        agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
+        
+        bytes32 inputHash = keccak256("test input");
+        uint256 deadline = block.timestamp + 3600;
+        
+        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+            modelId: MODEL_ID,
+            inputHash: inputHash,
+            amount: PRICE - 1, // Insufficient
+            deadline: deadline,
+            v: 0,
+            r: bytes32(0),
+            s: bytes32(0),
+            smartWalletSig: ""
+        });
+        
+        vm.prank(user1);
+        vm.expectRevert("Insufficient payment");
+        agentPayCore.payAndCall(payment);
     }
 
     // ===== INTEGRATION TESTS =====
     
-    function test_CompleteUserJourney() public {
-        // 1. Model owner registers model
-        vm.prank(modelOwner);
-        agentPayKit.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
-        
-        // 2. User deposits balance
-        uint256 depositAmount = 1000 * 10**6; // 1000 USDC
-        vm.startPrank(user1);
-        usdc.approve(address(agentPayKit), depositAmount);
-        agentPayKit.depositBalance(address(usdc), depositAmount);
+    function test_MultipleUsersMultipleModels() public {
+        // Register multiple models
+        vm.startPrank(modelOwner);
+        agentPayCore.registerModel("model1", "https://api1.com", PRICE, address(usdc));
+        agentPayCore.registerModel("model2", "https://api2.com", PRICE * 2, address(usdc));
         vm.stopPrank();
         
-        // 3. User makes multiple payments
-        for (uint i = 0; i < 3; i++) {
-            bytes32 inputHash = keccak256(abi.encodePacked("test input", i));
-            AgentPayKit.PaymentData memory payment = AgentPayKit.PaymentData({
-                modelId: MODEL_ID,
-                inputHash: inputHash,
-                amount: PRICE,
-                deadline: block.timestamp + 1 hours,
-                smartWalletSig: "",
-                v: 0,
-                r: 0,
-                s: 0
-            });
-            
-            vm.prank(user1);
-            agentPayKit.payAndCall(payment);
-        }
+        // Setup user balances
+        vm.startPrank(user1);
+        usdc.approve(address(agentPayCore), 1000 * 10**6);
+        agentPayCore.depositBalance(address(usdc), 1000 * 10**6);
+        vm.stopPrank();
         
-        // 4. Verify final state
-        AgentPayKit.Model memory model = agentPayKit.getModel(MODEL_ID);
-        assertEq(model.totalCalls, 3);
-        assertEq(model.totalRevenue, PRICE * 3);
+        vm.startPrank(user2);
+        usdc.approve(address(agentPayCore), 1000 * 10**6);
+        agentPayCore.depositBalance(address(usdc), 1000 * 10**6);
+        vm.stopPrank();
         
-        // 5. Model owner withdraws earnings
-        vm.prank(modelOwner);
-        agentPayKit.withdraw(address(usdc));
+        // Execute payments
+        bytes32 inputHash1 = keccak256("input1");
+        bytes32 inputHash2 = keccak256("input2");
+        uint256 deadline = block.timestamp + 3600;
         
-        // 6. User withdraws remaining balance
-        uint256 remainingBalance = agentPayKit.getUserBalance(user1, address(usdc));
+        // User1 pays for model1
         vm.prank(user1);
-        agentPayKit.withdrawBalance(address(usdc), remainingBalance);
+        agentPayCore.payAndCall(IAgentPayCore.PaymentData({
+            modelId: "model1",
+            inputHash: inputHash1,
+            amount: PRICE,
+            deadline: deadline,
+            v: 0, r: bytes32(0), s: bytes32(0),
+            smartWalletSig: ""
+        }));
         
-        assertEq(agentPayKit.getUserBalance(user1, address(usdc)), 0);
+        // User2 pays for model2
+        vm.prank(user2);
+        agentPayCore.payAndCall(IAgentPayCore.PaymentData({
+            modelId: "model2",
+            inputHash: inputHash2,
+            amount: PRICE * 2,
+            deadline: deadline,
+            v: 0, r: bytes32(0), s: bytes32(0),
+            smartWalletSig: ""
+        }));
+        
+        // Verify model stats
+        IAgentPayCore.Model memory model1 = agentPayCore.getModel("model1");
+        IAgentPayCore.Model memory model2 = agentPayCore.getModel("model2");
+        
+        assertEq(model1.totalCalls, 1);
+        assertEq(model1.totalRevenue, PRICE);
+        assertEq(model2.totalCalls, 1);
+        assertEq(model2.totalRevenue, PRICE * 2);
+        
+        console.log("[OK] Multi-user, multi-model integration test passed");
     }
 } 

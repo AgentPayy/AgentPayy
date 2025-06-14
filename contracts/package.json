@@ -7,6 +7,8 @@
     "test": "forge test",
     "test:verbose": "forge test -vvv",
     "test:gas": "forge test --gas-report",
+    "test:coverage": "forge coverage",
+    "test:deploy": "forge test --match-contract DeployTest",
     "clean": "forge clean",
     
     "deploy:ethereum": "forge script script/Deploy.s.sol:DeployScript --rpc-url ethereum --broadcast --verify",
