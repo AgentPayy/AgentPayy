@@ -234,10 +234,56 @@ console.log(`${stats.totalAPIs} APIs available`);
 
 ## Getting Started
 
-1. **[TypeScript SDK Guide](./sdk/typescript/README.md)** - Set up SDK in 5 minutes
-2. **[Python SDK Guide](./sdk/python/README.md)** - Python integration guide
+1. **[TypeScript SDK Guide](./sdk/typescript/README.md)** - Single package installation
+2. **[Python SDK Guide](./sdk/python/README.md)** - Python integration guide  
 3. **[Integration Examples](./examples/)** - Framework-specific guides
 4. **[AI Agent Guide](./AI_AGENT_GUIDE.md)** - Quick reference for AI agents
+
+## Quick Install
+
+```bash
+# TypeScript/JavaScript
+npm install @agentpay/sdk
+
+# Python  
+pip install agentpay
+```
+
+## Basic Usage
+
+### TypeScript
+```typescript
+import { AgentPayKit } from '@agentpay/sdk';
+
+const agentPay = new AgentPayKit({
+  network: 'base', // Uses deployed AgentPay contracts
+  privateKey: process.env.PRIVATE_KEY
+});
+
+// Pay for API call
+const result = await agentPay.callAPI(
+  'https://api.example.com/weather',
+  { city: 'New York' },
+  'weather-api-v1'
+);
+```
+
+### Python
+```python
+from agentpay import AgentPayKit
+
+agentpay = AgentPayKit(
+    private_key="0x...",
+    chain="base"  # Uses deployed AgentPay contracts
+)
+
+# Pay for API call
+result = agentpay.call_api(
+    "https://api.example.com/weather",
+    {"city": "New York"},
+    "weather-api-v1"
+)
+```
 
 ## Community
 

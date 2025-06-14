@@ -1,6 +1,6 @@
 # AgentPay Python SDK
 
-Connect to the AgentPay payment network. No contract deployment needed.
+**Complete Python integration** for the AgentPay payment network. All features in one package.
 
 ## Install
 ```bash
@@ -24,11 +24,21 @@ result = agentpay.call_api(
 )
 ```
 
-## Advanced Features
+## Complete Feature Set
 
-### Attribution Payments
+### Core Payment System
 ```python
-# Split payment across multiple agents
+# Basic API payment
+result = agentpay.call_api(endpoint, data, model_id)
+
+# Payment validation (for API providers)
+is_valid = agentpay.validate_payment(tx_hash, input_data)
+agentpay.mark_validated(tx_hash)
+```
+
+### Advanced Features
+```python
+# Attribution payments (revenue sharing)
 attributions = [
     {"recipient": "0xAgent1", "basisPoints": 6000},  # 60%
     {"recipient": "0xAgent2", "basisPoints": 4000}   # 40%
@@ -40,36 +50,27 @@ result = agentpay.pay_with_attribution(
     attributions,
     {"price": "0.10"}
 )
-```
 
-### Balance Management
-```python
-# Deposit to prepaid balance
-agentpay.deposit_balance("25.0")  # $25 USDC
-
-# Check balance
+# Balance management
+agentpay.deposit_balance("10.0")  # Deposit $10 USDC
 balance = agentpay.get_user_balance()
-print(f"Balance: ${balance} USDC")
+agentpay.withdraw_balance("5.0")  # Withdraw specific amount
+agentpay.withdraw()  # Withdraw all earnings
 
-# Withdraw earnings
-agentpay.withdraw()
-
-# Get financial overview
-overview = agentpay.get_financial_overview()
-print(f"Net position: ${overview['netPosition']}")
-```
-
-### Reputation System
-```python
-# Get agent reputation
+# Reputation system
 reputation = agentpay.get_reputation(agent_address)
-print(f"Rating: {reputation['rating']}/5.0")
-
-# Find specialists
-weather_experts = agentpay.find_agents_by_specialty("weather", 4.0)
-
-# Get top performers
+specialists = agentpay.find_agents_by_specialty("weather-data", 4.0)
 leaderboard = agentpay.get_leaderboard(10)
+
+# API marketplace
+agentpay.register_model({
+    "modelId": "weather-api-v1",
+    "endpoint": "https://api.myservice.com/weather",
+    "price": "0.02",
+    "category": "Weather & Environment"
+})
+
+weather_apis = agentpay.get_apis_by_category("Weather & Environment")
 ```
 
 ## API Provider Integration
@@ -123,16 +124,21 @@ trending = agentpay.get_trending_apis(10)
 - **polygon**: Polygon mainnet
 
 ## Key Features
-- Uses deployed AgentPay contracts (no setup required)
-- Privacy-first (only hashes on-chain)
-- Sub-cent fees on L2s
-- Direct client-to-API communication
-- Built-in payment validation
-- Attribution engine for revenue sharing
-- Prepaid balance system
-- Reputation scoring and agent discovery
-- On-chain API registry with search and categories
-- Marketplace statistics and trending APIs
+- **Complete Package**: All AgentPay features in single Python package
+- **Zero Setup**: Uses deployed AgentPay contracts (no deployment needed)
+- **Privacy-First**: Only payment hashes stored on-chain
+- **Sub-Cent Costs**: Enable $0.001-$0.01 API calls economically
+- **Multi-Chain**: Works across Base, Arbitrum, Optimism L2s
+- **AI-Agent Ready**: Perfect for CrewAI, AutoGPT, LangChain workflows
+- **FastAPI Integration**: Built-in middleware for API monetization
+
+## Package Contents
+- **AgentPayKit**: Main payment class with all methods
+- **Reputation System**: Agent discovery and scoring functions
+- **Attribution Engine**: Multi-party revenue sharing
+- **Balance Management**: Prepaid balance and earnings withdrawal
+- **API Registry**: On-chain marketplace integration
+- **Crypto Utilities**: Signature verification and hashing functions
 
 ## Quick Start
 

@@ -11,18 +11,48 @@ Privacy-first payment protocol for API monetization using deployed smart contrac
 - **ReputationSystem**: Agent scoring and discovery
 - **APIRegistry**: On-chain API discovery and marketplace
 
-### SDK Layer
-- **TypeScript SDK**: Browser and Node.js integration
-- **Python SDK**: AI agent and API server integration
-- **Payment Validation**: Direct client-to-API verification
-- **API Discovery**: Search and categorization system
+### Consolidated SDK Layer
+- **Single TypeScript Package** (`@agentpay/sdk`): All features included
+  - Core payment functions
+  - Attribution engine
+  - Reputation system
+  - API registry
+  - Wallet adapters
+  - Paywall middleware
+- **Single Python Package** (`agentpay`): Complete Python integration
+- **Direct Client-to-API**: Payment validation without intermediaries
 
 ### Privacy Architecture
 ```
-Client → SDK → Smart Contract (hash only) → API Provider
+Client → Consolidated SDK → Smart Contract (hash only) → API Provider
          ↓
     Direct Data Transfer (off-chain)
 ```
+
+## Package Structure
+
+### TypeScript SDK (`@agentpay/sdk`)
+```
+src/
+├── index.ts                 # Main AgentPayKit class
+├── core/                    # Core utilities (was packages/core)
+│   ├── types.ts            # All type definitions
+│   ├── contracts.ts        # Contract interfaces
+│   └── crypto.ts           # Cryptographic functions
+├── services/               # Payment and balance services
+├── wallet/                 # Universal wallet adapters
+├── paywall/                # Express.js middleware
+├── registry/               # API marketplace
+├── ReputationModule.ts     # Agent discovery
+└── AttributionModule.ts    # Revenue sharing
+```
+
+### Benefits of Consolidation
+- **Single Install**: `npm install @agentpay/sdk` gets everything
+- **No Dependency Hell**: All modules work together seamlessly  
+- **Simpler Imports**: `import { AgentPayKit, ReputationModule } from '@agentpay/sdk'`
+- **Better Tree Shaking**: Bundlers can optimize unused features
+- **Easier Maintenance**: All TypeScript code in one place
 
 ## Advanced Features
 

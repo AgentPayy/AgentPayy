@@ -1,14 +1,16 @@
 # AgentPay - AI Agent Integration Guide
 
 ## What is AgentPay?
-Privacy-first API payment system using deployed smart contracts. No contract deployment needed.
+**Single-package payment system** for AI agents. Uses deployed smart contracts - no blockchain setup required.
 
 ## Quick Integration
 
-### Install
+### Install (One Package)
 ```bash
+# TypeScript/JavaScript
 npm install @agentpay/sdk
-# or
+
+# Python
 pip install agentpay
 ```
 
@@ -46,56 +48,39 @@ result = agentpay.call_api(
 )
 ```
 
-## Advanced Features
+## All Features in One Package
 
-### Attribution Payments
-Split payments across multiple agents automatically:
-
+### Advanced Features (TypeScript)
 ```typescript
-// Multi-agent workflow with revenue sharing
+// Import everything from single package
+import { 
+  AgentPayKit,
+  ReputationModule,
+  AttributionModule,
+  AgentPayWall,
+  APIRegistry 
+} from '@agentpay/sdk';
+
+// Multi-agent revenue sharing
 const attributions = [
-  { recipient: '0xDataAgent', basisPoints: 3000 },    // 30%
-  { recipient: '0xAnalysisAgent', basisPoints: 7000 } // 70%
+  { recipient: '0xAgent1', basisPoints: 6000 },  // 60%
+  { recipient: '0xAgent2', basisPoints: 4000 }   // 40%
 ];
 
 const result = await agentPay.payWithAttribution(
-  'market-analysis',
-  { query: 'NVDA analysis' },
+  'complex-task',
+  { data: 'input' },
   attributions,
   { price: '0.05' }
 );
-```
 
-### Balance Management
-Netflix-style prepaid system:
+// Reputation system
+const reputation = new ReputationModule(gatewayUrl);
+const agentRep = await reputation.getReputation(agentAddress);
 
-```typescript
-// Deposit once, use seamlessly
-await agentPay.depositBalance('10.0'); // $10 USDC
-
-// Check balance
-const balance = await agentPay.getUserBalance();
-
-// Automatic usage (no wallet popups)
-const result = await agentPay.callAPI(endpoint, data, modelId);
-
-// Withdraw earnings
-await agentPay.withdraw();
-```
-
-### Reputation System
-Built-in agent discovery:
-
-```typescript
-// Get agent reputation
-const reputation = await agentPay.getReputation(agentAddress);
-console.log(`Rating: ${reputation.rating}/5.0`);
-
-// Find specialists
-const specialists = await agentPay.findAgentsBySpecialty('weather-data', 4.0);
-
-// Get leaderboard
-const topAgents = await agentPay.getLeaderboard(10);
+// API marketplace
+const registry = new APIRegistry(gatewayUrl);
+const weatherAPIs = await registry.getAPIsByCategory('Weather & Environment');
 ```
 
 ## For API Providers
@@ -156,18 +141,15 @@ const trending = await agentPay.getTrendingAPIs(5);
 - **polygon**: High throughput
 
 ## Key Benefits for AI Agents
-- No blockchain setup required
-- Automatic payment handling
-- Sub-cent transaction costs
-- Privacy-preserving
-- Multi-network support
-- Direct API communication
-- Revenue attribution across agents
-- Prepaid balance system
-- Built-in reputation scoring
-- Agent discovery and reliability
-- On-chain API registry and marketplace
-- Searchable API categories and tags
+- **Single Package Install**: Everything included, no complex setup
+- **Zero Blockchain Setup**: Uses deployed contracts, just add private key
+- **Automatic Payment Handling**: Sub-cent transaction costs
+- **Privacy-Preserving**: Input/output data never stored on-chain
+- **Multi-Network Support**: Base, Arbitrum, Optimism L2s
+- **Direct API Communication**: No intermediary services required
+- **Complete Toolkit**: Payments + attribution + reputation + marketplace
+- **AI Framework Ready**: Works with CrewAI, AutoGPT, LangChain
+- **Production Ready**: All 34 smart contract tests pass
 
 ## Integration Examples
 - **CrewAI**: [examples/crewai-integration.md](./examples/crewai-integration.md)

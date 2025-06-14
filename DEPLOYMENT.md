@@ -1,13 +1,20 @@
-# AgentPay Integration Guide
+# AgentPay Deployment Guide
+
+## Overview
+AgentPay uses **deployed smart contracts** - developers just install the SDK packages. This guide covers contract deployment for AgentPay maintainers only.
 
 ## For Developers (Recommended)
 
-### Install SDK
+### Quick Start
 ```bash
+# TypeScript/JavaScript - Single package with all features
 npm install @agentpay/sdk
+
+# Python - Complete integration package  
+pip install agentpay
 ```
 
-### Connect to Network
+### Usage
 ```typescript
 import { AgentPayKit } from '@agentpay/sdk';
 
@@ -17,65 +24,85 @@ const agentPay = new AgentPayKit({
 });
 ```
 
-### Available Networks
-- **base**: 0x... (recommended - lowest fees)
-- **arbitrum**: 0x... (fast finality)
-- **optimism**: 0x... (Ethereum-compatible)
-- **polygon**: 0x... (high throughput)
+**No contract deployment needed** - connect to existing AgentPay network.
 
-## For API Providers
+## Package Publishing (For Maintainers)
 
-### Validate Payments
-```typescript
-// In your API endpoint
-const isValid = await agentPay.validatePayment(txHash, inputData);
+### TypeScript SDK
+```bash
+cd sdk/typescript
+npm run build
+npm publish --access public
 ```
 
-### Integration Examples
-- Express middleware
-- FastAPI decorators
-- Next.js API routes
+### Python SDK  
+```bash
+cd sdk/python
+python setup.py sdist bdist_wheel
+twine upload dist/*
+```
 
----
+## Smart Contract Deployment (Advanced)
 
-## Contract Deployment (Advanced)
+### Prerequisites
+- Foundry installed
+- Private key with ETH for gas
+- RPC URLs for target networks
 
-For those who need custom contract deployment:
-
+### Deploy to Base
 ```bash
 cd contracts
-forge build
-forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast --verify
+forge script script/Deploy.s.sol:DeployScript \
+  --rpc-url $BASE_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast \
+  --verify
 ```
 
-### Environment Variables
+### Deploy to Multiple Networks
 ```bash
-PRIVATE_KEY=0x...
-ETHERSCAN_API_KEY=...
-BASE_RPC_URL=...
+# Base
+forge script script/Deploy.s.sol:DeployScript --rpc-url $BASE_RPC_URL --broadcast --verify
+
+# Arbitrum  
+forge script script/Deploy.s.sol:DeployScript --rpc-url $ARBITRUM_RPC_URL --broadcast --verify
+
+# Optimism
+forge script script/Deploy.s.sol:DeployScript --rpc-url $OPTIMISM_RPC_URL --broadcast --verify
 ```
 
-## Environment Variables
+### Update SDK Contract Addresses
+After deployment, update contract addresses in:
+- `sdk/typescript/src/core/contracts.ts`
+- `sdk/python/agentpay/contracts.py`
 
+## Testing
+
+### Contract Tests
 ```bash
-PRIVATE_KEY=0x...
-ETHERSCAN_API_KEY=...
-BASE_RPC_URL=...
-ARBITRUM_RPC_URL=...
-OPTIMISM_RPC_URL=...
+cd contracts
+forge test --gas-report
 ```
 
-## Networks
-- Base (8453)
-- Arbitrum (42161) 
-- Optimism (10)
-- Polygon (137)
-
-## SDK Installation
-
+### SDK Tests  
 ```bash
-npm install @agentpay/sdk
+# TypeScript
+cd sdk/typescript
+npm test
+
+# Python
+cd sdk/python  
+python -m pytest
 ```
+
+## Production Checklist
+
+- [ ] All 34 contract tests pass
+- [ ] Contracts deployed to Base, Arbitrum, Optimism
+- [ ] SDK packages published to npm/PyPI
+- [ ] Contract addresses updated in SDKs
+- [ ] Documentation updated
+- [ ] Example applications tested
 
 ## 🚀 Quick Deploy
 

@@ -4,7 +4,7 @@
 
 # AgentPay TypeScript SDK
 
-Connect to the AgentPay payment network. No contract deployment needed.
+**Single package with all features included**. Connect to the AgentPay payment network with zero setup.
 
 ## Install
 ```bash
@@ -28,14 +28,33 @@ const result = await agentPay.callAPI(
 );
 ```
 
-## Advanced Features
+## All Features Included
 
-### Attribution Payments
+### Core Payment System
 ```typescript
-// Split payment across multiple agents
+// Basic API payment
+const result = await agentPay.callAPI(endpoint, data, modelId);
+
+// Payment validation (for API providers)
+const isValid = await agentPay.validatePayment(txHash, inputData);
+await agentPay.markValidated(txHash);
+```
+
+### Advanced Features
+```typescript
+// Import specialized modules
+import { 
+  AgentPayKit,
+  ReputationModule,
+  AttributionModule,
+  AgentPayWall,
+  APIRegistry 
+} from '@agentpay/sdk';
+
+// Attribution payments (revenue sharing)
 const attributions = [
-  { recipient: '0xAgent1', basisPoints: 6000 }, // 60%
-  { recipient: '0xAgent2', basisPoints: 4000 }  // 40%
+  { recipient: '0xAgent1', basisPoints: 6000 },  // 60%
+  { recipient: '0xAgent2', basisPoints: 4000 }   // 40%
 ];
 
 const result = await agentPay.payWithAttribution(
@@ -44,36 +63,28 @@ const result = await agentPay.payWithAttribution(
   attributions,
   { price: '0.10' }
 );
-```
 
-### Balance Management
-```typescript
-// Deposit to prepaid balance
-await agentPay.depositBalance('25.0'); // $25 USDC
-
-// Check balance
+// Balance management
+await agentPay.depositBalance('10.0'); // Deposit $10 USDC
 const balance = await agentPay.getUserBalance();
-console.log(`Balance: $${balance} USDC`);
+await agentPay.withdrawBalance('5.0'); // Withdraw specific amount
+await agentPay.withdraw(); // Withdraw all earnings
 
-// Withdraw earnings
-await agentPay.withdraw();
+// Reputation system
+const reputation = new ReputationModule(gatewayUrl);
+const agentRep = await reputation.getReputation(agentAddress);
+const specialists = await reputation.findAgentsBySpecialty('weather-data', 4.0);
 
-// Get financial overview
-const overview = await agentPay.getFinancialOverview();
-console.log(`Net position: $${overview.netPosition}`);
-```
+// API marketplace
+const registry = new APIRegistry(gatewayUrl);
+await registry.registerModel({
+  modelId: 'weather-api-v1',
+  endpoint: 'https://api.myservice.com/weather',
+  price: '0.02',
+  category: 'Weather & Environment'
+});
 
-### Reputation System
-```typescript
-// Get agent reputation
-const reputation = await agentPay.getReputation(agentAddress);
-console.log(`Rating: ${reputation.rating}/5.0`);
-
-// Find specialists
-const weatherExperts = await agentPay.findAgentsBySpecialty('weather', 4.0);
-
-// Get top performers
-const leaderboard = await agentPay.getLeaderboard(10);
+const weatherAPIs = await registry.getAPIsByCategory('Weather & Environment');
 ```
 
 ## API Provider Integration
@@ -125,13 +136,19 @@ const trending = await agentPay.getTrendingAPIs(10);
 - **polygon**: Polygon mainnet
 
 ## Key Features
-- Uses deployed AgentPay contracts (no setup required)
-- Privacy-first (only hashes on-chain)
-- Sub-cent fees on L2s
-- Direct client-to-API communication
-- Built-in payment validation
-- Attribution engine for revenue sharing
-- Prepaid balance system
-- Reputation scoring and agent discovery
-- On-chain API registry with search and categories
-- Marketplace statistics and trending APIs 
+- **Single Package**: All features included, no separate installs
+- **Zero Setup**: Uses deployed AgentPay contracts (no deployment needed)
+- **Privacy-First**: Only payment hashes stored on-chain
+- **Sub-Cent Costs**: Enable $0.001-$0.01 API calls economically
+- **Multi-Chain**: Works across Base, Arbitrum, Optimism L2s
+- **Complete Toolkit**: Core payments + attribution + reputation + marketplace
+- **Framework Ready**: Works with Express, FastAPI, CrewAI, and more
+
+## Package Contents
+- **AgentPayKit**: Main payment class
+- **ReputationModule**: Agent discovery and scoring
+- **AttributionModule**: Multi-party revenue sharing  
+- **AgentPayWall**: Express.js middleware for API monetization
+- **APIRegistry**: On-chain API marketplace
+- **Wallet Adapters**: MetaMask, Coinbase, WalletConnect, Smart Accounts
+- **Core Utilities**: Crypto functions, contract interfaces, type definitions 
