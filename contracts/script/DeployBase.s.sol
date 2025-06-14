@@ -34,7 +34,7 @@ contract DeployBase is Script {
         // Deploy factory
         console.log("\n=== Deploying Factory ===");
         factory = new AgentPayyFactory();
-        console.log("✅ Factory deployed:", address(factory));
+        console.log("Factory deployed:", address(factory));
         
         // Prepare simple deployment config
         AgentPayyFactory.DeploymentConfig memory config = AgentPayyFactory.DeploymentConfig({
@@ -54,7 +54,7 @@ contract DeployBase is Script {
         
         vm.stopBroadcast();
         
-        console.log("\n🎉 === DEPLOYMENT SUCCESSFUL ===");
+        console.log("\n=== DEPLOYMENT SUCCESSFUL ===");
         console.log("Factory:              ", address(factory));
         console.log("AgentPayyCore:        ", deployed.agentPayyCore);
         console.log("AttributionEngine:    ", deployed.attributionEngine);
@@ -86,12 +86,12 @@ contract DeployBase is Script {
         
         // Next steps
         console.log("\n=== Next Steps ===");
-        console.log("1. ✅ Contracts deployed successfully");
-        console.log("2. 🔍 Verify contracts (see commands below)");
-        console.log("3. 📝 Update SDK with contract addresses above");
-        console.log("4. 🧪 Test with small transactions");
-        console.log("5. 📦 Publish updated SDKs to npm/PyPI");
-        console.log("6. 🏛️  Use Gnosis Safe for governance changes");
+        console.log("1. Contracts deployed successfully");
+        console.log("2. Verify contracts (see commands below)");
+        console.log("3. Update SDK with contract addresses above");
+        console.log("4. Test with small transactions");
+        console.log("5. Publish updated SDKs to npm/PyPI");
+        console.log("6. Use Gnosis Safe for governance changes");
         
         console.log("\n=== Verification Commands ===");
         console.log("Run these to verify your contracts:");
@@ -116,6 +116,6 @@ contract DeployBase is Script {
         console.log("- Great for consumer applications");
         console.log("- Coinbase ecosystem support");
         
-        console.log("\n🚀 AgentPayy is live on Base! 🚀");
+        console.log("\nAgentPayy is live on Base!");
     }
 } 
