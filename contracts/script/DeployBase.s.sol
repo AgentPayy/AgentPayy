@@ -27,7 +27,7 @@ contract DeployBase is Script {
         console.log("Deployer Balance:", vm.addr(deployerPrivateKey).balance / 1e18, "ETH");
         
         require(gnosisSafe != address(0), "GNOSIS_SAFE_ADDRESS must be set");
-        require(vm.addr(deployerPrivateKey).balance > 0.01 ether, "Need at least 0.01 ETH for deployment");
+        require(vm.addr(deployerPrivateKey).balance > 0.005 ether, "Need at least 0.005 ETH for deployment");
         
         vm.startBroadcast(deployerPrivateKey);
         
