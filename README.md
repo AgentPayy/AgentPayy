@@ -2,7 +2,7 @@
   <img src="./AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPayy Logo" width="200"/>
 </div>
 
-# AgentPayy
+# AgentPayy Docs
 
 **Privacy-first API payment protocol for the agent economy**
 
