@@ -251,7 +251,9 @@ contract APIRegistry is Ownable, ReentrancyGuard {
         uint256 callSum = 0;
         uint256 revenueSum = 0;
         
-        for (uint256 i = 0; i < allModelIds.length; i++) {
+        // Cache array length for gas optimization
+        uint256 allModelIdsLength = allModelIds.length;
+        for (uint256 i = 0; i < allModelIdsLength; i++) {
             APIModel storage api = apis[allModelIds[i]];
             callSum += api.totalCalls;
             revenueSum += api.totalRevenue;
@@ -269,7 +271,9 @@ contract APIRegistry is Ownable, ReentrancyGuard {
         string[] memory results = new string[](allModelIds.length);
         uint256 count = 0;
         
-        for (uint256 i = 0; i < allModelIds.length; i++) {
+        // Cache array length for gas optimization
+        uint256 allModelIdsLength = allModelIds.length;
+        for (uint256 i = 0; i < allModelIdsLength; i++) {
             string memory modelId = allModelIds[i];
             APIModel storage api = apis[modelId];
             
@@ -317,7 +321,9 @@ contract APIRegistry is Ownable, ReentrancyGuard {
      * @dev Check if category is valid
      */
     function _isValidCategory(string calldata category) internal view returns (bool) {
-        for (uint256 i = 0; i < categories.length; i++) {
+        // Cache array length for gas optimization
+        uint256 categoriesLength = categories.length;
+        for (uint256 i = 0; i < categoriesLength; i++) {
             if (keccak256(bytes(categories[i])) == keccak256(bytes(category))) {
                 return true;
             }

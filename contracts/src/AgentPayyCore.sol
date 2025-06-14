@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -20,6 +21,7 @@ import "./IAgentPayyCore.sol";
 contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
+    using SafeERC20 for IERC20;
 
     /// @notice Model storage
     mapping(string => Model) public models;
@@ -38,6 +40,12 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
     /// @notice External contract references
     address public attributionEngine;
     address public receiptManager;
+
+    /// @notice Additional events for security
+    event PlatformFeeUpdated(uint256 oldFee, uint256 newFee);
+    event TreasuryUpdated(address oldTreasury, address newTreasury);
+    event AttributionEngineUpdated(address oldEngine, address newEngine);
+    event ReceiptManagerUpdated(address oldManager, address newManager);
 
     /**
      * @notice Initialize the core payment contract
@@ -112,7 +120,8 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
         require(token != address(0), "Invalid token");
         require(amount > 0, "Invalid amount");
         
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        // Use SafeERC20 for secure transfer
+        IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
         userBalances[msg.sender][token] += amount;
         
         emit BalanceDeposited(msg.sender, token, amount);
@@ -146,19 +155,9 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
             payment.inputHash
         ));
 
-        // Dual payment model: Check balance first, fallback to signature
-        uint256 userBalance = userBalances[msg.sender][model.token];
-        
-        if (userBalance >= payment.amount) {
-            // Use prepaid balance
-            userBalances[msg.sender][model.token] -= payment.amount;
-            _distributeFunds(model, payment.amount);
-            
-            emit BalanceUsed(msg.sender, model.token, payment.amount, payment.modelId);
-        } else {
-            // Process signature payment (unified permit/smart wallet handling)
-            _processSignaturePayment(model, payment);
-        }
+        // Update model stats BEFORE external calls (reentrancy protection)
+        model.totalCalls++;
+        model.totalRevenue += payment.amount;
 
         // Create privacy-preserving payment receipt
         paymentReceipts[txHash] = PaymentReceipt({
@@ -170,9 +169,19 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
             validated: false
         });
 
-        // Update model stats
-        model.totalCalls++;
-        model.totalRevenue += payment.amount;
+        // Dual payment model: Check balance first, fallback to signature
+        uint256 userBalance = userBalances[msg.sender][model.token];
+        
+        if (userBalance >= payment.amount) {
+            // Use prepaid balance - update state before external interactions
+            userBalances[msg.sender][model.token] -= payment.amount;
+            _distributeFunds(model, payment.amount);
+            
+            emit BalanceUsed(msg.sender, model.token, payment.amount, payment.modelId);
+        } else {
+            // Process signature payment (unified permit/smart wallet handling)
+            _processSignaturePayment(model, payment);
+        }
 
         emit PaymentProcessed(
             payment.modelId,
@@ -220,7 +229,8 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
             revert("No valid signature provided");
         }
 
-        IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        // Use SafeERC20 for secure transfer
+        IERC20(model.token).safeTransferFrom(msg.sender, address(this), payment.amount);
         _distributeFunds(model, payment.amount);
     }
 
@@ -247,8 +257,8 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
         
         balances[msg.sender][token] = 0;
         
-        bool success = IERC20(token).transfer(msg.sender, amount);
-        require(success, "Transfer failed");
+        // Use SafeERC20 for secure transfer
+        IERC20(token).safeTransfer(msg.sender, amount);
         
         emit PaymentWithdrawn(msg.sender, token, amount);
     }
@@ -263,8 +273,8 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
         
         userBalances[msg.sender][token] -= amount;
         
-        bool success = IERC20(token).transfer(msg.sender, amount);
-        require(success, "Transfer failed");
+        // Use SafeERC20 for secure transfer
+        IERC20(token).safeTransfer(msg.sender, amount);
         
         emit PaymentWithdrawn(msg.sender, token, amount);
     }
@@ -334,7 +344,9 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
      */
     function setPlatformFee(uint256 _platformFee) external onlyOwner {
         require(_platformFee <= 2000, "Fee too high"); // Max 20%
+        uint256 oldFee = platformFee;
         platformFee = _platformFee;
+        emit PlatformFeeUpdated(oldFee, _platformFee);
     }
 
     /**
@@ -343,7 +355,9 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
      */
     function setTreasury(address _treasury) external onlyOwner {
         require(_treasury != address(0), "Invalid treasury");
+        address oldTreasury = treasury;
         treasury = _treasury;
+        emit TreasuryUpdated(oldTreasury, _treasury);
     }
 
     /**
@@ -351,7 +365,10 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
      * @param _attributionEngine Attribution engine contract address
      */
     function setAttributionEngine(address _attributionEngine) external onlyOwner {
+        require(_attributionEngine != address(0), "Invalid attribution engine");
+        address oldEngine = attributionEngine;
         attributionEngine = _attributionEngine;
+        emit AttributionEngineUpdated(oldEngine, _attributionEngine);
     }
 
     /**
@@ -359,7 +376,10 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
      * @param _receiptManager Receipt manager contract address
      */
     function setReceiptManager(address _receiptManager) external onlyOwner {
+        require(_receiptManager != address(0), "Invalid receipt manager");
+        address oldManager = receiptManager;
         receiptManager = _receiptManager;
+        emit ReceiptManagerUpdated(oldManager, _receiptManager);
     }
 
     /**
@@ -386,7 +406,8 @@ contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
      */
     function validatePayment(bytes32 txHash, bytes32 inputHash) external view override returns (bool valid) {
         PaymentReceipt memory receipt = paymentReceipts[txHash];
-        return receipt.inputHash == inputHash && receipt.amount > 0;
+        // Use != instead of == for safer comparison
+        return receipt.inputHash != bytes32(0) && receipt.inputHash == inputHash && receipt.amount > 0;
     }
 
     /**

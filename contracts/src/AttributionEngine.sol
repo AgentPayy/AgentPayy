@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -18,6 +19,7 @@ import "./IAgentPayyCore.sol";
 contract AttributionEngine is ReentrancyGuard, Ownable {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
+    using SafeERC20 for IERC20;
 
     /// @notice Attribution split definition
     struct Attribution {
@@ -64,6 +66,8 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
         string modelId
     );
     event PaymentWithdrawn(address indexed recipient, address indexed token, uint256 amount);
+    event PlatformFeeUpdated(uint256 oldFee, uint256 newFee);
+    event TreasuryUpdated(address oldTreasury, address newTreasury);
 
     /**
      * @notice Initialize the attribution engine
@@ -99,10 +103,12 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
             _hashAttributions(payment.attributions)
         ));
         require(!processedAttributions[paymentId], "Payment processed");
+        
+        // Update state before external calls (reentrancy protection)
         processedAttributions[paymentId] = true;
 
-        // Process payment through core contract first
-        IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
+        // Process payment through secure transfer
+        IERC20(model.token).safeTransferFrom(msg.sender, address(this), payment.amount);
         
         // Distribute funds according to attribution
         _distributeFundsWithAttribution(model, payment.amount, payment.attributions);
@@ -188,8 +194,8 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
         
         balances[msg.sender][token] = 0;
         
-        bool success = IERC20(token).transfer(msg.sender, amount);
-        require(success, "Transfer failed");
+        // Use SafeERC20 for secure transfer
+        IERC20(token).safeTransfer(msg.sender, amount);
         
         emit PaymentWithdrawn(msg.sender, token, amount);
     }
@@ -210,7 +216,9 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
      */
     function setPlatformFee(uint256 _platformFee) external onlyOwner {
         require(_platformFee <= 2000, "Fee too high"); // Max 20%
+        uint256 oldFee = platformFee;
         platformFee = _platformFee;
+        emit PlatformFeeUpdated(oldFee, _platformFee);
     }
 
     /**
@@ -219,6 +227,8 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
      */
     function setTreasury(address _treasury) external onlyOwner {
         require(_treasury != address(0), "Invalid treasury");
+        address oldTreasury = treasury;
         treasury = _treasury;
+        emit TreasuryUpdated(oldTreasury, _treasury);
     }
 } 
