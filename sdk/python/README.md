@@ -169,7 +169,7 @@ from agentpayy import AgentPayyKit
 agentpay = AgentPayyKit(
     private_key=os.getenv("PRIVATE_KEY"),
     chain="base",  # base|arbitrum|optimism|ethereum
-    gateway_url="https://gateway.agentpay.dev"
+    gateway_url="https://gateway.agentpayy.dev"
 )
 
 # Check connection
@@ -254,7 +254,7 @@ print(f"Withdrawal: {tx_hash}")
 ## CrewAI Integration
 
 ```python
-from agentpay.crewai import AgentPayyTool
+from agentpayy.crewai import AgentPayyTool
 
 # Create paywall tool for CrewAI agents
 weather_tool = AgentPayyTool(
@@ -280,7 +280,7 @@ result = agent.execute("What's the weather in NYC?")
 ## LangChain Integration
 
 ```python
-from agentpay.langchain import AgentPayyWrapper
+from agentpayy.langchain import AgentPayyWrapper
 from langchain.tools import Tool
 
 # Wrap any API with payment
@@ -360,13 +360,13 @@ export BICONOMY_PAYMASTER_API_KEY="..."
 export ZERODEV_API_KEY="..."
 
 # Optional - Custom gateway
-export AGENTPAY_GATEWAY_URL="https://gateway.agentpay.dev"
+export AGENTPAY_GATEWAY_URL="https://gateway.agentpayy.dev"
 ```
 
 ## Error Handling
 
 ```python
-from agentpay.exceptions import InsufficientBalance, PaymentFailed
+from agentpayy.exceptions import InsufficientBalance, PaymentFailed
 
 try:
     result = agentpay.pay_and_call("expensive-api", data, "10.0")

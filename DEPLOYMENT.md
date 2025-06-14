@@ -74,7 +74,7 @@ forge script script/Deploy.s.sol:DeployScript --rpc-url $OPTIMISM_RPC_URL --broa
 ### Update SDK Contract Addresses
 After deployment, update contract addresses in:
 - `sdk/typescript/src/core/contracts.ts`
-- `sdk/python/agentpay/contracts.py`
+- `sdk/python/agentpayy/contracts.py`
 
 ## Testing
 

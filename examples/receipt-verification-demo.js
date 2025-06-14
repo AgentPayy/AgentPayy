@@ -8,7 +8,7 @@
  * 4. Handle disputes with on-chain evidence
  */
 
-const { EnhancedAgentPayKit } = require('@agentpay/sdk');
+const { EnhancedAgentPayKit } = require('@agentpayy/sdk');
 
 async function demonstrateReceiptSystem() {
     console.log('🔒 AgentPayKit Cryptographic Receipt Demo');
