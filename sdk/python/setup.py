@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="agentpayy",
-    version="0.1.0",
+    version="1.0.0",
     description="AgentPayyKit Python SDK - Pay-per-call APIs for AI agents",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

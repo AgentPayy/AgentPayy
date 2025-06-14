@@ -1,6 +1,6 @@
 {
   "name": "@agentpayy/contracts",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "AgentPayyKit smart contracts with governance",
   "scripts": {
     "build": "forge build",
@@ -10,7 +10,6 @@
     "test:coverage": "forge coverage",
     "test:deploy": "forge test --match-contract DeployTest",
     "clean": "forge clean",
-    
     "deploy:ethereum": "forge script script/Deploy.s.sol:DeployScript --rpc-url ethereum --broadcast --verify",
     "deploy:base": "forge script script/Deploy.s.sol:DeployScript --rpc-url base --broadcast --verify",
     "deploy:arbitrum": "forge script script/Deploy.s.sol:DeployScript --rpc-url arbitrum --broadcast --verify",
@@ -22,12 +21,10 @@
     "deploy:scroll": "forge script script/Deploy.s.sol:DeployScript --rpc-url scroll --broadcast --verify",
     "deploy:polygon-zkevm": "forge script script/Deploy.s.sol:DeployScript --rpc-url polygon_zkevm --broadcast --verify",
     "deploy:mantle": "forge script script/Deploy.s.sol:DeployScript --rpc-url mantle --broadcast --verify",
-    
     "deploy:tier1": "./script/DeployMultichain.sh tier1",
     "deploy:tier2": "./script/DeployMultichain.sh tier2",
     "deploy:tier3": "./script/DeployMultichain.sh tier3",
     "deploy:all": "./script/DeployMultichain.sh all",
-    
     "governance:deploy:ethereum": "forge script script/DeployWithGovernance.s.sol:DeployWithGovernance --rpc-url ethereum --broadcast --verify",
     "governance:deploy:base": "forge script script/DeployWithGovernance.s.sol:DeployWithGovernance --rpc-url base --broadcast --verify",
     "governance:deploy:arbitrum": "forge script script/DeployWithGovernance.s.sol:DeployWithGovernance --rpc-url arbitrum --broadcast --verify",
@@ -35,14 +32,11 @@
     "governance:deploy:unichain": "forge script script/DeployWithGovernance.s.sol:DeployWithGovernance --rpc-url unichain --broadcast --verify",
     "governance:deploy:worldchain": "forge script script/DeployWithGovernance.s.sol:DeployWithGovernance --rpc-url worldchain --broadcast --verify",
     "governance:deploy:linea": "forge script script/DeployWithGovernance.s.sol:DeployWithGovernance --rpc-url linea --broadcast --verify",
-    
     "governance:deploy:target": "npm run governance:deploy:base && npm run governance:deploy:arbitrum && npm run governance:deploy:optimism && npm run governance:deploy:ethereum && npm run governance:deploy:worldchain && npm run governance:deploy:unichain",
-    
     "safe:create": "node script/CreateGnosisSafe.js",
     "safe:create:base": "node script/CreateGnosisSafe.js --network base",
     "safe:create:target": "node script/CreateGnosisSafe.js --networks base,arbitrum,optimism,ethereum,worldchain,unichain",
     "safe:create:all": "node script/CreateGnosisSafe.js --networks base,arbitrum,optimism,ethereum",
-    
     "verify:base": "forge verify-contract --chain base",
     "verify:arbitrum": "forge verify-contract --chain arbitrum",
     "verify:optimism": "forge verify-contract --chain optimism",
@@ -55,4 +49,4 @@
   "engines": {
     "node": ">=18.0.0"
   }
-} 
+}
