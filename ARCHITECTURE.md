@@ -1,3 +1,27 @@
+# AgentPay Architecture
+
+Privacy-first payment protocol for API monetization.
+
+## Core Components
+
+### Smart Contracts
+- `AgentPayCore.sol` - Payment processing
+- `AttributionEngine.sol` - Revenue sharing
+- `ReceiptManager.sol` - Payment verification
+
+### SDK
+- `@agentpay/sdk` - TypeScript/JavaScript client
+- Direct API calls (no gateway)
+- Privacy-preserving (only hashes on-chain)
+
+## Flow
+```
+Client → Smart Contract (payment + hash) → API Provider (direct call) → Validation
+```
+
+## Networks
+Base, Arbitrum, Optimism, Polygon supported.
+
 # AgentPay Architecture Documentation
 
 **Version**: 2.0.0  

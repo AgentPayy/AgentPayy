@@ -1,4 +1,4 @@
-# AgentPayKit Launch Strategy
+# AgentPay Launch Strategy
 
 ## 🚀 Launch Timeline (Week 11-12)
 
@@ -25,65 +25,38 @@
 
 ## 📝 HackerNews Launch Post
 
-### Title Options (A/B Test)
-1. **"We built Stripe for AI agents – pay-per-call APIs with stablecoins"**
-2. **"AgentPayKit: Monetize any API with sub-cent crypto payments"**
-3. **"Show HN: Pay-per-call SDK for AI agents using stablecoin payments"**
+### Title
+"Show HN: Privacy-first API payments with crypto – no gateway needed"
 
-### Post Content
+### Post
+Built AgentPay after seeing AI agents everywhere but no good payment infrastructure.
 
----
+**The problem:** APIs need monetization, but traditional payments don't work for $0.01 calls.
 
-**Title:** We built Stripe for AI agents – pay-per-call APIs with stablecoins
-
-**Body:**
-
-Hey HN! Solo builder here.
-
-I've been watching the AI agent space explode, but noticed a huge gap: **there's no good way for agents to pay each other for services**. If an agent needs weather data, token prices, or premium analysis, it either has to be free or use clunky traditional payment systems.
-
-So I built **AgentPayKit** – an SDK that lets any developer monetize any API endpoint with sub-cent stablecoin payments on Layer 2s.
+**The solution:** Privacy-first crypto payments on L2s.
 
 **How it works:**
-1. Register your API endpoint: `agentpay register`
-2. Set a price in USDC (e.g., $0.01 per call)
-3. Agents pay and call your API in one line: `agentpay.payAndCall("weather-v1", {city: "NYC"}, {price: "0.01"})`
-
-**What makes this interesting:**
-- **Sub-cent payments**: $0.001-$0.01 per API call (impossible with traditional payments)
-- **Smart wallet ready**: Auto-detects Account Abstraction wallets vs regular wallets
-- **Multi-chain**: Works on Base, Arbitrum, Optimism (gas costs ~$0.01)
-- **Framework integrations**: One-line wrappers for CrewAI, LangChain, FastAPI
-
-**Real use cases I'm seeing:**
-- Weather APIs charging $0.005 per call
-- Token price feeds at $0.002 per query  
-- Premium AI analysis at $0.05 per request
-- Agent-to-agent payments (trading bots buying market data from data bots)
-
-**Technical details:**
-- Uses EIP-2612 permit() for gasless approvals
-- Event-driven gateway that forwards paid requests
-- 10% platform fee, 90% goes to API owner
-- Open source (MIT license)
-
-The agent economy is happening **right now** – I think we need payment infrastructure that's built for it. Curious what HN thinks!
-
-**Links:**
-- GitHub: https://github.com/agentpaykit/agentpaykit
-- Demo: https://demo.agentpay.org
-- Docs: https://docs.agentpay.org
-
-**Try it:**
-```bash
-npm install @agentpay/sdk
-# or
-pip install agentpay
+```typescript
+// Pay for API call
+const result = await agentPay.callAPI(
+  'https://api.weather.com',
+  { city: 'NYC' },
+  'weather-api'
+);
 ```
 
-Would love feedback, especially from anyone building with AI agents or microservices!
+**Key features:**
+- Sub-cent fees (~$0.001 on Base)
+- Privacy-first (only hashes on-chain)
+- No gateway/middleware needed
+- Direct client-to-API calls
 
----
+**Architecture:**
+Client → Smart Contract (payment) → API Provider (validation)
+
+Open source, MIT license. Built for the API economy.
+
+GitHub: https://github.com/agentpay/agentpay
 
 ### Engagement Strategy
 
@@ -115,7 +88,7 @@ Would love feedback, especially from anyone building with AI agents or microserv
 "Stripe for AI agents – monetize APIs with crypto payments"
 
 ### Description
-"AgentPayKit lets developers monetize any API endpoint with sub-cent stablecoin payments. Perfect for the agent economy where AI agents need to pay each other for services. One-line integration, smart wallet support, works on Layer 2s."
+"AgentPay lets developers monetize any API endpoint with sub-cent stablecoin payments. Perfect for the agent economy where AI agents need to pay each other for services. One-line integration, smart wallet support, works on Layer 2s."
 
 ### Key Features
 - ⚡ Sub-cent payments ($0.001-$0.01 per call)
@@ -131,7 +104,7 @@ Would love feedback, especially from anyone building with AI agents or microserv
 
 ### Twitter Thread
 ```
-🧵 1/8 Just launched AgentPayKit – Stripe for AI agents! 
+🧵 1/8 Just launched AgentPay – privacy-first API payments! 
 
 Finally, a way for agents to pay each other for services with sub-cent stablecoin payments.
 
@@ -150,7 +123,7 @@ It's either free (unsustainable) or traditional payments (too expensive for micr
 ```
 
 ```
-3/8 AgentPayKit solves this with:
+3/8 AgentPay solves this with:
 
 ⚡ Sub-cent payments ($0.001-$0.01 per call)
 🤖 One-line integration 
@@ -208,7 +181,7 @@ Making it dead simple for developers to monetize APIs.
 ```
 8/8 This is just the beginning!
 
-The agent economy needs payment infrastructure. AgentPayKit is open source and ready for the community to build on.
+The agent economy needs payment infrastructure. AgentPay is open source and ready for the community to build on.
 
 Try it: npm install @agentpay/sdk
 
@@ -220,10 +193,10 @@ What would you build with pay-per-call APIs? 🤔
 ### Discord/Telegram Posts
 
 **AI/Agent Communities:**
-"Hey everyone! Just launched AgentPayKit – a way to monetize APIs with crypto micro-payments. Perfect for AI agents that need to pay each other for services. One-line integration, works with CrewAI/LangChain. Would love feedback from this community! [link]"
+"Hey everyone! Just launched AgentPay – a way to monetize APIs with crypto micro-payments. Perfect for AI agents that need to pay each other for services. One-line integration, works with CrewAI/LangChain. Would love feedback from this community! [link]"
 
 **Crypto Developer Communities:**
-"Built something for the intersection of AI and crypto: AgentPayKit lets you monetize any API with sub-cent stablecoin payments. Uses EIP-2612 permit(), works with smart wallets, deployed on Base/Arbitrum. Open source and ready for builders! [link]"
+"Built something for the intersection of AI and crypto: AgentPay lets you monetize any API with sub-cent stablecoin payments. Uses EIP-2612 permit(), works with smart wallets, deployed on Base/Arbitrum. Open source and ready for builders! [link]"
 
 ## 📊 Success Metrics
 

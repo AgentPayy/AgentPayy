@@ -20,14 +20,22 @@ const agentPay = new AgentPayKit({
   privateKey: process.env.PRIVATE_KEY
 });
 
+// Direct API call with payment proof
 const result = await agentPay.callAPI(
   'https://api.example.com',
   { data: 'input' },
   'model-id'
 );
+
+// Validate payment (for API providers)
+const isValid = await agentPay.validatePayment(txHash, inputData);
 ```
 
+## Architecture
+Client → Smart Contract (payment + hash) → API Provider (validation)
+
 ## Links
-- [Docs](./docs/getting-started.md)
+- [Contracts](./contracts/)
+- [SDK](./sdk/typescript/)
 - [Examples](./examples/)
 - [Discord](https://discord.gg/agentpay) 

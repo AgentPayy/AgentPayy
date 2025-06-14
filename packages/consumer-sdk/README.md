@@ -1,8 +1,37 @@
 # @agentpay/consumer-sdk
 
-> **SDK for consuming AI APIs with automatic payments and smart wallet integration**
+Privacy-first API payments with crypto.
 
-The consumer SDK enables developers to easily integrate API payments into their applications using smart accounts, gasless transactions, and automatic payment routing.
+## Install
+```bash
+npm install @agentpay/consumer-sdk
+```
+
+## Usage
+```typescript
+import { AgentPayKit } from '@agentpay/consumer-sdk';
+
+const agentpay = new AgentPayKit({
+  network: 'base',
+  privateKey: process.env.PRIVATE_KEY
+});
+
+// Direct API call with payment
+const result = await agentpay.callAPI(
+  'https://api.example.com',
+  { input: 'data' },
+  'model-id'
+);
+
+// Validate payment (for API providers)
+const isValid = await agentpay.validatePayment(txHash, inputData);
+```
+
+## Features
+- Privacy-first (only hashes on-chain)
+- Sub-cent fees on L2s
+- Direct client-to-API calls
+- Multi-chain support (Base, Arbitrum, Optimism)
 
 ## 🚀 Quick Start
 

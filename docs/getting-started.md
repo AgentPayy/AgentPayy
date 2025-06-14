@@ -21,6 +21,7 @@ const agentPay = new AgentPayKit({
 
 ## Call API
 ```typescript
+// Direct API call with payment proof
 const result = await agentPay.callAPI(
   'https://api.example.com',
   { input: 'data' },
@@ -28,7 +29,11 @@ const result = await agentPay.callAPI(
 );
 ```
 
-## Validate Payment (API Providers)
+## For API Providers
 ```typescript
-const isValid = await agentPay.validatePayment(txHash, inputHash);
+// Validate payment
+const isValid = await agentPay.validatePayment(txHash, inputData);
+
+// Mark as validated
+await agentPay.markValidated(txHash);
 ``` 

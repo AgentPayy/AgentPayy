@@ -1,12 +1,37 @@
-# AgentPayKit Python SDK
+# AgentPay Python SDK
 
-> Universal wallet infrastructure for AI agents and Python applications
+Privacy-first API payments with crypto.
 
-## Installation
-
+## Install
 ```bash
 pip install agentpay
 ```
+
+## Usage
+```python
+from agentpay import AgentPayKit
+
+agentpay = AgentPayKit(
+    private_key="0x...", 
+    chain="base"
+)
+
+# Direct API call with payment
+result = agentpay.call_api(
+    "https://api.example.com",
+    {"input": "data"},
+    "model-id"
+)
+
+# Validate payment (for API providers)
+is_valid = agentpay.validate_payment(tx_hash, input_data)
+```
+
+## Features
+- Privacy-first (only hashes on-chain)
+- Sub-cent fees on L2s
+- Direct client-to-API calls
+- Multi-chain support (Base, Arbitrum, Optimism)
 
 ## Quick Start
 
@@ -24,14 +49,6 @@ result = agentpay.pay_and_call(
 )
 print(result)  # Weather data
 ```
-
-## Features
-
-- **AI Framework Ready**: CrewAI, LangChain integrations
-- **Multi-chain Support**: 13 networks including Base, Arbitrum, Optimism
-- **Smart Contracts**: Full Web3 integration with balance system
-- **Mock Mode**: Test APIs without payment
-- **Dual Usage**: Both earn from APIs and spend on APIs
 
 ## Basic Usage
 

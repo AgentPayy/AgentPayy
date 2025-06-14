@@ -1,4 +1,34 @@
-# AgentPayKit Deployment Guide
+# AgentPay Deployment
+
+## Deploy Smart Contracts
+
+```bash
+cd contracts
+forge build
+forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast --verify
+```
+
+## Environment Variables
+
+```bash
+PRIVATE_KEY=0x...
+ETHERSCAN_API_KEY=...
+BASE_RPC_URL=...
+ARBITRUM_RPC_URL=...
+OPTIMISM_RPC_URL=...
+```
+
+## Networks
+- Base (8453)
+- Arbitrum (42161) 
+- Optimism (10)
+- Polygon (137)
+
+## SDK Installation
+
+```bash
+npm install @agentpay/sdk
+```
 
 ## 🚀 Quick Deploy
 
@@ -30,24 +60,10 @@ npm run deploy:ethereum
 npm run deploy:all
 ```
 
-### 3. Start Gateway
+### 3. Install SDK
 
 ```bash
-cd gateway
-npm install
-
-# Set contract addresses
-export AGENTPAY_BASE_CONTRACT="0x..."
-export AGENTPAY_ARBITRUM_CONTRACT="0x..."
-export REDIS_URL="redis://localhost:6379"
-
-npm start
-```
-
-### 4. Install CLI
-
-```bash
-npm install -g @agentpay/cli
+npm install @agentpay/sdk
 ```
 
 ## 🌐 Supported Networks
@@ -74,51 +90,19 @@ npm install -g @agentpay/cli
 - [ ] Treasury address configured
 - [ ] Contracts deployed to target networks
 - [ ] Contract addresses verified on explorers
-- [ ] Gateway configured with contract addresses
-- [ ] Gateway deployed and accessible
-- [ ] CLI installed and tested
+- [ ] SDK installed and tested
 - [ ] SDK packages published to npm
 
 ## 🔧 Production Setup
 
-### Environment Variables
 
-```bash
-# Deployment
-PRIVATE_KEY=0x...
-TREASURY_ADDRESS=0x...
-
-# Gateway
-REDIS_URL=redis://localhost:6379
-AGENTPAY_BASE_CONTRACT=0x...
-AGENTPAY_ARBITRUM_CONTRACT=0x...
-AGENTPAY_OPTIMISM_CONTRACT=0x...
-AGENTPAY_ETHEREUM_CONTRACT=0x...
-
-# Smart Wallet Providers (optional)
-BICONOMY_PAYMASTER_API_KEY=...
-ZERODEV_API_KEY=...
-ALCHEMY_API_KEY=...
-```
-
-### Docker Deployment
-
-```bash
-# Build and deploy gateway
-docker build -t agentpay-gateway ./gateway
-docker run -p 3000:3000 agentpay-gateway
-```
 
 ## 🧪 Testing
 
 ```bash
-# Test CLI
-agentpay generate-wallet --smart --name "test-wallet"
-agentpay mock weather-api '{"city":"NYC"}'
-
 # Test SDK
 cd sdk/typescript && npm test
-cd sdk/python && python -m pytest
+cd contracts && forge test
 ```
 
 ## 📊 Cost Estimates
@@ -137,7 +121,7 @@ cd sdk/python && python -m pytest
 - Use hardware wallets for mainnet
 - Verify contract addresses before use
 - Monitor treasury address
-- Keep gateway logs for auditing
+- Monitor smart contract events
 
 ## 🆘 Troubleshooting
 
@@ -150,8 +134,8 @@ cd sdk/python && python -m pytest
 # Contract verification failed
 # Solution: Verify constructor arguments match deployment
 
-# Gateway connection failed
-# Solution: Check Redis connection and contract addresses
+# SDK connection failed
+# Solution: Check RPC endpoints and contract addresses
 ```
 
 ### Getting Help
