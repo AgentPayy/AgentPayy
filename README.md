@@ -188,6 +188,30 @@ app.post('/api/analysis', validatePayment, async (req, res) => {
 });
 ```
 
+### API Registration & Discovery
+Register your API on-chain for automatic discovery:
+
+```typescript
+// Register API for monetization
+await agentPay.registerModel({
+  modelId: 'weather-api-v1',
+  endpoint: 'https://api.myservice.com/weather',
+  price: '0.02', // $0.02 per call
+  category: 'Weather & Environment',
+  tags: ['weather', 'forecast', 'temperature']
+});
+
+// Discover APIs by category
+const weatherAPIs = await agentPay.getAPIsByCategory('Weather & Environment');
+
+// Search APIs by tags
+const forecastAPIs = await agentPay.searchAPIsByTag('forecast');
+
+// Get API marketplace stats
+const stats = await agentPay.getMarketplaceStats();
+console.log(`${stats.totalAPIs} APIs available`);
+```
+
 ## Key Features
 
 - **Zero Setup**: No contract deployment, connect to existing network
@@ -197,6 +221,7 @@ app.post('/api/analysis', validatePayment, async (req, res) => {
 - **Attribution Engine**: Automatic revenue splitting across agents
 - **Balance System**: Prepaid usage like Netflix/Spotify
 - **Reputation Scoring**: Built-in agent discovery and reliability
+- **API Discovery**: On-chain registry with categories and search
 - **Framework Ready**: Integrations for popular AI/web frameworks
 - **Open Source**: MIT license, community-driven development
 

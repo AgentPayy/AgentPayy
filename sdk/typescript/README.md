@@ -92,6 +92,32 @@ await agentPay.registerModel({
 });
 ```
 
+## API Discovery & Marketplace
+```typescript
+// Register API with full metadata
+await agentPay.registerModel({
+  modelId: 'weather-forecast-v2',
+  endpoint: 'https://api.weather.com/forecast',
+  price: '0.03',
+  category: 'Weather & Environment',
+  tags: ['weather', 'forecast', 'climate'],
+  description: 'Advanced weather forecasting API'
+});
+
+// Discover APIs by category
+const weatherAPIs = await agentPay.getAPIsByCategory('Weather & Environment');
+
+// Search APIs by tags
+const aiAPIs = await agentPay.searchAPIsByTag('ai');
+
+// Get marketplace statistics
+const stats = await agentPay.getMarketplaceStats();
+console.log(`${stats.totalAPIs} APIs, ${stats.totalDevelopers} developers`);
+
+// Get trending APIs
+const trending = await agentPay.getTrendingAPIs(10);
+```
+
 ## Available Networks
 - **base**: Base mainnet (recommended)
 - **arbitrum**: Arbitrum One
@@ -106,4 +132,6 @@ await agentPay.registerModel({
 - Built-in payment validation
 - Attribution engine for revenue sharing
 - Prepaid balance system
-- Reputation scoring and agent discovery 
+- Reputation scoring and agent discovery
+- On-chain API registry with search and categories
+- Marketplace statistics and trending APIs 

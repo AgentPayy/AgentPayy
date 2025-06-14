@@ -90,6 +90,32 @@ agentpay.register_model({
 })
 ```
 
+## API Discovery & Marketplace
+```python
+# Register API with full metadata
+agentpay.register_model({
+    "modelId": "weather-forecast-v2",
+    "endpoint": "https://api.weather.com/forecast",
+    "price": "0.03",
+    "category": "Weather & Environment",
+    "tags": ["weather", "forecast", "climate"],
+    "description": "Advanced weather forecasting API"
+})
+
+# Discover APIs by category
+weather_apis = agentpay.get_apis_by_category("Weather & Environment")
+
+# Search APIs by tags
+ai_apis = agentpay.search_apis_by_tag("ai")
+
+# Get marketplace statistics
+stats = agentpay.get_marketplace_stats()
+print(f"{stats['totalAPIs']} APIs, {stats['totalDevelopers']} developers")
+
+# Get trending APIs
+trending = agentpay.get_trending_apis(10)
+```
+
 ## Available Networks
 - **base**: Base mainnet (recommended)
 - **arbitrum**: Arbitrum One
@@ -105,6 +131,8 @@ agentpay.register_model({
 - Attribution engine for revenue sharing
 - Prepaid balance system
 - Reputation scoring and agent discovery
+- On-chain API registry with search and categories
+- Marketplace statistics and trending APIs
 
 ## Quick Start
 

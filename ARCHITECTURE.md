@@ -9,11 +9,13 @@ Privacy-first payment protocol for API monetization using deployed smart contrac
 - **AgentPayCore**: Payment processing and model registration
 - **AttributionEngine**: Multi-party revenue splitting
 - **ReputationSystem**: Agent scoring and discovery
+- **APIRegistry**: On-chain API discovery and marketplace
 
 ### SDK Layer
 - **TypeScript SDK**: Browser and Node.js integration
 - **Python SDK**: AI agent and API server integration
 - **Payment Validation**: Direct client-to-API verification
+- **API Discovery**: Search and categorization system
 
 ### Privacy Architecture
 ```
@@ -46,6 +48,15 @@ Built-in agent discovery and reliability:
 - Leaderboard rankings
 - Reliability scoring
 
+### API Registry & Discovery
+On-chain marketplace for API monetization:
+- Model registration with metadata
+- Category-based organization
+- Tag-based search system
+- Usage statistics tracking
+- Trending API algorithms
+- Developer revenue analytics
+
 ## Payment Flow
 
 ### Standard Payment
@@ -66,6 +77,13 @@ Built-in agent discovery and reliability:
 2. API calls deduct from balance
 3. No transaction signing required
 4. Seamless user experience
+
+### API Registration Flow
+1. Developer calls `registerModel()` with metadata
+2. Smart contract stores API details on-chain
+3. API appears in marketplace immediately
+4. Indexer enhances with additional metadata
+5. Users can discover via search/categories
 
 ## Privacy Guarantees
 - Only payment hashes stored on-chain
@@ -115,6 +133,22 @@ app.post('/api/data', (req, res) => {
 const result = await agentPay.payWithAttribution(
   modelId, input, attributions, options
 );
+```
+
+### API Marketplace Integration
+```typescript
+// Register API for discovery
+await agentPay.registerModel({
+  modelId: 'sentiment-api-v1',
+  endpoint: 'https://api.example.com/sentiment',
+  price: '0.01',
+  category: 'AI & Machine Learning',
+  tags: ['sentiment', 'nlp']
+});
+
+// Discover APIs programmatically
+const aiAPIs = await agentPay.getAPIsByCategory('AI & Machine Learning');
+const bestAPI = aiAPIs.sort((a, b) => b.rating - a.rating)[0];
 ```
 
 ## Scalability

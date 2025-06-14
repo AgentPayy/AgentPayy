@@ -119,6 +119,36 @@ await agentPay.registerModel({
 });
 ```
 
+## API Discovery & Marketplace
+
+### Register API with Full Metadata
+```typescript
+await agentPay.registerModel({
+  modelId: 'advanced-sentiment-v1',
+  endpoint: 'https://api.myai.com/sentiment',
+  price: '0.01',
+  category: 'AI & Machine Learning',
+  tags: ['sentiment', 'nlp', 'analysis'],
+  description: 'Advanced sentiment analysis with confidence scores'
+});
+```
+
+### Discover APIs
+```typescript
+// Find APIs by category
+const aiAPIs = await agentPay.getAPIsByCategory('AI & Machine Learning');
+
+// Search by tags
+const sentimentAPIs = await agentPay.searchAPIsByTag('sentiment');
+
+// Get marketplace stats
+const stats = await agentPay.getMarketplaceStats();
+console.log(`${stats.totalAPIs} APIs available`);
+
+// Get trending APIs
+const trending = await agentPay.getTrendingAPIs(5);
+```
+
 ## Available Networks
 - **base**: Lowest fees (recommended)
 - **arbitrum**: Fast finality
@@ -136,6 +166,8 @@ await agentPay.registerModel({
 - Prepaid balance system
 - Built-in reputation scoring
 - Agent discovery and reliability
+- On-chain API registry and marketplace
+- Searchable API categories and tags
 
 ## Integration Examples
 - **CrewAI**: [examples/crewai-integration.md](./examples/crewai-integration.md)
