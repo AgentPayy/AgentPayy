@@ -8,12 +8,11 @@ AgentPayy has been successfully deployed to Base network with full governance se
 
 | Contract | Address | Description |
 |----------|---------|-------------|
-| **Factory** | `0xe91bF2679320618c472a1EdD24Fc26311c7790Dc` | Main factory for deploying ecosystem |
-| **AgentPayyCore** | `0x5c8d572e7dF3EE84316773280EB877c28Bd547fA` | Core payment processing |
-| **AttributionEngine** | `0x3327872a4ceB2E15D71dfE5a3Fd188e0acaf4726` | Revenue attribution system |
-| **ReceiptManager** | `0xca9961FAc8beCF986b2e56eA69165F2Cc925C7c4` | Transaction receipts |
-| **APIRegistry** | `0x9fe3459657817721F466f47700f7B79E18288D8f` | API provider registry |
-| **GovernanceTimelock** | `0xdA4B4D75071d3143d24Cc4246f384EE7fd6F0fB7` | 24h governance timelock |
+| **AgentPayyCore** | `0x7213E3E48D44504EEb42AF36f363Deca7C7E0565` | **Core payment processing** |
+| **AttributionEngine** | `0x7ec304483F5549345351A7903C3B87A653698Ac3` | Revenue attribution system |
+| **ReceiptManager** | `0x678f0F998D5D72f88744A298cb827264b4289D43` | Transaction receipts |
+| **APIRegistry** | `0x9F68C43427AC0935043624eE40189B7382AC5700` | API provider registry |
+| **GovernanceTimelock** | `0xF0dDb154ed6557a9c9Bcd9715fCeD7242F594814` | 24h governance timelock |
 | **Treasury/Gnosis Safe** | `0x53C0D26A9d000eAa2C2138497491A45e25970574` | Multi-sig governance |
 
 ## 🔍 Contract Verification
@@ -24,11 +23,11 @@ Run these commands to verify contracts on Basescan:
 cd contracts
 
 # Verify all contracts
-forge verify-contract 0xe91bF2679320618c472a1EdD24Fc26311c7790Dc src/AgentPayyFactory.sol:AgentPayyFactory --chain-id 8453
-forge verify-contract 0x5c8d572e7dF3EE84316773280EB877c28Bd547fA src/AgentPayyCore.sol:AgentPayyCore --chain-id 8453
-forge verify-contract 0x3327872a4ceB2E15D71dfE5a3Fd188e0acaf4726 src/AttributionEngine.sol:AttributionEngine --chain-id 8453
-forge verify-contract 0xca9961FAc8beCF986b2e56eA69165F2Cc925C7c4 src/ReceiptManager.sol:ReceiptManager --chain-id 8453
-forge verify-contract 0x9fe3459657817721F466f47700f7B79E18288D8f src/APIRegistry.sol:APIRegistry --chain-id 8453
+forge verify-contract 0x7213E3E48D44504EEb42AF36f363Deca7C7E0565 src/AgentPayyCore.sol:AgentPayyCore --chain-id 8453
+forge verify-contract 0x7ec304483F5549345351A7903C3B87A653698Ac3 src/AttributionEngine.sol:AttributionEngine --chain-id 8453
+forge verify-contract 0x678f0F998D5D72f88744A298cb827264b4289D43 src/ReceiptManager.sol:ReceiptManager --chain-id 8453
+forge verify-contract 0x9F68C43427AC0935043624eE40189B7382AC5700 src/APIRegistry.sol:APIRegistry --chain-id 8453
+forge verify-contract 0xF0dDb154ed6557a9c9Bcd9715fCeD7242F594814 src/GovernanceTimelock.sol:GovernanceTimelock --chain-id 8453
 ```
 
 ## 🏛️ Governance Setup

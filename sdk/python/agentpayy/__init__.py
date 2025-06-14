@@ -27,7 +27,7 @@ class AgentPayyKit:
         "base": {
             "rpc": "https://mainnet.base.org",
             "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-            "contract": "0x..."  # Set after deployment
+            "contract": "0x7213E3E48D44504EEb42AF36f363Deca7C7E0565"  # Live on Base mainnet
         },
         "arbitrum": {
             "rpc": "https://arb1.arbitrum.io/rpc",

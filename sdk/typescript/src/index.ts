@@ -16,7 +16,7 @@ import { getContractAddress, USDC_ADDRESSES } from './core';
 // Types are now imported from ./core
 
 const CONTRACTS = {
-  base: '0x...',  // Set after deployment
+  base: '0x7213E3E48D44504EEb42AF36f363Deca7C7E0565',  // Live on Base mainnet
   arbitrum: '0x...',
   optimism: '0x...'
 };
