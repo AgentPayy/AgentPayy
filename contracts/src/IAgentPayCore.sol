@@ -35,7 +35,10 @@ interface IAgentPayCore {
         bytes32 inputHash;        // Hash of input (privacy preserved)
         uint256 amount;           // Payment amount
         uint256 deadline;         // Payment deadline
-        bytes signature;          // Unified signature (permit or smart wallet)
+        uint8 v;                  // Signature v component
+        bytes32 r;                // Signature r component
+        bytes32 s;                // Signature s component
+        bytes smartWalletSig;     // Smart wallet signature (alternative to v,r,s)
     }
 
     /// @notice Events

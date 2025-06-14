@@ -192,28 +192,19 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
         Model storage model,
         PaymentData calldata payment
     ) internal {
-        // Try permit first (EIP-2612), fallback to smart wallet signature
-        if (payment.signature.length == 65) {
+        // Check if we have standard signature components (v,r,s)
+        if (payment.v != 0 || payment.r != bytes32(0) || payment.s != bytes32(0)) {
             // Standard permit signature (v,r,s format)
-            bytes32 r;
-            bytes32 s;
-            uint8 v;
-            assembly {
-                r := mload(add(payment.signature, 32))
-                s := mload(add(payment.signature, 64))
-                v := byte(0, mload(add(payment.signature, 96)))
-            }
-            
             IERC20Permit(model.token).permit(
                 msg.sender,
                 address(this),
                 payment.amount,
                 payment.deadline,
-                v,
-                r,
-                s
+                payment.v,
+                payment.r,
+                payment.s
             );
-        } else {
+        } else if (payment.smartWalletSig.length > 0) {
             // Smart wallet signature validation
             bytes32 messageHash = keccak256(abi.encodePacked(
                 payment.modelId,
@@ -223,8 +214,10 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
             ));
             
             bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-            address signer = ethSignedMessageHash.recover(payment.signature);
+            address signer = ethSignedMessageHash.recover(payment.smartWalletSig);
             require(signer == msg.sender, "Invalid signature");
+        } else {
+            revert("No valid signature provided");
         }
 
         IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);

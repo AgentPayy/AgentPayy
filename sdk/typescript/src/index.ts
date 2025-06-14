@@ -412,6 +412,79 @@ export class AgentPayKit {
   async markValidated(txHash: string): Promise<ethers.ContractTransactionResponse> {
     return await this.contract.markPaymentValidated(txHash);
   }
+
+  // === API DISCOVERY METHODS ===
+
+  /**
+   * Get APIs by category
+   * @param category - API category to filter by
+   * @returns Array of APIs in the specified category
+   */
+  async getAPIsByCategory(category: string): Promise<any[]> {
+    try {
+      const response = await axios.get(`${this.gatewayUrl}/registry/category/${encodeURIComponent(category)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting APIs by category:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Search APIs by tag
+   * @param tag - Tag to search for
+   * @returns Array of APIs matching the tag
+   */
+  async searchAPIsByTag(tag: string): Promise<any[]> {
+    try {
+      const response = await axios.get(`${this.gatewayUrl}/registry/search?tag=${encodeURIComponent(tag)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error searching APIs by tag:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get marketplace statistics
+   * @returns Marketplace statistics
+   */
+  async getMarketplaceStats(): Promise<{
+    totalAPIs: number;
+    totalCategories: number;
+    totalDevelopers: number;
+    totalCalls: number;
+    totalRevenue: string;
+  }> {
+    try {
+      const response = await axios.get(`${this.gatewayUrl}/registry/stats`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting marketplace stats:', error);
+      return {
+        totalAPIs: 0,
+        totalCategories: 0,
+        totalDevelopers: 0,
+        totalCalls: 0,
+        totalRevenue: '0'
+      };
+    }
+  }
+
+  /**
+   * Get trending APIs
+   * @param limit - Maximum number of APIs to return
+   * @returns Array of trending APIs
+   */
+  async getTrendingAPIs(limit: number = 10): Promise<any[]> {
+    try {
+      const response = await axios.get(`${this.gatewayUrl}/registry/trending?limit=${limit}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting trending APIs:', error);
+      return [];
+    }
+  }
 }
 
 export default AgentPayKit;

@@ -434,4 +434,147 @@ export class AgentPaySDK {
     this.provider = null;
     console.log('🔌 Wallet disconnected');
   }
+
+  // === API DISCOVERY METHODS ===
+
+  /**
+   * Get APIs by category
+   * @param category - API category to filter by
+   * @returns Array of APIs in the specified category
+   */
+  async getAPIsByCategory(category: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/category/${encodeURIComponent(category)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get APIs by category');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting APIs by category:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Search APIs by tag
+   * @param tag - Tag to search for
+   * @returns Array of APIs matching the tag
+   */
+  async searchAPIsByTag(tag: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/search?tag=${encodeURIComponent(tag)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to search APIs by tag');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error searching APIs by tag:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get marketplace statistics
+   * @returns Marketplace statistics
+   */
+  async getMarketplaceStats(): Promise<{
+    totalAPIs: number;
+    totalCategories: number;
+    totalDevelopers: number;
+    totalCalls: number;
+    totalRevenue: string;
+  }> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/stats`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get marketplace stats');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting marketplace stats:', error);
+      return {
+        totalAPIs: 0,
+        totalCategories: 0,
+        totalDevelopers: 0,
+        totalCalls: 0,
+        totalRevenue: '0'
+      };
+    }
+  }
+
+  /**
+   * Get trending APIs
+   * @param limit - Maximum number of APIs to return
+   * @returns Array of trending APIs
+   */
+  async getTrendingAPIs(limit: number = 10): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/trending?limit=${limit}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get trending APIs');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting trending APIs:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Register API model for discovery
+   * @param config - API configuration
+   * @returns Registration result
+   */
+  async registerModel(config: {
+    modelId: string;
+    endpoint: string;
+    price: string;
+    category?: string;
+    tags?: string[];
+    description?: string;
+  }): Promise<{
+    success: boolean;
+    txHash?: string;
+    error?: string;
+  }> {
+    try {
+      if (!this.wallet) {
+        throw new Error('No wallet connected. Use generateWallet() or connectWallet()');
+      }
+
+      const response = await fetch(`${this.gatewayUrl}/registry/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...config,
+          owner: this.wallet.address
+        })
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Registration failed');
+      }
+
+      return {
+        success: true,
+        txHash: result.txHash
+      };
+    } catch (error) {
+      console.error('Model registration error:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
 } 

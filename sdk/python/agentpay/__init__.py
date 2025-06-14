@@ -335,6 +335,70 @@ class AgentPayKit:
         
         raise TimeoutError(f"API response timeout after {max_retries} retries")
 
+    # === API DISCOVERY METHODS ===
+
+    def get_apis_by_category(self, category: str) -> list:
+        """Get APIs by category."""
+        try:
+            response = requests.get(f"{self.gateway_url}/registry/category/{category}", timeout=10)
+            if response.status_code == 200:
+                return response.json()
+        except Exception as e:
+            print(f"Error getting APIs by category: {e}")
+        return []
+
+    def search_apis_by_tag(self, tag: str) -> list:
+        """Search APIs by tag."""
+        try:
+            response = requests.get(f"{self.gateway_url}/registry/search?tag={tag}", timeout=10)
+            if response.status_code == 200:
+                return response.json()
+        except Exception as e:
+            print(f"Error searching APIs by tag: {e}")
+        return []
+
+    def get_marketplace_stats(self) -> Dict[str, Any]:
+        """Get marketplace statistics."""
+        try:
+            response = requests.get(f"{self.gateway_url}/registry/stats", timeout=10)
+            if response.status_code == 200:
+                return response.json()
+        except Exception as e:
+            print(f"Error getting marketplace stats: {e}")
+        return {
+            "totalAPIs": 0,
+            "totalCategories": 0,
+            "totalDevelopers": 0,
+            "totalCalls": 0,
+            "totalRevenue": "0"
+        }
+
+    def get_trending_apis(self, limit: int = 10) -> list:
+        """Get trending APIs."""
+        try:
+            response = requests.get(f"{self.gateway_url}/registry/trending?limit={limit}", timeout=10)
+            if response.status_code == 200:
+                return response.json()
+        except Exception as e:
+            print(f"Error getting trending APIs: {e}")
+        return []
+
+    def register_model(self, config: Dict[str, Any]) -> Dict[str, Any]:
+        """Register API model for discovery."""
+        try:
+            config["owner"] = self.account.address
+            response = requests.post(
+                f"{self.gateway_url}/registry/register",
+                json=config,
+                timeout=10
+            )
+            if response.status_code == 200:
+                return {"success": True, **response.json()}
+            else:
+                return {"success": False, "error": response.text}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
 
 def pay_and_call(model_id: str, input_data: Any, price: str, private_key: Optional[str] = None, mock: bool = False, use_balance: bool = True) -> Dict[str, Any]:
     """Convenience function for one-off API calls."""
