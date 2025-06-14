@@ -60,7 +60,7 @@ SDK → Deployed AgentPayy Contracts → API Provider
 
 Open source, MIT license. Built for the API economy.
 
-GitHub: https://github.com/agentpay/agentpay
+GitHub: https://github.com/AgentPayy/agentpayy
 
 ### Engagement Strategy
 

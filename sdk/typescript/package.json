@@ -14,10 +14,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/agentpay/agentpay",
+    "url": "https://github.com/AgentPayy/agentpayy",
     "directory": "sdk/typescript"
   },
-  "homepage": "https://github.com/agentpay/agentpay#readme",
+  "homepage": "https://github.com/AgentPayy/agentpayy#readme",
   "dependencies": {
     "ethers": "^6.8.0",
     "axios": "^1.6.0",

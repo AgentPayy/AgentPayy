@@ -160,5 +160,5 @@ const trending = await agentPay.getTrendingAPIs(5);
 AgentPayy contracts are deployed on all supported networks. SDK automatically connects to the correct addresses.
 
 ## Support
-- GitHub: https://github.com/agentpay/agentpay
+- GitHub: https://github.com/AgentPayy/agentpayy
 - Documentation: [Getting Started](./docs/getting-started.md) 

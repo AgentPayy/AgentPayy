@@ -7,7 +7,7 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     author="AgentPayyKit Team",
-    url="https://github.com/agentpayy/agentpayy",
+    url="https://github.com/AgentPayy/agentpayy",
     packages=find_packages(),
     install_requires=[
         "web3>=6.0.0",
