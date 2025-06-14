@@ -9,9 +9,12 @@ export type {
   Analytics
 } from './AgentPayWall';
 
-// Re-export useful core types
+// Re-export types from core
 export type {
+  PaymentOptions,
   ChainType,
   PaymentProof,
-  APICallMetadata
-} from '@agentpay/core'; 
+  APICallMetadata,
+  PaymentError,
+  AgentPayError
+} from '../core'; 
