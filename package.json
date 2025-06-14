@@ -44,9 +44,6 @@
     "ci:quick": "npm run type-check && npm run test:contracts"
   },
   "workspaces": [
-    "packages/core",
-    "packages/consumer-sdk", 
-    "packages/paywall-sdk",
     "sdk/typescript",
     "cli",
     "gateway"

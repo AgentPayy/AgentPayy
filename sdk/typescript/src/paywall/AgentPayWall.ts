@@ -1,21 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
-import { ethers, Contract } from 'ethers';
+import { ethers, Contract, JsonRpcProvider, Wallet } from 'ethers';
+import axios from 'axios';
+
+// Import from consolidated core
+import type { 
+  ChainType, 
+  ModelConfig, 
+  PaymentOptions,
+  PaymentData,
+  WalletInfo 
+} from '../core';
+import { getContractAddress, USDC_ADDRESSES } from '../core';
 import {
-  getContractAddress,
   getUSDCAddress,
   CONTRACT_ABI,
   createPaymentHash,
   verifyPaymentSignature,
   parseAmount,
   formatAmount
-} from '@agentpay/core';
+} from '../core';
 import type {
-  ChainType,
   PaymentProof,
   APICallMetadata,
   PaymentError,
   AgentPayError
-} from '@agentpay/core';
+} from '../core';
 
 export interface PaywallOptions {
   apiKey: string;

@@ -1,31 +1,19 @@
-import { ethers, Contract, Wallet, JsonRpcProvider } from 'ethers';
+import { ethers, JsonRpcProvider, Wallet, Contract } from 'ethers';
 import axios from 'axios';
 
-export interface PaymentOptions {
-  chain?: 'base' | 'arbitrum' | 'optimism';
-  price: string;
-  deadline?: number;
-  mock?: boolean;
-  useBalance?: boolean;
-}
+// Import from consolidated core
+import type { 
+  ChainType, 
+  ModelConfig, 
+  PaymentOptions, 
+  PaymentData,
+  WalletInfo,
+  WalletConnectionOptions,
+  WalletType
+} from './core';
+import { getContractAddress, USDC_ADDRESSES } from './core';
 
-export interface ModelConfig {
-  modelId: string;
-  endpoint: string;
-  price: string;
-  token?: string;
-}
-
-interface PaymentData {
-  modelId: string;
-  inputHash: string;
-  amount: string;
-  deadline: number;
-  smartWalletSig: string;
-  v: number;
-  r: string;
-  s: string;
-}
+// Types are now imported from ./core
 
 const CONTRACTS = {
   base: '0x...',  // Set after deployment
@@ -37,12 +25,6 @@ const RPC_URLS = {
   base: 'https://mainnet.base.org',
   arbitrum: 'https://arb1.arbitrum.io/rpc',
   optimism: 'https://mainnet.optimism.io'
-};
-
-const USDC_ADDRESSES = {
-  base: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-  arbitrum: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-  optimism: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85'
 };
 
 const CONTRACT_ABI = [
@@ -489,6 +471,18 @@ export class AgentPayKit {
 
 export default AgentPayKit;
 
+// Core utilities and types
+export * from './core';
+
+// Modules
+export { ReputationModule } from './ReputationModule';
+export { AttributionModule } from './AttributionModule';
+
+// Specialized modules
+export { AgentPayWall } from './paywall';
+export { APIRegistry } from './registry/APIRegistry';
+export { RegistryIndexer } from './registry/RegistryIndexer';
+
 // Wallet Infrastructure
 export { UniversalWalletAdapter } from './wallet/UniversalWalletAdapter';
 export { SmartWalletFactory } from './wallet/SmartWalletFactory';
@@ -496,10 +490,6 @@ export { SmartWalletFactory } from './wallet/SmartWalletFactory';
 // Services
 export { PaymentService } from './services/PaymentService';
 export { BalanceService } from './services/BalanceService';
-
-// Modules
-export { ReputationModule } from './ReputationModule';
-export { AttributionModule } from './AttributionModule';
 
 // Additional Types
 export type {

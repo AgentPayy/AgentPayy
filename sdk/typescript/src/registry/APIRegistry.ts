@@ -1,6 +1,6 @@
-import { ethers, Contract } from 'ethers';
-import { getContractAddress, CONTRACT_ABI } from '@agentpay/core';
-import type { ChainType } from '@agentpay/core';
+import { ethers, Contract, JsonRpcProvider } from 'ethers';
+import { getContractAddress, CONTRACT_ABI } from '../core';
+import type { ChainType } from '../core';
 
 export interface RegisteredAPI {
   modelId: string;
