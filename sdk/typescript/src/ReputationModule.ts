@@ -48,7 +48,7 @@ export class ReputationModule {
         throw new Error('Failed to get reputation data');
       }
 
-      return await response.json();
+      return await response.json() as ReputationData;
     } catch (error) {
       console.error('Error getting reputation:', error);
       
@@ -80,7 +80,7 @@ export class ReputationModule {
         throw new Error('Failed to get leaderboard');
       }
 
-      return await response.json();
+      return await response.json() as ReputationData[];
     } catch (error) {
       console.error('Error getting leaderboard:', error);
       return [];
@@ -103,7 +103,7 @@ export class ReputationModule {
         throw new Error('Failed to find specialist agents');
       }
 
-      return await response.json();
+      return await response.json() as ReputationData[];
     } catch (error) {
       console.error('Error finding specialist agents:', error);
       return [];

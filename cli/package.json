@@ -1,5 +1,5 @@
 {
-  "name": "@agentpay/cli",
+  "name": "@agentpayy/cli",
   "version": "1.0.0",
   "description": "AgentPayyKit CLI - Complete wallet infrastructure for the API economy",
   "main": "dist/index.js",
@@ -23,7 +23,7 @@
     "ethers": "^6.8.0",
     "viem": "^2.7.0",
     "wagmi": "^2.5.0",
-    "@agentpay/sdk": "file:../sdk/typescript"
+    "@agentpayy/sdk": "file:../sdk/typescript"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

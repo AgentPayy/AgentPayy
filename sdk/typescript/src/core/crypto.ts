@@ -18,7 +18,7 @@ export function createPaymentHash(
   amount: string,
   timestamp: number
 ): string {
-  return ethers.solidityKeccak256(
+  return ethers.solidityPackedKeccak256(
     ['string', 'address', 'uint256', 'uint256'],
     [modelId, payer, amount, timestamp]
   );
@@ -117,7 +117,7 @@ export async function prepareSmartWalletPayment(
   amount: string,
   deadline: number
 ): Promise<PaymentData> {
-  const messageHash = ethers.solidityKeccak256(
+  const messageHash = ethers.solidityPackedKeccak256(
     ['string', 'bytes32', 'uint256', 'uint256'],
     [modelId, inputHash, amount, deadline]
   );

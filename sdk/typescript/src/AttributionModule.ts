@@ -77,7 +77,10 @@ export class AttributionModule {
         })
       });
 
-      const result = await response.json();
+      const result = await response.json() as {
+        error?: string;
+        txHash?: string;
+      };
       
       if (!response.ok) {
         throw new Error(result.error || 'Attribution payment failed');
@@ -85,7 +88,7 @@ export class AttributionModule {
 
       return {
         success: true,
-        txHash: result.txHash,
+        txHash: result.txHash!,
         attributions,
         totalAmount: options.price,
       };
@@ -298,7 +301,11 @@ export class AttributionModule {
         throw new Error('Failed to get attribution balance');
       }
 
-      return await response.json();
+      return await response.json() as {
+        balance: string;
+        token: string;
+        pendingAttributions: number;
+      };
     } catch (error) {
       console.error('Error getting attribution balance:', error);
       return {
@@ -332,7 +339,14 @@ export class AttributionModule {
         throw new Error('Failed to get attribution history');
       }
 
-      return await response.json();
+      return await response.json() as Array<{
+        txHash: string;
+        modelId: string;
+        amount: string;
+        percentage: number;
+        timestamp: number;
+        status: "completed" | "pending";
+      }>;
     } catch (error) {
       console.error('Error getting attribution history:', error);
       return [];
@@ -357,7 +371,11 @@ export class AttributionModule {
         body: JSON.stringify({ token })
       });
 
-      const result = await response.json();
+      const result = await response.json() as {
+        error?: string;
+        txHash?: string;
+        amount?: string;
+      };
       
       if (!response.ok) {
         throw new Error(result.error || 'Withdrawal failed');
@@ -365,8 +383,8 @@ export class AttributionModule {
 
       return {
         success: true,
-        txHash: result.txHash,
-        amount: result.amount
+        txHash: result.txHash!,
+        amount: result.amount!
       };
     } catch (error) {
       console.error('Attribution withdrawal error:', error);

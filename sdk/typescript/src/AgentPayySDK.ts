@@ -178,7 +178,12 @@ export class AgentPayySDK {
         })
       });
 
-      const result = await response.json();
+      const result = await response.json() as {
+        error?: string;
+        txHash?: string;
+        receipt?: any;
+        gasUsed?: string;
+      };
       
       if (!response.ok) {
         throw new Error(result.error || 'Payment failed');
@@ -186,9 +191,9 @@ export class AgentPayySDK {
 
       return {
         success: true,
-        txHash: result.txHash,
+        txHash: result.txHash!,
         receipt: result.receipt,
-        gasUsed: result.gasUsed
+        gasUsed: result.gasUsed || '0'
       };
     } catch (error) {
       console.error('Payment error:', error);
@@ -228,7 +233,11 @@ export class AgentPayySDK {
         throw new Error('Validation request failed');
       }
 
-      return await response.json();
+      return await response.json() as {
+        valid: boolean;
+        reason?: string;
+        gasEstimate?: string;
+      };
     } catch (error) {
       console.error('Validation error:', error);
       return {
@@ -260,7 +269,7 @@ export class AgentPayySDK {
         throw new Error('Failed to get balances');
       }
 
-      return await response.json();
+      return await response.json() as { [token: string]: string };
     } catch (error) {
       console.error('Error getting balances:', error);
       return {};
@@ -295,7 +304,13 @@ export class AgentPayySDK {
         throw new Error('Failed to get payment history');
       }
 
-      return await response.json();
+      return await response.json() as Array<{
+        txHash: string;
+        modelId: string;
+        amount: string;
+        timestamp: number;
+        status: string;
+      }>;
     } catch (error) {
       console.error('Error getting payment history:', error);
       return [];
@@ -326,7 +341,15 @@ export class AgentPayySDK {
         throw new Error('Model not found');
       }
 
-      return await response.json();
+      return await response.json() as {
+        owner: string;
+        endpoint: string;
+        price: string;
+        token: string;
+        active: boolean;
+        totalCalls: string;
+        totalRevenue: string;
+      };
     } catch (error) {
       console.error('Error getting model:', error);
       return null;
@@ -367,7 +390,12 @@ export class AgentPayySDK {
         throw new Error('Gateway unavailable');
       }
 
-      return await response.json();
+      return await response.json() as {
+        status: string;
+        timestamp: string;
+        version: string;
+        services: string[];
+      };
     } catch (error) {
       console.error('Health check error:', error);
       return {
@@ -397,7 +425,13 @@ export class AgentPayySDK {
         throw new Error('Failed to get analytics');
       }
 
-      return await response.json();
+      return await response.json() as {
+        totalPayments: number;
+        totalRevenue: string;
+        uniqueUsers: number;
+        avgPaymentSize: string;
+        networks: any;
+      };
     } catch (error) {
       console.error('Analytics error:', error);
       return {
@@ -450,7 +484,7 @@ export class AgentPayySDK {
         throw new Error('Failed to get APIs by category');
       }
 
-      return await response.json();
+      return await response.json() as any[];
     } catch (error) {
       console.error('Error getting APIs by category:', error);
       return [];
@@ -470,7 +504,7 @@ export class AgentPayySDK {
         throw new Error('Failed to search APIs by tag');
       }
 
-      return await response.json();
+      return await response.json() as any[];
     } catch (error) {
       console.error('Error searching APIs by tag:', error);
       return [];
@@ -495,7 +529,13 @@ export class AgentPayySDK {
         throw new Error('Failed to get marketplace stats');
       }
 
-      return await response.json();
+      return await response.json() as {
+        totalAPIs: number;
+        totalCategories: number;
+        totalDevelopers: number;
+        totalCalls: number;
+        totalRevenue: string;
+      };
     } catch (error) {
       console.error('Error getting marketplace stats:', error);
       return {
@@ -521,7 +561,7 @@ export class AgentPayySDK {
         throw new Error('Failed to get trending APIs');
       }
 
-      return await response.json();
+      return await response.json() as any[];
     } catch (error) {
       console.error('Error getting trending APIs:', error);
       return [];
@@ -559,7 +599,10 @@ export class AgentPayySDK {
         })
       });
 
-      const result = await response.json();
+      const result = await response.json() as {
+        error?: string;
+        txHash?: string;
+      };
       
       if (!response.ok) {
         throw new Error(result.error || 'Registration failed');
@@ -567,7 +610,7 @@ export class AgentPayySDK {
 
       return {
         success: true,
-        txHash: result.txHash
+        txHash: result.txHash!
       };
     } catch (error) {
       console.error('Model registration error:', error);

@@ -342,12 +342,18 @@ export class AgentPayyKit {
     );
 
     // 3. Pay on-chain
-    const paymentTx = await this.pay({
+    const paymentData: PaymentData = {
       modelId,
       inputHash,
-      amount: cost,
+      amount: cost.toString(),
       deadline: Math.floor(Date.now() / 1000) + 3600, // 1 hour
-    });
+      smartWalletSig: '0x',
+      v: 0,
+      r: ethers.ZeroHash,
+      s: ethers.ZeroHash
+    };
+    
+    const paymentTx = await this.contract.payAndCall(paymentData);
 
     const receipt = await paymentTx.wait();
     const txHash = receipt.hash;
