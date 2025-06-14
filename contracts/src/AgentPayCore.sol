@@ -28,6 +28,7 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
     mapping(address => mapping(address => uint256)) public balances; // user => token => amount
     mapping(address => mapping(address => uint256)) public userBalances; // prepaid balances
     mapping(bytes32 => bool) public processedPayments;
+    mapping(bytes32 => PaymentReceipt) public paymentReceipts; // txHash => receipt
     
     /// @notice Platform configuration
     uint256 public platformFee = 1000; // 10%
@@ -118,7 +119,7 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @notice Process payment for API call
+     * @notice Process payment for API call (Privacy-First)
      * @param payment Payment data structure
      */
     function payAndCall(PaymentData calldata payment) external override nonReentrant {
@@ -137,7 +138,15 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
         require(!processedPayments[paymentId], "Payment processed");
         processedPayments[paymentId] = true;
 
-        // Dual payment model: Check balance first, fallback to permit
+        // Create transaction hash for receipt
+        bytes32 txHash = keccak256(abi.encodePacked(
+            block.number,
+            block.timestamp,
+            msg.sender,
+            payment.inputHash
+        ));
+
+        // Dual payment model: Check balance first, fallback to signature
         uint256 userBalance = userBalances[msg.sender][model.token];
         
         if (userBalance >= payment.amount) {
@@ -147,13 +156,19 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
             
             emit BalanceUsed(msg.sender, model.token, payment.amount, payment.modelId);
         } else {
-            // Fallback to permit/smart wallet payment
-            if (payment.smartWalletSig.length > 0) {
-                _processSmartWalletPayment(model, payment);
-            } else {
-                _processPermitPayment(model, payment);
-            }
+            // Process signature payment (unified permit/smart wallet handling)
+            _processSignaturePayment(model, payment);
         }
+
+        // Create privacy-preserving payment receipt
+        paymentReceipts[txHash] = PaymentReceipt({
+            inputHash: payment.inputHash,
+            amount: payment.amount,
+            modelId: payment.modelId,
+            payer: msg.sender,
+            timestamp: block.timestamp,
+            validated: false
+        });
 
         // Update model stats
         model.totalCalls++;
@@ -169,47 +184,48 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
     }
 
     /**
-     * @notice Process smart wallet signature payment
+     * @notice Process signature payment (unified permit/smart wallet handling)
      * @param model API model being paid for
      * @param payment Payment data
      */
-    function _processSmartWalletPayment(
+    function _processSignaturePayment(
         Model storage model,
         PaymentData calldata payment
     ) internal {
-        bytes32 messageHash = keccak256(abi.encodePacked(
-            payment.modelId,
-            payment.inputHash,
-            payment.amount,
-            payment.deadline
-        ));
-        
-        bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-        address signer = ethSignedMessageHash.recover(payment.smartWalletSig);
-        require(signer == msg.sender, "Invalid signature");
-
-        IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
-        _distributeFunds(model, payment.amount);
-    }
-
-    /**
-     * @notice Process EIP-2612 permit payment
-     * @param model API model being paid for
-     * @param payment Payment data
-     */
-    function _processPermitPayment(
-        Model storage model,
-        PaymentData calldata payment
-    ) internal {
-        IERC20Permit(model.token).permit(
-            msg.sender,
-            address(this),
-            payment.amount,
-            payment.deadline,
-            payment.v,
-            payment.r,
-            payment.s
-        );
+        // Try permit first (EIP-2612), fallback to smart wallet signature
+        if (payment.signature.length == 65) {
+            // Standard permit signature (v,r,s format)
+            bytes32 r;
+            bytes32 s;
+            uint8 v;
+            assembly {
+                r := mload(add(payment.signature, 32))
+                s := mload(add(payment.signature, 64))
+                v := byte(0, mload(add(payment.signature, 96)))
+            }
+            
+            IERC20Permit(model.token).permit(
+                msg.sender,
+                address(this),
+                payment.amount,
+                payment.deadline,
+                v,
+                r,
+                s
+            );
+        } else {
+            // Smart wallet signature validation
+            bytes32 messageHash = keccak256(abi.encodePacked(
+                payment.modelId,
+                payment.inputHash,
+                payment.amount,
+                payment.deadline
+            ));
+            
+            bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
+            address signer = ethSignedMessageHash.recover(payment.signature);
+            require(signer == msg.sender, "Invalid signature");
+        }
 
         IERC20(model.token).transferFrom(msg.sender, address(this), payment.amount);
         _distributeFunds(model, payment.amount);
@@ -367,5 +383,40 @@ contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
      */
     function unpauseModel(string calldata modelId) external onlyOwner {
         models[modelId].active = true;
+    }
+
+    /**
+     * @notice Validate payment for API providers (Privacy-First)
+     * @param txHash Transaction hash from payment
+     * @param inputHash Hash of the input data being validated
+     * @return valid Whether the payment is valid for this input
+     */
+    function validatePayment(bytes32 txHash, bytes32 inputHash) external view override returns (bool valid) {
+        PaymentReceipt memory receipt = paymentReceipts[txHash];
+        return receipt.inputHash == inputHash && receipt.amount > 0;
+    }
+
+    /**
+     * @notice Mark payment as validated by API provider
+     * @param txHash Transaction hash from payment
+     */
+    function markPaymentValidated(bytes32 txHash) external override {
+        PaymentReceipt storage receipt = paymentReceipts[txHash];
+        require(receipt.amount > 0, "Payment not found");
+        
+        // Only model owner can mark as validated
+        Model memory model = models[receipt.modelId];
+        require(model.owner == msg.sender, "Not authorized");
+        
+        receipt.validated = true;
+    }
+
+    /**
+     * @notice Get payment receipt
+     * @param txHash Transaction hash
+     * @return receipt The payment receipt
+     */
+    function getPaymentReceipt(bytes32 txHash) external view override returns (PaymentReceipt memory receipt) {
+        return paymentReceipts[txHash];
     }
 } 

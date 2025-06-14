@@ -53,7 +53,9 @@ const CONTRACT_ABI = [
   "function withdrawBalance(address token, uint256 amount)",
   "function getBalance(address user, address token) view returns (uint256)",
   "function getUserBalance(address user, address token) view returns (uint256)",
-  "function getModel(string modelId) view returns (tuple(address owner, string endpoint, uint256 price, address token, bool active, uint256 totalCalls, uint256 totalRevenue))"
+  "function getModel(string modelId) view returns (tuple(address owner, string endpoint, uint256 price, address token, bool active, uint256 totalCalls, uint256 totalRevenue))",
+  "function validatePayment(string txHash, string inputHash) view returns (bool)",
+  "function markPaymentValidated(string txHash) returns (bool)"
 ];
 
 export class AgentPayKit {
@@ -325,6 +327,90 @@ export class AgentPayKit {
         timestamp: Date.now()
       };
     }
+  }
+
+  /**
+   * Privacy-First API Call
+   * Pay for API call and execute it directly (no gateway needed)
+   */
+  async callAPI(
+    apiUrl: string,
+    input: any,
+    modelId: string,
+    options: {
+      maxCost?: string;
+      timeout?: number;
+    } = {}
+  ): Promise<{
+    response: any;
+    receipt: string;
+    cost: string;
+  }> {
+    // 1. Get model info and validate cost
+    const model = await this.getModel(modelId);
+    const cost = ethers.parseUnits(model.price.toString(), 6); // Assuming USDC
+    
+    if (options.maxCost && cost > ethers.parseUnits(options.maxCost, 6)) {
+      throw new Error(`Cost ${ethers.formatUnits(cost, 6)} exceeds max ${options.maxCost}`);
+    }
+
+    // 2. Create input hash (privacy preserved)
+    const inputHash = ethers.keccak256(
+      ethers.toUtf8Bytes(JSON.stringify(input))
+    );
+
+    // 3. Pay on-chain
+    const paymentTx = await this.pay({
+      modelId,
+      inputHash,
+      amount: cost,
+      deadline: Math.floor(Date.now() / 1000) + 3600, // 1 hour
+    });
+
+    const receipt = await paymentTx.wait();
+    const txHash = receipt.hash;
+
+    // 4. Call API directly with payment proof
+    const apiResponse = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `AgentPay ${txHash}`,
+        'X-Input-Hash': inputHash,
+      },
+      body: JSON.stringify(input),
+      signal: AbortSignal.timeout(options.timeout || 30000),
+    });
+
+    if (!apiResponse.ok) {
+      throw new Error(`API call failed: ${apiResponse.status} ${apiResponse.statusText}`);
+    }
+
+    const responseData = await apiResponse.json();
+
+    return {
+      response: responseData,
+      receipt: txHash,
+      cost: ethers.formatUnits(cost, 6),
+    };
+  }
+
+  /**
+   * Validate payment for API providers
+   */
+  async validatePayment(txHash: string, inputData: any): Promise<boolean> {
+    const inputHash = ethers.keccak256(
+      ethers.toUtf8Bytes(JSON.stringify(inputData))
+    );
+    
+    return await this.contract.validatePayment(txHash, inputHash);
+  }
+
+  /**
+   * Mark payment as validated (for API providers)
+   */
+  async markValidated(txHash: string): Promise<ethers.ContractTransactionResponse> {
+    return await this.contract.markPaymentValidated(txHash);
   }
 }
 

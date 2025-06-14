@@ -19,16 +19,23 @@ interface IAgentPayCore {
         uint256 totalRevenue;
     }
 
-    /// @notice Payment data for standard payments
+    /// @notice Privacy-preserving payment receipt
+    struct PaymentReceipt {
+        bytes32 inputHash;        // Hash of input data (privacy preserved)
+        uint256 amount;           // Payment amount
+        string modelId;           // API identifier
+        address payer;            // Who paid
+        uint256 timestamp;        // When payment was made
+        bool validated;           // Whether API provider validated the payment
+    }
+
+    /// @notice Payment data for privacy-first payments
     struct PaymentData {
-        string modelId;
-        bytes32 inputHash;
-        uint256 amount;
-        uint256 deadline;
-        bytes smartWalletSig;
-        uint8 v;
-        bytes32 r;
-        bytes32 s;
+        string modelId;           // API identifier
+        bytes32 inputHash;        // Hash of input (privacy preserved)
+        uint256 amount;           // Payment amount
+        uint256 deadline;         // Payment deadline
+        bytes signature;          // Unified signature (permit or smart wallet)
     }
 
     /// @notice Events
@@ -47,12 +54,15 @@ interface IAgentPayCore {
     /// @notice Core functions
     function registerModel(string calldata modelId, string calldata endpoint, uint256 price, address token) external;
     function payAndCall(PaymentData calldata payment) external;
+    function validatePayment(bytes32 txHash, bytes32 inputHash) external view returns (bool valid);
+    function markPaymentValidated(bytes32 txHash) external;
     function depositBalance(address token, uint256 amount) external;
     function withdraw(address token) external;
     function withdrawBalance(address token, uint256 amount) external;
     
     /// @notice View functions
     function getModel(string calldata modelId) external view returns (Model memory);
+    function getPaymentReceipt(bytes32 txHash) external view returns (PaymentReceipt memory);
     function getBalance(address user, address token) external view returns (uint256);
     function getUserBalance(address user, address token) external view returns (uint256);
 } 
