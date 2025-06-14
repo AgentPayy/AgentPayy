@@ -54,7 +54,7 @@ export class UniversalWalletAdapter {
         metaMask(),
         coinbaseWallet({ appName: 'AgentPayyKit' }),
         walletConnect({ 
-          projectId: process.env.WALLETCONNECT_PROJECT_ID || 'agentpaykit' 
+          projectId: process.env.WALLETCONNECT_PROJECT_ID || 'agentpayykit' 
         })
       ]
     });
@@ -141,7 +141,7 @@ export class UniversalWalletAdapter {
       case 'walletconnect':
         account = await connect({ 
           connector: walletConnect({ 
-            projectId: process.env.WALLETCONNECT_PROJECT_ID || 'agentpaykit' 
+            projectId: process.env.WALLETCONNECT_PROJECT_ID || 'agentpayykit' 
           }) 
         });
         break;

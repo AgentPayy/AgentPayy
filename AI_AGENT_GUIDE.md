@@ -33,7 +33,7 @@ const result = await agentPay.callAPI(
 
 ### Basic Usage (Python)
 ```python
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 agentpay = AgentPayyKit(
     private_key="0x...",

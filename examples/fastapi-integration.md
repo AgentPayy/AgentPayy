@@ -2,13 +2,13 @@
 
 ## Install
 ```bash
-pip install fastapi agentpay uvicorn
+pip install fastapi agentpayy uvicorn
 ```
 
 ## API Provider Setup
 ```python
 from fastapi import FastAPI, HTTPException, Header
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 from typing import Optional
 
 app = FastAPI()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
 ## Client Usage
 ```python
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 client = AgentPayyKit(
     private_key="your_private_key",

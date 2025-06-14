@@ -153,7 +153,7 @@ AgentPayy contracts are deployed and ready on:
 ```python
 # CrewAI agent with paid API access
 from crewai import Agent
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 agentpay = AgentPayyKit(private_key="0x...", chain="base")
 
@@ -270,7 +270,7 @@ const result = await agentPay.callAPI(
 
 ### Python
 ```python
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 agentpay = AgentPayyKit(
     private_key="0x...",

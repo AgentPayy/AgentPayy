@@ -2,13 +2,13 @@
 
 ## Install
 ```bash
-pip install crewai agentpay
+pip install crewai agentpayy
 ```
 
 ## Setup
 ```python
 from crewai import Agent, Task, Crew
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 # Initialize AgentPayy (connects to deployed contracts)
 agentpay = AgentPayyKit(

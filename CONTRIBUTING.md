@@ -29,8 +29,8 @@ AgentPayy/
 
 ### Quick Start
 ```bash
-git clone https://github.com/agentpay/agentpay
-cd agentpay
+git clone https://github.com/agentpayy/agentpayy
+cd agentpayy
 
 # Install dependencies
 npm install
@@ -90,7 +90,7 @@ pip install -e .
 python -m pytest
 
 # Type checking
-mypy agentpay/
+mypy agentpayy/
 ```
 
 ## Code Standards
@@ -189,4 +189,4 @@ twine upload dist/*
 - **Issues**: GitHub Issues for bugs and feature requests
 - **Discussions**: GitHub Discussions for questions
 - **Discord**: Join our developer community
-- **Email**: dev@agentpay.org for private inquiries
+- **Email**: dev@agentpayy.org for private inquiries

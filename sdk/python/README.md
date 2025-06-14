@@ -9,7 +9,7 @@ pip install agentpayy
 
 ## Basic Usage
 ```python
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 agentpay = AgentPayyKit(
     private_key="0x...", 
@@ -143,7 +143,7 @@ trending = agentpay.get_trending_apis(10)
 ## Quick Start
 
 ```python
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 # Initialize with private key
 agentpay = AgentPayyKit(private_key="0x...", chain="base")
@@ -163,7 +163,7 @@ print(result)  # Weather data
 
 ```python
 import os
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 # From environment variable
 agentpay = AgentPayyKit(
@@ -311,7 +311,7 @@ response = agent.run("What's the weather like in London?")
 
 ```python
 from fastapi import FastAPI
-from agentpay import require_payment
+from agentpayy import require_payment
 
 app = FastAPI()
 
@@ -386,7 +386,7 @@ except PaymentFailed as e:
 ### AI Trading Bot
 
 ```python
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 import time
 
 class TradingBot:
@@ -432,7 +432,7 @@ bot.run()
 ### Data Pipeline
 
 ```python
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 class DataPipeline:
     def __init__(self):
@@ -474,7 +474,7 @@ results = pipeline.process_data(your_data)
 
 ```python
 import asyncio
-from agentpay import AgentPayyKit
+from agentpayy import AgentPayyKit
 
 class ResearchAssistant:
     def __init__(self):
@@ -511,7 +511,7 @@ research = asyncio.run(assistant.research_topic("AI safety"))
 
 ```python
 # Quick one-liner for simple use cases
-from agentpay import pay_and_call
+from agentpayy import pay_and_call
 
 # Uses PRIVATE_KEY from environment
 result = pay_and_call(
