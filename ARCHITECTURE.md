@@ -1,4 +1,4 @@
-# AgentPay Architecture
+# AgentPayy Architecture
 
 ## Overview
 Privacy-first payment protocol for API monetization using deployed smart contracts on Layer 2 networks.
@@ -6,13 +6,13 @@ Privacy-first payment protocol for API monetization using deployed smart contrac
 ## Core Components
 
 ### Smart Contracts (Deployed)
-- **AgentPayCore**: Payment processing and model registration
+- **AgentPayyCore**: Payment processing and model registration
 - **AttributionEngine**: Multi-party revenue splitting
 - **ReputationSystem**: Agent scoring and discovery
 - **APIRegistry**: On-chain API discovery and marketplace
 
 ### Consolidated SDK Layer
-- **Single TypeScript Package** (`@agentpay/sdk`): All features included
+- **Single TypeScript Package** (`@agentpayy/sdk`): All features included
   - Core payment functions
   - Attribution engine
   - Reputation system
@@ -31,10 +31,10 @@ Client → Consolidated SDK → Smart Contract (hash only) → API Provider
 
 ## Package Structure
 
-### TypeScript SDK (`@agentpay/sdk`)
+### TypeScript SDK (`@agentpayy/sdk`)
 ```
 src/
-├── index.ts                 # Main AgentPayKit class
+├── index.ts                 # Main AgentPayyKit class
 ├── core/                    # Core utilities (was packages/core)
 │   ├── types.ts            # All type definitions
 │   ├── contracts.ts        # Contract interfaces
@@ -48,9 +48,9 @@ src/
 ```
 
 ### Benefits of Consolidation
-- **Single Install**: `npm install @agentpay/sdk` gets everything
+- **Single Install**: `npm install @agentpayy/sdk` gets everything
 - **No Dependency Hell**: All modules work together seamlessly  
-- **Simpler Imports**: `import { AgentPayKit, ReputationModule } from '@agentpay/sdk'`
+- **Simpler Imports**: `import { AgentPayyKit, ReputationModule } from '@agentpayy/sdk'`
 - **Better Tree Shaking**: Bundlers can optimize unused features
 - **Easier Maintenance**: All TypeScript code in one place
 
@@ -92,7 +92,7 @@ On-chain marketplace for API monetization:
 ### Standard Payment
 1. Client calls `agentPay.callAPI()`
 2. SDK generates input hash
-3. Payment sent to AgentPayCore contract
+3. Payment sent to AgentPayyCore contract
 4. API validates payment via SDK
 5. Response returned directly to client
 
@@ -195,15 +195,15 @@ const bestAPI = aiAPIs.sort((a, b) => b.rating - a.rating)[0];
 - Gasless transaction support
 - Enhanced privacy features
 
-# AgentPay Architecture Documentation
+# AgentPayy Architecture Documentation
 
 **Version**: 2.0.0  
 **Last Updated**: January 2025  
-**Author**: AgentPay Team
+**Author**: AgentPayy Team
 
 ## 🏗️ **Architecture Overview**
 
-AgentPay is a modular, enterprise-grade payment infrastructure for AI agents built on multiple blockchain networks. The system consists of four main layers:
+AgentPayy is a modular, enterprise-grade payment infrastructure for AI agents built on multiple blockchain networks. The system consists of four main layers:
 
 ```mermaid
 graph TB
@@ -212,7 +212,7 @@ graph TB
     B --> D[Services Layer]
     
     subgraph "SDK Layer"
-        E[AgentPaySDK.ts<br/>436 lines]
+        E[AgentPayySDK.ts<br/>436 lines]
         F[AttributionModule.ts<br/>378 lines]
         G[ReputationModule.ts<br/>392 lines]
     end
@@ -228,10 +228,10 @@ graph TB
     end
     
     subgraph "Smart Contract Layer"
-        L[AgentPayCore.sol<br/>370 lines]
+        L[AgentPayyCore.sol<br/>370 lines]
         M[AttributionEngine.sol<br/>222 lines]
         N[ReceiptManager.sol<br/>252 lines]
-        O[IAgentPayCore.sol<br/>57 lines]
+        O[IAgentPayyCore.sol<br/>57 lines]
     end
 ```
 
@@ -243,17 +243,17 @@ All files are under 450 lines for maximum maintainability:
 | Component | File | Lines | Status |
 |-----------|------|-------|--------|
 | **Smart Contracts** | | | |
-| Core Interface | `IAgentPayCore.sol` | 57 | ✅ |
+| Core Interface | `IAgentPayyCore.sol` | 57 | ✅ |
 | Attribution Engine | `AttributionEngine.sol` | 222 | ✅ |
 | Receipt Manager | `ReceiptManager.sol` | 252 | ✅ |
-| Core Contract | `AgentPayCore.sol` | 370 | ✅ |
+| Core Contract | `AgentPayyCore.sol` | 370 | ✅ |
 | **Gateway Services** | | | |
 | Main Gateway | `Gateway.ts` | 413 | ✅ |
 | Payment Service | `PaymentService.ts` | 387 | ✅ |
 | Reputation Service | `ReputationService.ts` | 224 | ✅ |
 | Escrow Service | `EscrowService.ts` | 364 | ✅ |
 | **SDK Modules** | | | |
-| Main SDK | `AgentPaySDK.ts` | 436 | ✅ |
+| Main SDK | `AgentPayySDK.ts` | 436 | ✅ |
 | Attribution Module | `AttributionModule.ts` | 378 | ✅ |
 | Reputation Module | `ReputationModule.ts` | 392 | ✅ |
 
@@ -289,7 +289,7 @@ All files are under 450 lines for maximum maintainability:
 ### **4. SDK Layer**
 - **Purpose**: Developer-friendly interface
 - **Components**:
-  - **AgentPaySDK**: Main payment and wallet functionality
+  - **AgentPayySDK**: Main payment and wallet functionality
   - **AttributionModule**: Multi-party revenue splits
   - **ReputationModule**: Agent discovery and reliability
 
@@ -301,7 +301,7 @@ All files are under 450 lines for maximum maintainability:
 ```mermaid
 sequenceDiagram
     participant Agent as AI Agent
-    participant SDK as AgentPay SDK
+    participant SDK as AgentPayy SDK
     participant Gateway as Gateway
     participant Contract as Smart Contract
     participant API as API Provider
@@ -368,9 +368,9 @@ sequenceDiagram
 
 ### **Basic Integration** (Simple Payments)
 ```typescript
-import { AgentPaySDK } from '@agentpay/sdk';
+import { AgentPayySDK } from '@agentpayy/sdk';
 
-const agentpay = new AgentPaySDK('https://gateway.agentpay.org');
+const agentpay = new AgentPayySDK('https://gateway.agentpay.org');
 await agentpay.generateWallet();
 
 // Simple payment

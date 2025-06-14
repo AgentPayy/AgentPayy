@@ -2,12 +2,12 @@
 pragma solidity ^0.8.19;
 
 /**
- * @title IAgentPayCore
- * @author AgentPay Team
- * @notice Interface for core AgentPay payment functionality
+ * @title IAgentPayyCore
+ * @author AgentPayy Team
+ * @notice Interface for core AgentPayy payment functionality
  * @dev This interface defines the core payment processing functions
  */
-interface IAgentPayCore {
+interface IAgentPayyCore {
     /// @notice Represents an API model/endpoint
     struct Model {
         address owner;

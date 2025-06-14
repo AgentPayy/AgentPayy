@@ -1,22 +1,22 @@
 <div align="center">
-  <img src="../../AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPay Logo" width="120"/>
+  <img src="../../AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPayy Logo" width="120"/>
 </div>
 
-# AgentPay TypeScript SDK
+# AgentPayy TypeScript SDK
 
-**Single package with all features included**. Connect to the AgentPay payment network with zero setup.
+**Single package with all features included**. Connect to the AgentPayy payment network with zero setup.
 
 ## Install
 ```bash
-npm install @agentpay/sdk
+npm install @agentpayy/sdk
 ```
 
 ## Basic Usage
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayKit({
-  network: 'base', // Connects to deployed AgentPay contracts
+const agentPay = new AgentPayyKit({
+  network: 'base', // Connects to deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 
@@ -44,12 +44,12 @@ await agentPay.markValidated(txHash);
 ```typescript
 // Import specialized modules
 import { 
-  AgentPayKit,
+  AgentPayyKit,
   ReputationModule,
   AttributionModule,
-  AgentPayWall,
+  AgentPayyWall,
   APIRegistry 
-} from '@agentpay/sdk';
+} from '@agentpayy/sdk';
 
 // Attribution payments (revenue sharing)
 const attributions = [
@@ -137,7 +137,7 @@ const trending = await agentPay.getTrendingAPIs(10);
 
 ## Key Features
 - **Single Package**: All features included, no separate installs
-- **Zero Setup**: Uses deployed AgentPay contracts (no deployment needed)
+- **Zero Setup**: Uses deployed AgentPayy contracts (no deployment needed)
 - **Privacy-First**: Only payment hashes stored on-chain
 - **Sub-Cent Costs**: Enable $0.001-$0.01 API calls economically
 - **Multi-Chain**: Works across Base, Arbitrum, Optimism L2s
@@ -145,10 +145,10 @@ const trending = await agentPay.getTrendingAPIs(10);
 - **Framework Ready**: Works with Express, FastAPI, CrewAI, and more
 
 ## Package Contents
-- **AgentPayKit**: Main payment class
+- **AgentPayyKit**: Main payment class
 - **ReputationModule**: Agent discovery and scoring
 - **AttributionModule**: Multi-party revenue sharing  
-- **AgentPayWall**: Express.js middleware for API monetization
+- **AgentPayyWall**: Express.js middleware for API monetization
 - **APIRegistry**: On-chain API marketplace
 - **Wallet Adapters**: MetaMask, Coinbase, WalletConnect, Smart Accounts
 - **Core Utilities**: Crypto functions, contract interfaces, type definitions 

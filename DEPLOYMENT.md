@@ -1,30 +1,30 @@
-# AgentPay Deployment Guide
+# AgentPayy Deployment Guide
 
 ## Overview
-AgentPay uses **deployed smart contracts** - developers just install the SDK packages. This guide covers contract deployment for AgentPay maintainers only.
+AgentPayy uses **deployed smart contracts** - developers just install the SDK packages. This guide covers contract deployment for AgentPayy maintainers only.
 
 ## For Developers (Recommended)
 
 ### Quick Start
 ```bash
 # TypeScript/JavaScript - Single package with all features
-npm install @agentpay/sdk
+npm install @agentpayy/sdk
 
 # Python - Complete integration package  
-pip install agentpay
+pip install agentpayy
 ```
 
 ### Usage
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayKit({
-  network: 'base', // Uses deployed AgentPay contracts
+const agentPay = new AgentPayyKit({
+  network: 'base', // Uses deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 ```
 
-**No contract deployment needed** - connect to existing AgentPay network.
+**No contract deployment needed** - connect to existing AgentPayy network.
 
 ## Package Publishing (For Maintainers)
 
@@ -137,7 +137,7 @@ npm run deploy:all
 ### 3. Install SDK
 
 ```bash
-npm install @agentpay/sdk
+npm install @agentpayy/sdk
 ```
 
 ## 🌐 Supported Networks
@@ -214,6 +214,6 @@ cd contracts && forge test
 
 ### Getting Help
 
-- Check [GitHub Issues](https://github.com/DLhugly/AgentPay/issues)
+- Check [GitHub Issues](https://github.com/DLhugly/AgentPayy/issues)
 - Review component READMEs
 - Test with mock mode first 

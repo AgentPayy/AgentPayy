@@ -2,14 +2,14 @@
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
-import {AgentPayCore} from "../src/AgentPayCore.sol";
+import {AgentPayyCore} from "../src/AgentPayyCore.sol";
 import {AttributionEngine} from "../src/AttributionEngine.sol";
 import {ReceiptManager} from "../src/ReceiptManager.sol";
-import {IAgentPayCore} from "../src/IAgentPayCore.sol";
+import {IAgentPayyCore} from "../src/IAgentPayyCore.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract AgentPayCoreTest is Test {
-    AgentPayCore public agentPayCore;
+contract AgentPayyCoreTest is Test {
+    AgentPayyCore public agentPayCore;
     AttributionEngine public attributionEngine;
     ReceiptManager public receiptManager;
     
@@ -25,7 +25,7 @@ contract AgentPayCoreTest is Test {
         mockToken = makeAddr("mockToken");
         
         // Deploy core contracts
-        agentPayCore = new AgentPayCore(treasury);
+        agentPayCore = new AgentPayyCore(treasury);
         attributionEngine = new AttributionEngine(address(agentPayCore), treasury);
         receiptManager = new ReceiptManager(address(this));
         
@@ -33,8 +33,8 @@ contract AgentPayCoreTest is Test {
         agentPayCore.setAttributionEngine(address(attributionEngine));
         agentPayCore.setReceiptManager(address(receiptManager));
         
-        console.log("=== AgentPay Modular Deployment ===");
-        console.log("AgentPayCore:", address(agentPayCore));
+        console.log("=== AgentPayy Modular Deployment ===");
+        console.log("AgentPayyCore:", address(agentPayCore));
         console.log("AttributionEngine:", address(attributionEngine));
         console.log("ReceiptManager:", address(receiptManager));
         console.log("Treasury:", treasury);
@@ -63,7 +63,7 @@ contract AgentPayCoreTest is Test {
         agentPayCore.registerModel(modelId, endpoint, price, mockToken);
         
         // Verify model was registered
-        IAgentPayCore.Model memory model = agentPayCore.getModel(modelId);
+        IAgentPayyCore.Model memory model = agentPayCore.getModel(modelId);
         
         assertEq(model.owner, modelOwner);
         assertEq(model.endpoint, endpoint);
@@ -81,7 +81,7 @@ contract AgentPayCoreTest is Test {
     function testFuzz_TreasuryAddress(address _treasury) public {
         vm.assume(_treasury != address(0));
         
-        AgentPayCore testContract = new AgentPayCore(_treasury);
+        AgentPayyCore testContract = new AgentPayyCore(_treasury);
         assertEq(testContract.treasury(), _treasury);
     }
     

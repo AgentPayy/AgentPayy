@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="agentpay",
+    name="agentpayy",
     version="0.1.0",
-    description="AgentPayKit Python SDK - Pay-per-call APIs for AI agents",
+    description="AgentPayyKit Python SDK - Pay-per-call APIs for AI agents",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    author="AgentPayKit Team",
-    url="https://github.com/agentpaykit/agentpaykit",
+    author="AgentPayyKit Team",
+    url="https://github.com/agentpayykit/agentpayykit",
     packages=find_packages(),
     install_requires=[
         "web3>=6.0.0",

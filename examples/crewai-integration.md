@@ -1,4 +1,4 @@
-# CrewAI + AgentPay Integration
+# CrewAI + AgentPayy Integration
 
 ## Install
 ```bash
@@ -8,12 +8,12 @@ pip install crewai agentpay
 ## Setup
 ```python
 from crewai import Agent, Task, Crew
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
-# Initialize AgentPay (connects to deployed contracts)
-agentpay = AgentPayKit(
+# Initialize AgentPayy (connects to deployed contracts)
+agentpay = AgentPayyKit(
     private_key="your_private_key",
-    chain="base"  # Uses deployed AgentPay contracts
+    chain="base"  # Uses deployed AgentPayy contracts
 )
 
 # Create paid API tool

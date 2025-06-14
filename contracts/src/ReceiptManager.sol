@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 /**
  * @title ReceiptManager
- * @author AgentPay Team
+ * @author AgentPayy Team
  * @notice Manages cryptographic receipts for API execution verification
  * @dev Provides enterprise-grade audit trails for all API executions
  */

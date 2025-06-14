@@ -1,18 +1,18 @@
 import { 
-  AgentPayKit, 
+  AgentPayyKit, 
   ReputationModule, 
   AttributionModule,
-  AgentPayWall,
+  AgentPayyWall,
   APIRegistry 
-} from '@agentpay/sdk';
+} from '@agentpayy/sdk';
 import { ethers } from 'ethers';
 
 async function demoAllFeatures() {
-  console.log('🚀 AgentPay Demo - All Features from Single Package');
+  console.log('🚀 AgentPayy Demo - All Features from Single Package');
   
-  // Initialize AgentPay with wallet
+  // Initialize AgentPayy with wallet
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!);
-  const agentpay = new AgentPayKit({
+  const agentpay = new AgentPayyKit({
     wallet,
     network: 'base',
     gatewayUrl: 'http://localhost:3000'
@@ -70,7 +70,7 @@ async function demoAllFeatures() {
     // Use balance for API call (no wallet popup)
     const result = await agentpay.callAPI(
       'https://api.example.com/sentiment',
-      { text: 'AgentPay is amazing!' },
+      { text: 'AgentPayy is amazing!' },
       'sentiment-api',
       { useBalance: true }
     );
@@ -137,7 +137,7 @@ async function demoAllFeatures() {
   // 6. Paywall Middleware (Express.js)
   console.log('\n6. Paywall Middleware Demo');
   try {
-    const paywall = new AgentPayWall({
+    const paywall = new AgentPayyWall({
       apiKey: 'demo-api-key',
       pricePerQuery: '0.01',
       chain: 'base'
@@ -150,7 +150,7 @@ async function demoAllFeatures() {
     console.log('❌ Paywall setup failed:', error);
   }
 
-  console.log('\n🎉 Demo completed! All features from single @agentpay/sdk package');
+  console.log('\n🎉 Demo completed! All features from single @agentpayy/sdk package');
 }
 
 // Run demo

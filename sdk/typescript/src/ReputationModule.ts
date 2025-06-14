@@ -1,6 +1,6 @@
 /**
  * @fileoverview Reputation Module - Handles agent reputation and discovery
- * @author AgentPay Team
+ * @author AgentPayy Team
  * @version 2.0.0
  */
 

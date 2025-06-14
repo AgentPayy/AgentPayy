@@ -1,5 +1,5 @@
 """
-FastAPI AgentPayKit Integration
+FastAPI AgentPayyKit Integration
 Easily monetize your FastAPI endpoints with crypto payments.
 """
 
@@ -14,8 +14,8 @@ from fastapi.responses import JSONResponse
 import requests
 
 
-class AgentPayMiddleware:
-    """Middleware to handle AgentPayKit payments for FastAPI."""
+class AgentPayyMiddleware:
+    """Middleware to handle AgentPayyKit payments for FastAPI."""
     
     def __init__(self, gateway_url: str = None):
         self.gateway_url = gateway_url or os.getenv("AGENTPAY_GATEWAY_URL", "http://localhost:3000")
@@ -44,8 +44,8 @@ class AgentPayMiddleware:
                     raise HTTPException(status_code=500, detail="Request object not found")
                 
                 # Check for payment headers
-                tx_hash = request.headers.get("x-agentpay-txhash")
-                payer = request.headers.get("x-agentpay-payer")
+                tx_hash = request.headers.get("x-agentpayy-txhash")
+                payer = request.headers.get("x-agentpayy-payer")
                 
                 if not tx_hash or not payer:
                     raise HTTPException(
@@ -55,7 +55,7 @@ class AgentPayMiddleware:
                             "model_id": model_id,
                             "price": price,
                             "description": self.registered_endpoints[model_id]["description"],
-                            "payment_info": "Use AgentPayKit to pay for this endpoint"
+                            "payment_info": "Use AgentPayyKit to pay for this endpoint"
                         }
                     )
                 
@@ -80,19 +80,19 @@ class AgentPayMiddleware:
 
 
 # Initialize middleware
-agentpay = AgentPayMiddleware()
+agentpayy = AgentPayyMiddleware()
 
 # Create FastAPI app
 app = FastAPI(
-    title="AgentPayKit FastAPI Demo",
-    description="Demo API with monetized endpoints using AgentPayKit",
+    title="AgentPayyKit FastAPI Demo",
+    description="Demo API with monetized endpoints using AgentPayyKit",
     version="1.0.0"
 )
 
 
 # Example monetized endpoints
 @app.post("/premium-weather")
-@agentpay.paywall("premium-weather-v1", "0.02", "Premium weather data with forecasts")
+@agentpayy.paywall("premium-weather-v1", "0.02", "Premium weather data with forecasts")
 async def premium_weather(request: Request, data: Dict[str, Any]):
     """Premium weather endpoint that requires payment."""
     city = data.get("city", "Unknown")
@@ -125,7 +125,7 @@ async def premium_weather(request: Request, data: Dict[str, Any]):
 
 
 @app.post("/ai-analysis")
-@agentpay.paywall("ai-analysis-v1", "0.05", "AI-powered market analysis")
+@agentpayy.paywall("ai-analysis-v1", "0.05", "AI-powered market analysis")
 async def ai_analysis(request: Request, data: Dict[str, Any]):
     """AI analysis endpoint that requires payment."""
     query = data.get("query", "")
@@ -153,7 +153,7 @@ async def ai_analysis(request: Request, data: Dict[str, Any]):
 
 
 @app.post("/database-query")
-@agentpay.paywall("db-query-v1", "0.01", "Premium database queries")
+@agentpayy.paywall("db-query-v1", "0.01", "Premium database queries")
 async def database_query(request: Request, data: Dict[str, Any]):
     """Database query endpoint that requires payment."""
     query = data.get("query", "")
@@ -180,7 +180,7 @@ async def database_query(request: Request, data: Dict[str, Any]):
 async def root():
     """Free endpoint showing available paid services."""
     return {
-        "message": "AgentPayKit FastAPI Demo",
+        "message": "AgentPayyKit FastAPI Demo",
         "paid_endpoints": [
             {
                 "endpoint": "/premium-weather",
@@ -198,14 +198,14 @@ async def root():
                 "description": "Premium database queries"
             }
         ],
-        "usage": "Use AgentPayKit SDK to make paid requests"
+        "usage": "Use AgentPayyKit SDK to make paid requests"
     }
 
 
 @app.get("/health")
 async def health():
     """Free health check endpoint."""
-    return {"status": "ok", "service": "agentpay-fastapi-demo"}
+    return {"status": "ok", "service": "agentpayy-fastapi-demo"}
 
 
 # Error handlers
@@ -216,9 +216,9 @@ async def payment_required_handler(request: Request, exc: HTTPException):
         status_code=402,
         content={
             "error": "Payment Required",
-            "message": "This endpoint requires payment via AgentPayKit",
+            "message": "This endpoint requires payment via AgentPayyKit",
             "details": exc.detail,
-            "how_to_pay": "Use AgentPayKit SDK: agentpay.pay_and_call(model_id, data, price)"
+            "how_to_pay": "Use AgentPayyKit SDK: agentpayy.pay_and_call(model_id, data, price)"
         }
     )
 
@@ -226,7 +226,7 @@ async def payment_required_handler(request: Request, exc: HTTPException):
 if __name__ == "__main__":
     import uvicorn
     
-    print("🚀 Starting AgentPayKit FastAPI Demo")
+    print("🚀 Starting AgentPayyKit FastAPI Demo")
     print("💰 Monetized endpoints available:")
     print("  • POST /premium-weather (0.02 USDC)")
     print("  • POST /ai-analysis (0.05 USDC)")  

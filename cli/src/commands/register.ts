@@ -35,14 +35,14 @@ const categories = [
 ];
 
 export const registerCommand = new Command('register')
-  .description('Register your API in the AgentPayKit marketplace')
+  .description('Register your API in the AgentPayyKit marketplace')
   .option('-i, --interactive', 'Interactive registration mode')
   .option('-f, --file <path>', 'Load configuration from JSON file')
   .option('--private-key <key>', 'Private key for transaction signing')
   .option('--rpc-url <url>', 'Custom RPC URL')
   .option('--chain <chain>', 'Target chain (base, arbitrum, optimism)', 'base')
   .action(async (options) => {
-    console.log(chalk.blue.bold('\n🚀 AgentPayKit API Registration\n'));
+    console.log(chalk.blue.bold('\n🚀 AgentPayyKit API Registration\n'));
 
     try {
       let registrationData: APIRegistrationData;
@@ -316,7 +316,7 @@ async function testEndpoint(endpoint: string): Promise<{ success: boolean; error
     const healthUrl = `${endpoint}/health`;
     const response = await fetch(healthUrl, {
       method: 'GET',
-      headers: { 'User-Agent': 'AgentPayKit-CLI/1.0' }
+      headers: { 'User-Agent': 'AgentPayyKit-CLI/1.0' }
     });
 
     if (response.ok) {
@@ -385,9 +385,9 @@ async function registerAPI(data: APIRegistrationData, wallet: ethers.Wallet, cha
     // Show integration code
     console.log(chalk.cyan('\n📝 Integration Code:'));
     console.log(chalk.gray(`
-import { AgentPayWall } from '@agentpaykit/paywall-sdk';
+import { AgentPayyWall } from '@agentpaykit/paywall-sdk';
 
-const paywall = new AgentPayWall({
+const paywall = new AgentPayyWall({
   apiKey: '${data.modelId}',
   pricePerQuery: '${data.price}'
 });

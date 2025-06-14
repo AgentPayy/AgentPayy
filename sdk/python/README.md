@@ -1,19 +1,19 @@
-# AgentPay Python SDK
+# AgentPayy Python SDK
 
-**Complete Python integration** for the AgentPay payment network. All features in one package.
+**Complete Python integration** for the AgentPayy payment network. All features in one package.
 
 ## Install
 ```bash
-pip install agentpay
+pip install agentpayy
 ```
 
 ## Basic Usage
 ```python
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
-agentpay = AgentPayKit(
+agentpay = AgentPayyKit(
     private_key="0x...", 
-    chain="base"  # Uses deployed AgentPay contracts
+    chain="base"  # Uses deployed AgentPayy contracts
 )
 
 # Pay for API call
@@ -124,8 +124,8 @@ trending = agentpay.get_trending_apis(10)
 - **polygon**: Polygon mainnet
 
 ## Key Features
-- **Complete Package**: All AgentPay features in single Python package
-- **Zero Setup**: Uses deployed AgentPay contracts (no deployment needed)
+- **Complete Package**: All AgentPayy features in single Python package
+- **Zero Setup**: Uses deployed AgentPayy contracts (no deployment needed)
 - **Privacy-First**: Only payment hashes stored on-chain
 - **Sub-Cent Costs**: Enable $0.001-$0.01 API calls economically
 - **Multi-Chain**: Works across Base, Arbitrum, Optimism L2s
@@ -133,7 +133,7 @@ trending = agentpay.get_trending_apis(10)
 - **FastAPI Integration**: Built-in middleware for API monetization
 
 ## Package Contents
-- **AgentPayKit**: Main payment class with all methods
+- **AgentPayyKit**: Main payment class with all methods
 - **Reputation System**: Agent discovery and scoring functions
 - **Attribution Engine**: Multi-party revenue sharing
 - **Balance Management**: Prepaid balance and earnings withdrawal
@@ -143,10 +143,10 @@ trending = agentpay.get_trending_apis(10)
 ## Quick Start
 
 ```python
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
 # Initialize with private key
-agentpay = AgentPayKit(private_key="0x...", chain="base")
+agentpay = AgentPayyKit(private_key="0x...", chain="base")
 
 # Make API call with payment
 result = agentpay.pay_and_call(
@@ -163,10 +163,10 @@ print(result)  # Weather data
 
 ```python
 import os
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
 # From environment variable
-agentpay = AgentPayKit(
+agentpay = AgentPayyKit(
     private_key=os.getenv("PRIVATE_KEY"),
     chain="base",  # base|arbitrum|optimism|ethereum
     gateway_url="https://gateway.agentpay.dev"
@@ -254,10 +254,10 @@ print(f"Withdrawal: {tx_hash}")
 ## CrewAI Integration
 
 ```python
-from agentpay.crewai import AgentPayTool
+from agentpay.crewai import AgentPayyTool
 
 # Create paywall tool for CrewAI agents
-weather_tool = AgentPayTool(
+weather_tool = AgentPayyTool(
     model_id="weather-api",
     price="0.01",
     description="Get current weather for any city",
@@ -280,14 +280,14 @@ result = agent.execute("What's the weather in NYC?")
 ## LangChain Integration
 
 ```python
-from agentpay.langchain import AgentPayWrapper
+from agentpay.langchain import AgentPayyWrapper
 from langchain.tools import Tool
 
 # Wrap any API with payment
 paid_weather_tool = Tool(
     name="Weather API",
     description="Get weather data with automatic payment",
-    func=AgentPayWrapper(
+    func=AgentPayyWrapper(
         model_id="weather-api",
         price="0.01",
         chain="base"
@@ -341,12 +341,12 @@ print(f"Net Position: ${financials['net_position']}")
 
 ```python
 # Different chains for different use cases
-base_client = AgentPayKit(private_key=key, chain="base")        # Consumer apps
-arbitrum_client = AgentPayKit(private_key=key, chain="arbitrum") # DeFi integration
-optimism_client = AgentPayKit(private_key=key, chain="optimism") # Superchain apps
+base_client = AgentPayyKit(private_key=key, chain="base")        # Consumer apps
+arbitrum_client = AgentPayyKit(private_key=key, chain="arbitrum") # DeFi integration
+optimism_client = AgentPayyKit(private_key=key, chain="optimism") # Superchain apps
 
 # Ethereum for enterprise
-ethereum_client = AgentPayKit(private_key=key, chain="ethereum")
+ethereum_client = AgentPayyKit(private_key=key, chain="ethereum")
 ```
 
 ## Environment Setup
@@ -386,12 +386,12 @@ except PaymentFailed as e:
 ### AI Trading Bot
 
 ```python
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 import time
 
 class TradingBot:
     def __init__(self):
-        self.agentpay = AgentPayKit(
+        self.agentpay = AgentPayyKit(
             private_key=os.getenv("PRIVATE_KEY"),
             chain="base"
         )
@@ -432,11 +432,11 @@ bot.run()
 ### Data Pipeline
 
 ```python
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
 class DataPipeline:
     def __init__(self):
-        self.agentpay = AgentPayKit(
+        self.agentpay = AgentPayyKit(
             private_key=os.getenv("PRIVATE_KEY"),
             chain="arbitrum"  # Lower costs for high volume
         )
@@ -474,11 +474,11 @@ results = pipeline.process_data(your_data)
 
 ```python
 import asyncio
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
 class ResearchAssistant:
     def __init__(self):
-        self.agentpay = AgentPayKit(
+        self.agentpay = AgentPayyKit(
             private_key=os.getenv("PRIVATE_KEY"),
             chain="base"
         )

@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { EnhancedAgentPayKit } from '../../../sdk/typescript/src/EnhancedAgentPayKit';
+import { EnhancedAgentPayyKit } from '../../../sdk/typescript/src/EnhancedAgentPayyKit';
 
 const program = new Command();
 
@@ -17,11 +17,11 @@ interface WalletStorage {
 }
 
 class WalletManager {
-  private agentpay: EnhancedAgentPayKit;
+  private agentpay: EnhancedAgentPayyKit;
   private storageFile = '.agentpay-wallets.json';
 
   constructor() {
-    this.agentpay = new EnhancedAgentPayKit();
+    this.agentpay = new EnhancedAgentPayyKit();
   }
 
   async generateWallet(options: {
@@ -336,7 +336,7 @@ const walletManager = new WalletManager();
 
 program
   .name('agentpay')
-  .description('AgentPayKit - Wallet Infrastructure for the API Economy')
+  .description('AgentPayyKit - Wallet Infrastructure for the API Economy')
   .version('1.0.0');
 
 program

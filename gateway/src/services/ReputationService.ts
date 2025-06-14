@@ -2,7 +2,7 @@ import { createClient, RedisClientType } from 'redis';
 
 /**
  * @fileoverview Reputation Service - Manages agent reputation and leaderboards
- * @author AgentPay Team
+ * @author AgentPayy Team
  * @version 2.0.0
  */
 

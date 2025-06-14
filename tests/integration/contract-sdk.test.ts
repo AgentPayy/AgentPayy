@@ -2,12 +2,12 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createWalletClient, http, parseEther, getContract } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { foundry } from 'viem/chains';
-import { AgentPayKit } from '../../sdk/typescript/src';
+import { AgentPayyKit } from '../../sdk/typescript/src';
 import { spawn, ChildProcess } from 'child_process';
 
 describe('Contract + SDK Integration Tests', () => {
   let anvilProcess: ChildProcess;
-  let agentPayKit: AgentPayKit;
+  let agentPayKit: AgentPayyKit;
   let contractAddress: string;
   
   const account = privateKeyToAccount('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80');
@@ -41,7 +41,7 @@ describe('Contract + SDK Integration Tests', () => {
     // Parse deployment output to get contract address
     deployProcess.stdout?.on('data', (data) => {
       const output = data.toString();
-      const match = output.match(/AgentPayKit deployed to: (0x[a-fA-F0-9]{40})/);
+      const match = output.match(/AgentPayyKit deployed to: (0x[a-fA-F0-9]{40})/);
       if (match) {
         contractAddress = match[1];
       }
@@ -52,7 +52,7 @@ describe('Contract + SDK Integration Tests', () => {
     });
 
     // Initialize SDK
-    agentPayKit = new AgentPayKit({
+    agentPayKit = new AgentPayyKit({
       contractAddress,
       rpcUrl: 'http://localhost:8545',
       privateKey: '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'

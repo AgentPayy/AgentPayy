@@ -1,6 +1,6 @@
-# AgentPay - AI Agent Integration Guide
+# AgentPayy - AI Agent Integration Guide
 
-## What is AgentPay?
+## What is AgentPayy?
 **Single-package payment system** for AI agents. Uses deployed smart contracts - no blockchain setup required.
 
 ## Quick Integration
@@ -8,18 +8,18 @@
 ### Install (One Package)
 ```bash
 # TypeScript/JavaScript
-npm install @agentpay/sdk
+npm install @agentpayy/sdk
 
 # Python
-pip install agentpay
+pip install agentpayy
 ```
 
 ### Basic Usage (TypeScript)
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayKit({
-  network: 'base', // Uses deployed AgentPay contracts
+const agentPay = new AgentPayyKit({
+  network: 'base', // Uses deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 
@@ -33,11 +33,11 @@ const result = await agentPay.callAPI(
 
 ### Basic Usage (Python)
 ```python
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
-agentpay = AgentPayKit(
+agentpay = AgentPayyKit(
     private_key="0x...",
-    chain="base"  # Uses deployed AgentPay contracts
+    chain="base"  # Uses deployed AgentPayy contracts
 )
 
 # Pay for API call
@@ -54,12 +54,12 @@ result = agentpay.call_api(
 ```typescript
 // Import everything from single package
 import { 
-  AgentPayKit,
+  AgentPayyKit,
   ReputationModule,
   AttributionModule,
-  AgentPayWall,
+  AgentPayyWall,
   APIRegistry 
-} from '@agentpay/sdk';
+} from '@agentpayy/sdk';
 
 // Multi-agent revenue sharing
 const attributions = [
@@ -157,7 +157,7 @@ const trending = await agentPay.getTrendingAPIs(5);
 - **FastAPI**: [examples/fastapi-integration.md](./examples/fastapi-integration.md)
 
 ## Contract Addresses
-AgentPay contracts are deployed on all supported networks. SDK automatically connects to the correct addresses.
+AgentPayy contracts are deployed on all supported networks. SDK automatically connects to the correct addresses.
 
 ## Support
 - GitHub: https://github.com/agentpay/agentpay

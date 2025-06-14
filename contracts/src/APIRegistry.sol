@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title APIRegistry
- * @dev Central registry for all monetizable APIs in the AgentPayKit ecosystem
+ * @dev Central registry for all monetizable APIs in the AgentPayyKit ecosystem
  * @notice This contract is the single source of truth for API discovery
  */
 contract APIRegistry is Ownable, ReentrancyGuard {

@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
 import {DeployScript} from "../script/Deploy.s.sol";
-import {AgentPayCore} from "../src/AgentPayCore.sol";
+import {AgentPayyCore} from "../src/AgentPayyCore.sol";
 import {AttributionEngine} from "../src/AttributionEngine.sol";
 import {ReceiptManager} from "../src/ReceiptManager.sol";
 
@@ -23,12 +23,12 @@ contract DeployTest is Test {
         deployScript.run();
         
         // Get deployed contracts
-        AgentPayCore agentPayCore = deployScript.agentPayCore();
+        AgentPayyCore agentPayCore = deployScript.agentPayCore();
         AttributionEngine attributionEngine = deployScript.attributionEngine();
         ReceiptManager receiptManager = deployScript.receiptManager();
         
         // Verify contracts are deployed
-        assertTrue(address(agentPayCore) != address(0), "AgentPayCore not deployed");
+        assertTrue(address(agentPayCore) != address(0), "AgentPayyCore not deployed");
         assertTrue(address(attributionEngine) != address(0), "AttributionEngine not deployed");
         assertTrue(address(receiptManager) != address(0), "ReceiptManager not deployed");
         
@@ -40,7 +40,7 @@ contract DeployTest is Test {
         assertEq(agentPayCore.treasury(), address(this), "Treasury not set correctly");
         
         console.log("[OK] Deployment script test passed");
-        console.log("AgentPayCore deployed at:", address(agentPayCore));
+        console.log("AgentPayyCore deployed at:", address(agentPayCore));
         console.log("AttributionEngine deployed at:", address(attributionEngine));
         console.log("ReceiptManager deployed at:", address(receiptManager));
     }

@@ -1,20 +1,20 @@
 <div align="center">
-  <img src="../AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPay Logo" width="150"/>
+  <img src="../AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPayy Logo" width="150"/>
 </div>
 
-# Getting Started with AgentPay
+# Getting Started with AgentPayy
 
 ## Step 1: Install SDK
 ```bash
-npm install @agentpay/sdk
+npm install @agentpayy/sdk
 ```
 
 ## Step 2: Initialize Client
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayKit({
-  network: 'base', // Uses deployed AgentPay contracts
+const agentPay = new AgentPayyKit({
+  network: 'base', // Uses deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 ```

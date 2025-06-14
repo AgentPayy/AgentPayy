@@ -1,7 +1,7 @@
 {
   "name": "@agentpay/cli",
   "version": "1.0.0",
-  "description": "AgentPayKit CLI - Complete wallet infrastructure for the API economy",
+  "description": "AgentPayyKit CLI - Complete wallet infrastructure for the API economy",
   "main": "dist/index.js",
   "bin": {
     "agentpay": "./dist/index.js"

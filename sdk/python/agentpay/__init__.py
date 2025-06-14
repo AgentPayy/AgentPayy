@@ -1,4 +1,4 @@
-"""AgentPayKit Python SDK - Pay-per-call APIs for AI agents."""
+"""AgentPayyKit Python SDK - Pay-per-call APIs for AI agents."""
 
 import json
 import time
@@ -20,8 +20,8 @@ class PaymentOptions:
     use_balance: bool = True  # NEW: Prefer balance over permit
 
 
-class AgentPayKit:
-    """Main AgentPayKit client for Python applications."""
+class AgentPayyKit:
+    """Main AgentPayyKit client for Python applications."""
     
     NETWORKS = {
         "base": {
@@ -407,8 +407,8 @@ def pay_and_call(model_id: str, input_data: Any, price: str, private_key: Option
     if not key:
         raise ValueError("Private key required (parameter or PRIVATE_KEY env var)")
     
-    client = AgentPayKit(key)
+    client = AgentPayyKit(key)
     return client.pay_and_call(model_id, input_data, PaymentOptions(price=price, mock=mock, use_balance=use_balance))
 
 
-__all__ = ["AgentPayKit", "PaymentOptions", "pay_and_call"] 
+__all__ = ["AgentPayyKit", "PaymentOptions", "pay_and_call"] 

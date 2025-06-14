@@ -7,8 +7,8 @@ import { ReputationService } from './services/ReputationService';
 import { EscrowService } from './services/EscrowService';
 
 /**
- * @fileoverview Main Gateway - Orchestrates all AgentPay services
- * @author AgentPay Team
+ * @fileoverview Main Gateway - Orchestrates all AgentPayy services
+ * @author AgentPayy Team
  * @version 2.0.0
  */
 
@@ -22,9 +22,9 @@ export interface GatewayConfig {
 }
 
 /**
- * Main AgentPay Gateway that coordinates all services
+ * Main AgentPayy Gateway that coordinates all services
  */
-export class AgentPayGateway {
+export class AgentPayyGateway {
   private app = express();
   private paymentService: PaymentService;
   private reputationService: ReputationService;
@@ -388,7 +388,7 @@ export class AgentPayGateway {
 
       // Start Express server
       const server = this.app.listen(this.config.port, () => {
-        console.log(`🚀 AgentPay Gateway running on port ${this.config.port}`);
+        console.log(`🚀 AgentPayy Gateway running on port ${this.config.port}`);
         console.log(`📊 Analytics: http://localhost:${this.config.port}/analytics`);
         console.log(`🏥 Health: http://localhost:${this.config.port}/health`);
       });

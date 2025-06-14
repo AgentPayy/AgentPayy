@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 
 /**
  * @fileoverview Escrow Service - Manages task-based payments and escrow
- * @author AgentPay Team
+ * @author AgentPayy Team
  * @version 2.0.0
  */
 

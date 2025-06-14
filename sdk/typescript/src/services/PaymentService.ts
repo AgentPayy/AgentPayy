@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { WalletInfo } from '../wallet/UniversalWalletAdapter';
 import type { PaymentOptions } from '../index';
 
-// AgentPayKit contract ABI (essential functions only)
+// AgentPayyKit contract ABI (essential functions only)
 const AGENTPAY_ABI = [
   'function payAndCall(tuple(string modelId, bytes32 inputHash, uint256 amount, uint256 deadline, bytes smartWalletSig, uint8 v, bytes32 r, bytes32 s) payment)',
   'function getModel(string modelId) view returns (tuple(address owner, string endpoint, uint256 price, address token, bool active, uint256 totalCalls, uint256 totalRevenue))',

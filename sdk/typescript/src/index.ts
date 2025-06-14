@@ -40,7 +40,7 @@ const CONTRACT_ABI = [
   "function markPaymentValidated(string txHash) returns (bool)"
 ];
 
-export class AgentPayKit {
+export class AgentPayyKit {
   private provider: JsonRpcProvider;
   private contract: Contract;
   private signer?: Wallet;
@@ -357,7 +357,7 @@ export class AgentPayKit {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `AgentPay ${txHash}`,
+        'Authorization': `AgentPayy ${txHash}`,
         'X-Input-Hash': inputHash,
       },
       body: JSON.stringify(input),
@@ -469,7 +469,7 @@ export class AgentPayKit {
   }
 }
 
-export default AgentPayKit;
+export default AgentPayyKit;
 
 // Core utilities and types
 export * from './core';
@@ -479,7 +479,7 @@ export { ReputationModule } from './ReputationModule';
 export { AttributionModule } from './AttributionModule';
 
 // Specialized modules
-export { AgentPayWall } from './paywall';
+export { AgentPayyWall } from './paywall';
 export { APIRegistry } from './registry/APIRegistry';
 export { RegistryIndexer } from './registry/RegistryIndexer';
 

@@ -7,11 +7,11 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import "./IAgentPayCore.sol";
+import "./IAgentPayyCore.sol";
 
 /**
  * @title AttributionEngine
- * @author AgentPay Team
+ * @author AgentPayy Team
  * @notice Handles multi-party revenue attribution for complex agent workflows
  * @dev Enables automatic distribution of payments across multiple agents
  */
@@ -39,7 +39,7 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
     }
 
     /// @notice Core contract reference
-    IAgentPayCore public immutable coreContract;
+    IAgentPayyCore public immutable coreContract;
     
     /// @notice Platform fee (10%)
     uint256 public platformFee = 1000;
@@ -67,13 +67,13 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
 
     /**
      * @notice Initialize the attribution engine
-     * @param _coreContract Address of the core AgentPay contract
+     * @param _coreContract Address of the core AgentPayy contract
      * @param _treasury Treasury address for platform fees
      */
     constructor(address _coreContract, address _treasury) Ownable(msg.sender) {
         require(_coreContract != address(0), "Invalid core contract");
         require(_treasury != address(0), "Invalid treasury");
-        coreContract = IAgentPayCore(_coreContract);
+        coreContract = IAgentPayyCore(_coreContract);
         treasury = _treasury;
     }
 
@@ -82,7 +82,7 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
      * @param payment Payment data including attribution splits
      */
     function payAndCallWithAttribution(AttributedPaymentData calldata payment) external nonReentrant {
-        IAgentPayCore.Model memory model = coreContract.getModel(payment.modelId);
+        IAgentPayyCore.Model memory model = coreContract.getModel(payment.modelId);
         require(model.owner != address(0), "Model not found");
         require(model.active, "Model inactive");
         require(payment.amount >= model.price, "Insufficient payment");
@@ -122,7 +122,7 @@ contract AttributionEngine is ReentrancyGuard, Ownable {
      * @param attributions Array of attribution splits
      */
     function _distributeFundsWithAttribution(
-        IAgentPayCore.Model memory model, 
+        IAgentPayyCore.Model memory model, 
         uint256 amount, 
         Attribution[] calldata attributions
     ) internal {

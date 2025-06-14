@@ -52,7 +52,7 @@ export class UniversalWalletAdapter {
       chains: [base, arbitrum, optimism],
       connectors: [
         metaMask(),
-        coinbaseWallet({ appName: 'AgentPayKit' }),
+        coinbaseWallet({ appName: 'AgentPayyKit' }),
         walletConnect({ 
           projectId: process.env.WALLETCONNECT_PROJECT_ID || 'agentpaykit' 
         })
@@ -136,7 +136,7 @@ export class UniversalWalletAdapter {
         account = await connect({ connector: metaMask() });
         break;
       case 'coinbase':
-        account = await connect({ connector: coinbaseWallet({ appName: 'AgentPayKit' }) });
+        account = await connect({ connector: coinbaseWallet({ appName: 'AgentPayyKit' }) });
         break;
       case 'walletconnect':
         account = await connect({ 

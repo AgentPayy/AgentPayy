@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-test.describe('AgentPayKit User Journey E2E Tests', () => {
+test.describe('AgentPayyKit User Journey E2E Tests', () => {
   let page: Page;
 
   test.beforeEach(async ({ browser }) => {
@@ -31,7 +31,7 @@ test.describe('AgentPayKit User Journey E2E Tests', () => {
   });
 
   test('Complete API Provider Journey', async () => {
-    // Navigate to AgentPayKit dashboard
+    // Navigate to AgentPayyKit dashboard
     await page.goto('http://localhost:3000/dashboard');
     
     // 1. Connect Wallet
@@ -110,7 +110,7 @@ test.describe('AgentPayKit User Journey E2E Tests', () => {
   });
 
   test('Paywall Integration Journey', async () => {
-    // Navigate to a demo site with AgentPayKit paywall
+    // Navigate to a demo site with AgentPayyKit paywall
     await page.goto('http://localhost:3001/premium-content');
     
     // 1. Encounter paywall

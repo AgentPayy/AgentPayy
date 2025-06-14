@@ -1,4 +1,4 @@
-"""CrewAI integration for AgentPayKit - Monetize your CrewAI tools."""
+"""CrewAI integration for AgentPayyKit - Monetize your CrewAI tools."""
 
 from typing import Any, Dict, Optional, Type
 
@@ -6,9 +6,9 @@ try:
     from crewai_tools import BaseTool
     from pydantic import BaseModel, Field
 except ImportError:
-    raise ImportError("CrewAI not installed. Run: pip install agentpay[crewai]")
+    raise ImportError("CrewAI not installed. Run: pip install agentpayy[crewai]")
 
-from .import AgentPayKit, PaymentOptions
+from .import AgentPayyKit, PaymentOptions
 
 
 class PayableTool(BaseTool):
@@ -16,10 +16,10 @@ class PayableTool(BaseTool):
     
     name: str = Field(..., description="Tool name")
     description: str = Field(..., description="Tool description")  
-    model_id: str = Field(..., description="AgentPayKit model ID")
+    model_id: str = Field(..., description="AgentPayyKit model ID")
     price: str = Field(..., description="Price per call in USDC")
     chain: str = Field(default="base", description="Blockchain network")
-    agentpay_client: Optional[AgentPayKit] = Field(default=None, exclude=True)
+    agentpayy_client: Optional[AgentPayyKit] = Field(default=None, exclude=True)
     
     def __init__(self, model_id: str, price: str, name: str = None, description: str = None, **kwargs):
         super().__init__(
@@ -30,20 +30,20 @@ class PayableTool(BaseTool):
             **kwargs
         )
         
-        # Initialize AgentPayKit client
+        # Initialize AgentPayyKit client
         import os
         private_key = os.getenv("PRIVATE_KEY")
         if private_key:
-            self.agentpay_client = AgentPayKit(private_key, self.chain)
+            self.agentpayy_client = AgentPayyKit(private_key, self.chain)
 
     def _run(self, **kwargs) -> str:
         """Execute the paid tool."""
-        if not self.agentpay_client:
-            raise ValueError("AgentPayKit client not initialized. Set PRIVATE_KEY environment variable.")
+        if not self.agentpayy_client:
+            raise ValueError("AgentPayyKit client not initialized. Set PRIVATE_KEY environment variable.")
         
         try:
             # Make paid API call
-            result = self.agentpay_client.pay_and_call(
+            result = self.agentpayy_client.pay_and_call(
                 self.model_id,
                 kwargs,
                 PaymentOptions(price=self.price, chain=self.chain)
@@ -64,11 +64,11 @@ def paid_tool(model_id: str, price: str, name: str = None, description: str = No
         class CustomPayableTool(PayableTool):
             def _run(self, **kwargs) -> str:
                 # Execute payment first
-                if not self.agentpay_client:
-                    raise ValueError("AgentPayKit client not initialized")
+                if not self.agentpayy_client:
+                    raise ValueError("AgentPayyKit client not initialized")
                 
                 # Make payment
-                payment_result = self.agentpay_client.pay_and_call(
+                payment_result = self.agentpayy_client.pay_and_call(
                     self.model_id,
                     kwargs,
                     PaymentOptions(price=self.price, chain=self.chain)

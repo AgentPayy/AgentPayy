@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="../AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPay Logo" width="120"/>
+  <img src="../AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPayy Logo" width="120"/>
 </div>
 
-# AgentPay Contracts
+# AgentPayy Contracts
 
 Smart contracts for privacy-first API payments.
 
@@ -18,7 +18,7 @@ forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast
 ```
 
 ## Contracts
-- `AgentPayCore.sol` - Payment processing
+- `AgentPayyCore.sol` - Payment processing
 - `AttributionEngine.sol` - Revenue sharing  
 - `ReceiptManager.sol` - Payment verification
 

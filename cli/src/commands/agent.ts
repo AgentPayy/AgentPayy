@@ -3,15 +3,15 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { EnhancedAgentPayKit } from '../../../sdk/typescript/src/EnhancedAgentPayKit';
+import { EnhancedAgentPayyKit } from '../../../sdk/typescript/src/EnhancedAgentPayyKit';
 
 const program = new Command();
 
 class AgentManager {
-  private agentpay: EnhancedAgentPayKit;
+  private agentpay: EnhancedAgentPayyKit;
 
   constructor() {
-    this.agentpay = new EnhancedAgentPayKit();
+    this.agentpay = new EnhancedAgentPayyKit();
   }
 
   async setupAgent(options: {
@@ -356,7 +356,7 @@ const agentManager = new AgentManager();
 
 program
   .name('agentpay-agent')
-  .description('AgentPayKit - Agent Management Commands')
+  .description('AgentPayyKit - Agent Management Commands')
   .version('1.0.0');
 
 program

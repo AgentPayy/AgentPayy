@@ -1,16 +1,16 @@
 <div align="center">
-  <img src="./AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPay Logo" width="200"/>
+  <img src="./AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPayy Logo" width="200"/>
 </div>
 
-# AgentPay
+# AgentPayy
 
 **Privacy-first API payment protocol for the agent economy**
 
-AgentPay enables developers to monetize APIs with sub-cent crypto payments while preserving user privacy. Built on Layer 2 networks with deployed smart contracts ready for immediate integration.
+AgentPayy enables developers to monetize APIs with sub-cent crypto payments while preserving user privacy. Built on Layer 2 networks with deployed smart contracts ready for immediate integration.
 
-## Why AgentPay?
+## Why AgentPayy?
 
-Traditional payment systems fail for micro-transactions. Credit cards have $0.30+ fees, making $0.01 API calls impossible. AgentPay solves this with:
+Traditional payment systems fail for micro-transactions. Credit cards have $0.30+ fees, making $0.01 API calls impossible. AgentPayy solves this with:
 
 - **Sub-cent fees**: ~$0.001 transaction costs on Base L2
 - **Privacy-first**: Only payment hashes stored on-chain, raw data stays private
@@ -21,17 +21,17 @@ Traditional payment systems fail for micro-transactions. Credit cards have $0.30
 
 ### Install SDK
 ```bash
-npm install @agentpay/sdk
+npm install @agentpayy/sdk
 # or
-pip install agentpay
+pip install agentpayy
 ```
 
 ### Pay for API Call
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayKit({
-  network: 'base', // Connects to deployed AgentPay contracts
+const agentPay = new AgentPayyKit({
+  network: 'base', // Connects to deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 
@@ -104,7 +104,7 @@ await agentPay.withdraw(); // Withdraw all earnings to wallet
 Built-in agent discovery and reliability scoring:
 
 ```typescript
-import { ReputationModule } from '@agentpay/sdk';
+import { ReputationModule } from '@agentpayy/sdk';
 
 const reputation = new ReputationModule(gatewayUrl);
 
@@ -123,7 +123,7 @@ const topAgents = await reputation.getLeaderboard(10);
 ## Architecture
 
 ```
-Developer → AgentPay SDK → Deployed Smart Contracts → API Provider
+Developer → AgentPayy SDK → Deployed Smart Contracts → API Provider
 ```
 
 1. **Client** pays for API access via SDK
@@ -133,7 +133,7 @@ Developer → AgentPay SDK → Deployed Smart Contracts → API Provider
 
 ## Supported Networks
 
-AgentPay contracts are deployed and ready on:
+AgentPayy contracts are deployed and ready on:
 
 - **Base** (8453) - Recommended for lowest fees
 - **Arbitrum** (42161) - Fast finality
@@ -153,9 +153,9 @@ AgentPay contracts are deployed and ready on:
 ```python
 # CrewAI agent with paid API access
 from crewai import Agent
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
-agentpay = AgentPayKit(private_key="0x...", chain="base")
+agentpay = AgentPayyKit(private_key="0x...", chain="base")
 
 def paid_market_data(symbol):
     return agentpay.call_api(
@@ -243,20 +243,20 @@ console.log(`${stats.totalAPIs} APIs available`);
 
 ```bash
 # TypeScript/JavaScript
-npm install @agentpay/sdk
+npm install @agentpayy/sdk
 
 # Python  
-pip install agentpay
+pip install agentpayy
 ```
 
 ## Basic Usage
 
 ### TypeScript
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayKit({
-  network: 'base', // Uses deployed AgentPay contracts
+const agentPay = new AgentPayyKit({
+  network: 'base', // Uses deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 
@@ -270,11 +270,11 @@ const result = await agentPay.callAPI(
 
 ### Python
 ```python
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
-agentpay = AgentPayKit(
+agentpay = AgentPayyKit(
     private_key="0x...",
-    chain="base"  # Uses deployed AgentPay contracts
+    chain="base"  # Uses deployed AgentPayy contracts
 )
 
 # Pay for API call

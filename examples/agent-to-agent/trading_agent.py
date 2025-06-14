@@ -9,11 +9,11 @@ import time
 import json
 from typing import Dict, Any
 
-# AgentPayKit import (assuming it's installed)
+# AgentPayyKit import (assuming it's installed)
 try:
-    from agentpay import AgentPayKit, PaymentOptions
+    from agentpayy import AgentPayyKit, PaymentOptions
 except ImportError:
-    print("AgentPayKit not installed. Run: pip install agentpay")
+    print("AgentPayyKit not installed. Run: pip install agentpayy")
     exit(1)
 
 
@@ -22,7 +22,7 @@ class TradingAgent:
     
     def __init__(self, private_key: str, name: str = "TradingBot"):
         self.name = name
-        self.agentpay = AgentPayKit(private_key, chain="base")
+        self.agentpayy = AgentPayyKit(private_key, chain="base")
         self.balance = 10.0  # Starting USDC balance for demo
         self.portfolio = {"BTC": 0, "ETH": 0, "USDC": 1000}
         
@@ -33,7 +33,7 @@ class TradingAgent:
         try:
             print(f"💰 {self.name}: Paying for {symbol} market data...")
             
-            result = self.agentpay.pay_and_call(
+            result = self.agentpayy.pay_and_call(
                 "market-data-agent-v1",  # Another agent's model ID
                 {"symbol": symbol, "analysis": True},
                 PaymentOptions(price="0.02", chain="base")  # 2 cents for premium data
@@ -52,7 +52,7 @@ class TradingAgent:
         try:
             print(f"💰 {self.name}: Paying for risk analysis...")
             
-            result = self.agentpay.pay_and_call(
+            result = self.agentpayy.pay_and_call(
                 "risk-analysis-agent-v1",
                 trade_data,
                 PaymentOptions(price="0.05", chain="base")  # 5 cents for risk analysis
@@ -138,7 +138,7 @@ class TradingAgent:
 
 def main():
     """Demo script showing agent-to-agent payments."""
-    print("🤖 AgentPayKit Agent-to-Agent Demo")
+    print("🤖 AgentPayyKit Agent-to-Agent Demo")
     print("=" * 50)
     print("This demo shows AI agents paying each other for services:")
     print("• Trading Agent pays Market Data Agent for price data")
@@ -162,7 +162,7 @@ def main():
         print(f"❌ Demo failed: {e}")
         print("\nMake sure you have:")
         print("1. USDC balance on Base network")
-        print("2. AgentPayKit contracts deployed")
+        print("2. AgentPayyKit contracts deployed")
         print("3. Demo API agents registered")
 
 

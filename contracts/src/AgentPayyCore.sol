@@ -7,17 +7,17 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import "./IAgentPayCore.sol";
+import "./IAgentPayyCore.sol";
 
 /**
- * @title AgentPayCore
- * @author AgentPay Team
- * @notice Core payment processing contract for AgentPay
+ * @title AgentPayyCore
+ * @author AgentPayy Team
+ * @notice Core payment processing contract for AgentPayy
  * @dev Handles basic API payments, model registration, and balance management
  * @custom:version 2.0.0
  * @custom:security-contact security@agentpay.org
  */
-contract AgentPayCore is IAgentPayCore, ReentrancyGuard, Ownable {
+contract AgentPayyCore is IAgentPayyCore, ReentrancyGuard, Ownable {
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
 

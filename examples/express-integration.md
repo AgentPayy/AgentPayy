@@ -1,18 +1,18 @@
-# Express + AgentPay Integration
+# Express + AgentPayy Integration
 
 ## Install
 ```bash
-npm install express @agentpay/sdk
+npm install express @agentpayy/sdk
 ```
 
 ## API Provider Setup
 ```typescript
 import express from 'express';
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
 const app = express();
-const agentPay = new AgentPayKit({
-  network: 'base' // Connects to deployed AgentPay contracts
+const agentPay = new AgentPayyKit({
+  network: 'base' // Connects to deployed AgentPayy contracts
 });
 
 // Payment validation middleware
@@ -46,9 +46,9 @@ app.listen(3000);
 
 ## Client Usage
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const client = new AgentPayKit({
+const client = new AgentPayyKit({
   network: 'base',
   privateKey: process.env.PRIVATE_KEY
 });
@@ -64,5 +64,5 @@ const weather = await client.callAPI(
 ## Key Benefits
 - Simple middleware integration
 - Automatic payment validation
-- Uses deployed AgentPay contracts
+- Uses deployed AgentPayy contracts
 - No blockchain setup required 

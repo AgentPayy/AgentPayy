@@ -23,7 +23,7 @@ import type {
   PaymentProof,
   APICallMetadata,
   PaymentError,
-  AgentPayError
+  AgentPayyError
 } from '../core';
 
 export interface PaywallOptions {
@@ -65,7 +65,7 @@ export interface Analytics {
   }>;
 }
 
-export class AgentPayWall {
+export class AgentPayyWall {
   private apiKey: string;
   private pricePerQuery: string;
   private chain: ChainType;
@@ -123,7 +123,7 @@ export class AgentPayWall {
 
         next(); // Payment verified, proceed to API
       } catch (error) {
-        console.error('AgentPayWall error:', error);
+        console.error('AgentPayyWall error:', error);
         res.status(500).json({
           error: 'Payment verification failed',
           details: error instanceof Error ? error.message : 'Unknown error'

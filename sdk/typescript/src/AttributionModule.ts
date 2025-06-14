@@ -7,7 +7,7 @@ export interface Attribution {
 
 /**
  * @fileoverview Attribution Module - Handles multi-party revenue attribution
- * @author AgentPay Team
+ * @author AgentPayy Team
  * @version 2.0.0
  */
 

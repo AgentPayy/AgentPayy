@@ -2,10 +2,10 @@
 pragma solidity ^0.8.20;
 
 import {Test, console} from "forge-std/Test.sol";
-import {AgentPayCore} from "../src/AgentPayCore.sol";
+import {AgentPayyCore} from "../src/AgentPayyCore.sol";
 import {AttributionEngine} from "../src/AttributionEngine.sol";
 import {ReceiptManager} from "../src/ReceiptManager.sol";
-import {IAgentPayCore} from "../src/IAgentPayCore.sol";
+import {IAgentPayyCore} from "../src/IAgentPayyCore.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -23,8 +23,8 @@ contract MockUSDC is ERC20 {
     }
 }
 
-contract AgentPayCoreComprehensiveTest is Test {
-    AgentPayCore public agentPayCore;
+contract AgentPayyCoreComprehensiveTest is Test {
+    AgentPayyCore public agentPayCore;
     AttributionEngine public attributionEngine;
     ReceiptManager public receiptManager;
     MockUSDC public usdc;
@@ -61,7 +61,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         
         // Deploy contracts
         usdc = new MockUSDC();
-        agentPayCore = new AgentPayCore(treasury);
+        agentPayCore = new AgentPayyCore(treasury);
         attributionEngine = new AttributionEngine(address(agentPayCore), treasury);
         receiptManager = new ReceiptManager(address(this));
         
@@ -75,7 +75,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         usdc.mint(attacker, 1000 * 10**6); // 1000 USDC
         
         console.log("=== Test Setup Complete ===");
-        console.log("AgentPayCore:", address(agentPayCore));
+        console.log("AgentPayyCore:", address(agentPayCore));
         console.log("AttributionEngine:", address(attributionEngine));
         console.log("ReceiptManager:", address(receiptManager));
     }
@@ -92,7 +92,7 @@ contract AgentPayCoreComprehensiveTest is Test {
     
     function test_RevertWhen_DeploymentWithZeroTreasury() public {
         vm.expectRevert("Invalid treasury");
-        new AgentPayCore(address(0));
+        new AgentPayyCore(address(0));
     }
 
     // ===== MODEL REGISTRATION TESTS =====
@@ -104,7 +104,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         
         agentPayCore.registerModel(MODEL_ID, ENDPOINT, PRICE, address(usdc));
         
-        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
+        IAgentPayyCore.Model memory model = agentPayCore.getModel(MODEL_ID);
         assertEq(model.owner, modelOwner);
         assertEq(model.endpoint, ENDPOINT);
         assertEq(model.price, PRICE);
@@ -162,7 +162,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         vm.prank(modelOwner);
         agentPayCore.updateModel(MODEL_ID, newEndpoint, newPrice, false);
         
-        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
+        IAgentPayyCore.Model memory model = agentPayCore.getModel(MODEL_ID);
         assertEq(model.endpoint, newEndpoint);
         assertEq(model.price, newPrice);
         assertFalse(model.active);
@@ -224,7 +224,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         bytes32 inputHash = keccak256("test input");
         uint256 deadline = block.timestamp + 3600;
         
-        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+        IAgentPayyCore.PaymentData memory payment = IAgentPayyCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
@@ -243,7 +243,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         assertEq(agentPayCore.getUserBalance(user1, address(usdc)), depositAmount - PRICE);
         
         // Verify model stats
-        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
+        IAgentPayyCore.Model memory model = agentPayCore.getModel(MODEL_ID);
         assertEq(model.totalCalls, 1);
         assertEq(model.totalRevenue, PRICE);
         
@@ -259,7 +259,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         bytes32 inputHash = keccak256("test input");
         uint256 deadline = block.timestamp + 3600;
         
-        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+        IAgentPayyCore.PaymentData memory payment = IAgentPayyCore.PaymentData({
             modelId: "nonexistent-model",
             inputHash: inputHash,
             amount: PRICE,
@@ -286,7 +286,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         bytes32 inputHash = keccak256("test input");
         uint256 deadline = block.timestamp + 3600;
         
-        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+        IAgentPayyCore.PaymentData memory payment = IAgentPayyCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
@@ -309,7 +309,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         bytes32 inputHash = keccak256("test input");
         uint256 deadline = block.timestamp - 1; // Expired
         
-        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+        IAgentPayyCore.PaymentData memory payment = IAgentPayyCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
@@ -339,7 +339,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         bytes32 inputHash = keccak256("test input");
         uint256 deadline = block.timestamp + 3600;
         
-        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+        IAgentPayyCore.PaymentData memory payment = IAgentPayyCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
@@ -410,7 +410,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         
         // Pause model
         agentPayCore.pauseModel(MODEL_ID);
-        IAgentPayCore.Model memory model = agentPayCore.getModel(MODEL_ID);
+        IAgentPayyCore.Model memory model = agentPayCore.getModel(MODEL_ID);
         assertFalse(model.active);
         
         // Unpause model
@@ -433,7 +433,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         bytes32 inputHash = keccak256("test input");
         uint256 deadline = block.timestamp + 3600;
         
-        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+        IAgentPayyCore.PaymentData memory payment = IAgentPayyCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE,
@@ -460,7 +460,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         bytes32 inputHash = keccak256("test input");
         uint256 deadline = block.timestamp + 3600;
         
-        IAgentPayCore.PaymentData memory payment = IAgentPayCore.PaymentData({
+        IAgentPayyCore.PaymentData memory payment = IAgentPayyCore.PaymentData({
             modelId: MODEL_ID,
             inputHash: inputHash,
             amount: PRICE - 1, // Insufficient
@@ -503,7 +503,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         
         // User1 pays for model1
         vm.prank(user1);
-        agentPayCore.payAndCall(IAgentPayCore.PaymentData({
+        agentPayCore.payAndCall(IAgentPayyCore.PaymentData({
             modelId: "model1",
             inputHash: inputHash1,
             amount: PRICE,
@@ -514,7 +514,7 @@ contract AgentPayCoreComprehensiveTest is Test {
         
         // User2 pays for model2
         vm.prank(user2);
-        agentPayCore.payAndCall(IAgentPayCore.PaymentData({
+        agentPayCore.payAndCall(IAgentPayyCore.PaymentData({
             modelId: "model2",
             inputHash: inputHash2,
             amount: PRICE * 2,
@@ -524,8 +524,8 @@ contract AgentPayCoreComprehensiveTest is Test {
         }));
         
         // Verify model stats
-        IAgentPayCore.Model memory model1 = agentPayCore.getModel("model1");
-        IAgentPayCore.Model memory model2 = agentPayCore.getModel("model2");
+        IAgentPayyCore.Model memory model1 = agentPayCore.getModel("model1");
+        IAgentPayyCore.Model memory model2 = agentPayCore.getModel("model2");
         
         assertEq(model1.totalCalls, 1);
         assertEq(model1.totalRevenue, PRICE);

@@ -3,7 +3,7 @@ import { createClient, RedisClientType } from 'redis';
 
 /**
  * @fileoverview Payment Service - Handles payment validation and processing
- * @author AgentPay Team
+ * @author AgentPayy Team
  * @version 2.0.0
  */
 

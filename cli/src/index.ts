@@ -24,7 +24,7 @@ const program = new Command();
 
 // Welcome message for new users
 function showWelcome() {
-  console.log(chalk.blue('🚀 Welcome to AgentPayKit - Wallet Infrastructure for the API Economy\n'));
+  console.log(chalk.blue('🚀 Welcome to AgentPayyKit - Wallet Infrastructure for the API Economy\n'));
   console.log(chalk.gray('The complete solution for monetizing and consuming APIs with smart wallets.\n'));
   
   console.log(chalk.bold('🔑 Universal Wallet Features:'));
@@ -52,7 +52,7 @@ function showWelcome() {
 
 // Demo scenarios
 function showDemo() {
-  console.log(chalk.blue('🎬 AgentPayKit Demo Scenarios\n'));
+  console.log(chalk.blue('🎬 AgentPayyKit Demo Scenarios\n'));
   
   console.log(chalk.bold('Scenario 1: New Developer (Earn Mode)'));
   console.log(chalk.gray('You want to monetize your API and earn money:'));
@@ -127,7 +127,7 @@ function showExamples() {
 
 program
   .name('agentpay')
-  .description('AgentPayKit - Complete wallet infrastructure for the API economy')
+  .description('AgentPayyKit - Complete wallet infrastructure for the API economy')
   .version('1.0.0')
   .action(() => {
     showWelcome();
@@ -224,8 +224,8 @@ program
   .action(async () => {
     const { WalletManager } = await import('./commands/wallet');
     const walletManager = new WalletManager();
-    const { EnhancedAgentPayKit } = await import('../../sdk/typescript/src/EnhancedAgentPayKit');
-    const agentpay = new EnhancedAgentPayKit();
+    const { EnhancedAgentPayyKit } = await import('../../sdk/typescript/src/EnhancedAgentPayyKit');
+    const agentpay = new EnhancedAgentPayyKit();
     const wallet = agentpay.getWalletInfo();
     
     if (!wallet) {

@@ -3,8 +3,8 @@ import { AttributionModule, type Attribution } from './AttributionModule';
 import { ReputationModule, type ReputationData } from './ReputationModule';
 
 /**
- * @fileoverview Main AgentPay SDK - Orchestrates all payment and agent functionality
- * @author AgentPay Team
+ * @fileoverview Main AgentPayy SDK - Orchestrates all payment and agent functionality
+ * @author AgentPayy Team
  * @version 2.0.0
  */
 
@@ -33,9 +33,9 @@ export interface WalletConfig {
 }
 
 /**
- * Main AgentPay SDK for payments, attribution, and reputation
+ * Main AgentPayy SDK for payments, attribution, and reputation
  */
-export class AgentPaySDK {
+export class AgentPayySDK {
   private gatewayUrl: string;
   private wallet: ethers.HDNodeWallet | ethers.Wallet | null = null;
   private provider: ethers.Provider | null = null;

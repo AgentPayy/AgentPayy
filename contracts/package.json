@@ -1,7 +1,7 @@
 {
   "name": "@agentpay/contracts",
   "version": "0.1.0",
-  "description": "AgentPayKit smart contracts",
+  "description": "AgentPayyKit smart contracts",
   "scripts": {
     "build": "forge build",
     "test": "forge test",

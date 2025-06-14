@@ -1,4 +1,4 @@
-"""LangChain integration for AgentPayKit."""
+"""LangChain integration for AgentPayyKit."""
 
 from typing import Optional
 
@@ -6,18 +6,18 @@ try:
     from langchain.tools import BaseTool
     from pydantic import Field
 except ImportError:
-    raise ImportError("LangChain not installed. Run: pip install agentpay[langchain]")
+    raise ImportError("LangChain not installed. Run: pip install agentpayy[langchain]")
 
-from . import AgentPayKit, PaymentOptions
+from . import AgentPayyKit, PaymentOptions
 
 
 class PayableLangChainTool(BaseTool):
     """A LangChain tool that requires payment for each use."""
     
-    model_id: str = Field(..., description="AgentPayKit model ID")
+    model_id: str = Field(..., description="AgentPayyKit model ID")
     price: str = Field(..., description="Price per call in USDC")
     chain: str = Field(default="base", description="Blockchain network")
-    agentpay_client: Optional[AgentPayKit] = Field(default=None, exclude=True)
+    agentpayy_client: Optional[AgentPayyKit] = Field(default=None, exclude=True)
     
     def __init__(self, model_id: str, price: str, name: str = None, description: str = None, **kwargs):
         super().__init__(
@@ -31,15 +31,15 @@ class PayableLangChainTool(BaseTool):
         import os
         private_key = os.getenv("PRIVATE_KEY")
         if private_key:
-            self.agentpay_client = AgentPayKit(private_key, self.chain)
+            self.agentpayy_client = AgentPayyKit(private_key, self.chain)
 
     def _run(self, query: str) -> str:
         """Execute the paid tool."""
-        if not self.agentpay_client:
-            raise ValueError("AgentPayKit client not initialized")
+        if not self.agentpayy_client:
+            raise ValueError("AgentPayyKit client not initialized")
         
         try:
-            result = self.agentpay_client.pay_and_call(
+            result = self.agentpayy_client.pay_and_call(
                 self.model_id,
                 {"query": query},
                 PaymentOptions(price=self.price, chain=self.chain)

@@ -1,4 +1,4 @@
-# FastAPI + AgentPay Integration
+# FastAPI + AgentPayy Integration
 
 ## Install
 ```bash
@@ -8,13 +8,13 @@ pip install fastapi agentpay uvicorn
 ## API Provider Setup
 ```python
 from fastapi import FastAPI, HTTPException, Header
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 from typing import Optional
 
 app = FastAPI()
 
-# Initialize AgentPay (connects to deployed contracts)
-agentpay = AgentPayKit(
+# Initialize AgentPayy (connects to deployed contracts)
+agentpay = AgentPayyKit(
     private_key="your_private_key",
     chain="base"
 )
@@ -56,9 +56,9 @@ if __name__ == "__main__":
 
 ## Client Usage
 ```python
-from agentpay import AgentPayKit
+from agentpay import AgentPayyKit
 
-client = AgentPayKit(
+client = AgentPayyKit(
     private_key="your_private_key",
     chain="base"
 )
@@ -74,5 +74,5 @@ weather = client.call_api(
 ## Key Benefits
 - FastAPI dependency injection
 - Automatic payment validation
-- Uses deployed AgentPay contracts
+- Uses deployed AgentPayy contracts
 - No blockchain setup required 

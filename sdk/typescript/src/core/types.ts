@@ -146,26 +146,26 @@ export interface ModelRegisteredEvent {
 }
 
 // Error types
-export class AgentPayError extends Error {
+export class AgentPayyError extends Error {
   constructor(message: string, public code?: string) {
     super(message);
-    this.name = 'AgentPayError';
+    this.name = 'AgentPayyError';
   }
 }
 
-export class PaymentError extends AgentPayError {
+export class PaymentError extends AgentPayyError {
   constructor(message: string) {
     super(message, 'PAYMENT_ERROR');
   }
 }
 
-export class WalletError extends AgentPayError {
+export class WalletError extends AgentPayyError {
   constructor(message: string) {
     super(message, 'WALLET_ERROR');
   }
 }
 
-export class ContractError extends AgentPayError {
+export class ContractError extends AgentPayyError {
   constructor(message: string) {
     super(message, 'CONTRACT_ERROR');
   }

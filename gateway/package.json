@@ -1,7 +1,7 @@
 {
   "name": "@agentpay/gateway",
   "version": "0.1.0",
-  "description": "AgentPayKit event gateway",
+  "description": "AgentPayyKit event gateway",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",

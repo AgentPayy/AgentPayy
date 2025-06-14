@@ -1,7 +1,7 @@
 {
-  "name": "@agentpay/sdk",
+  "name": "@agentpayy/sdk",
   "version": "0.1.0",
-  "description": "AgentPayKit TypeScript SDK",
+  "description": "AgentPayyKit TypeScript SDK",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

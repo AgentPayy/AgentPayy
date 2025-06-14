@@ -2,12 +2,12 @@
 pragma solidity ^0.8.20;
 
 import {Script, console} from "forge-std/Script.sol";
-import {AgentPayCore} from "../src/AgentPayCore.sol";
+import {AgentPayyCore} from "../src/AgentPayyCore.sol";
 import {AttributionEngine} from "../src/AttributionEngine.sol";
 import {ReceiptManager} from "../src/ReceiptManager.sol";
 
 contract DeployScript is Script {
-    AgentPayCore public agentPayCore;
+    AgentPayyCore public agentPayCore;
     AttributionEngine public attributionEngine;
     ReceiptManager public receiptManager;
     
@@ -34,7 +34,7 @@ contract DeployScript is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         uint256 chainId = block.chainid;
         
-        console.log("=== AgentPay Modular Deployment ===");
+        console.log("=== AgentPayy Modular Deployment ===");
         console.log("Chain ID:", chainId);
         console.log("Network:", getNetworkName(chainId));
         console.log("Treasury:", treasuryAddress);
@@ -47,9 +47,9 @@ contract DeployScript is Script {
         // Deploy core contracts
         console.log("\n=== Deploying Core Contracts ===");
         
-        console.log("1. Deploying AgentPayCore...");
-        agentPayCore = new AgentPayCore(treasuryAddress);
-        console.log("   [OK] AgentPayCore deployed:", address(agentPayCore));
+        console.log("1. Deploying AgentPayyCore...");
+        agentPayCore = new AgentPayyCore(treasuryAddress);
+        console.log("   [OK] AgentPayyCore deployed:", address(agentPayCore));
         
         console.log("2. Deploying AttributionEngine...");
         attributionEngine = new AttributionEngine(address(agentPayCore), treasuryAddress);
@@ -62,18 +62,18 @@ contract DeployScript is Script {
         // Link contracts
         console.log("\n=== Linking Contracts ===");
         
-        console.log("4. Setting AttributionEngine in AgentPayCore...");
+        console.log("4. Setting AttributionEngine in AgentPayyCore...");
         agentPayCore.setAttributionEngine(address(attributionEngine));
         console.log("   [OK] AttributionEngine linked");
         
-        console.log("5. Setting ReceiptManager in AgentPayCore...");
+        console.log("5. Setting ReceiptManager in AgentPayyCore...");
         agentPayCore.setReceiptManager(address(receiptManager));
         console.log("   [OK] ReceiptManager linked");
         
         vm.stopBroadcast();
         
         console.log("\n=== Deployment Summary ===");
-        console.log("AgentPayCore:      ", address(agentPayCore));
+        console.log("AgentPayyCore:      ", address(agentPayCore));
         console.log("AttributionEngine: ", address(attributionEngine));
         console.log("ReceiptManager:    ", address(receiptManager));
         console.log("Treasury:          ", treasuryAddress);

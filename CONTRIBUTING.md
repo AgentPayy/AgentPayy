@@ -1,9 +1,9 @@
-# Contributing to AgentPay
+# Contributing to AgentPayy
 
 ## Project Structure
 
 ```
-AgentPay/
+AgentPayy/
 ├── contracts/              # Smart contracts (Solidity)
 ├── sdk/
 │   ├── typescript/         # Consolidated TypeScript SDK
@@ -98,7 +98,7 @@ mypy agentpay/
 ### TypeScript
 - Use TypeScript strict mode
 - Export types from `src/core/types.ts`
-- Import from consolidated package: `import { AgentPayKit } from '@agentpay/sdk'`
+- Import from consolidated package: `import { AgentPayyKit } from '@agentpayy/sdk'`
 - Follow existing patterns for new modules
 
 ### Solidity

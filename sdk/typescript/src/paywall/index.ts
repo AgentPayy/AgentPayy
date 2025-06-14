@@ -1,5 +1,5 @@
 // Main paywall middleware
-export { AgentPayWall } from './AgentPayWall';
+export { AgentPayyWall } from './AgentPayyWall';
 
 // Types and interfaces
 export type {
@@ -7,7 +7,7 @@ export type {
   RouteOptions,
   PaymentRequest,
   Analytics
-} from './AgentPayWall';
+} from './AgentPayyWall';
 
 // Re-export types from core
 export type {
@@ -16,5 +16,5 @@ export type {
   PaymentProof,
   APICallMetadata,
   PaymentError,
-  AgentPayError
+  AgentPayyError
 } from '../core'; 

@@ -1,4 +1,4 @@
-# AgentPay Launch Strategy
+# AgentPayy Launch Strategy
 
 ## 🚀 Launch Timeline (Week 11-12)
 
@@ -29,7 +29,7 @@
 "Show HN: Privacy-first API payments with crypto – no gateway needed"
 
 ### Post
-Built AgentPay after seeing AI agents everywhere but no good payment infrastructure.
+Built AgentPayy after seeing AI agents everywhere but no good payment infrastructure.
 
 **The problem:** APIs need monetization, but traditional payments don't work for $0.01 calls.
 
@@ -37,9 +37,9 @@ Built AgentPay after seeing AI agents everywhere but no good payment infrastruct
 
 **How it works:**
 ```typescript
-import { AgentPayKit } from '@agentpay/sdk';
+import { AgentPayyKit } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayKit({ network: 'base' });
+const agentPay = new AgentPayyKit({ network: 'base' });
 
 // Pay for API call (connects to deployed contracts)
 const result = await agentPay.callAPI(
@@ -56,7 +56,7 @@ const result = await agentPay.callAPI(
 - Direct client-to-API calls
 
 **Architecture:**
-SDK → Deployed AgentPay Contracts → API Provider
+SDK → Deployed AgentPayy Contracts → API Provider
 
 Open source, MIT license. Built for the API economy.
 
@@ -84,7 +84,7 @@ GitHub: https://github.com/agentpay/agentpay
 "I totally get the skepticism – crypto payments have been clunky. But with Account Abstraction + L2s, it finally feels like web2 UX. Here's a 30-second demo: [link]"
 
 *For competition questions:*
-"You're right that [competitor] exists, but they focus on [difference]. AgentPayKit is specifically built for the agent economy with sub-cent payments and AI framework integrations."
+"You're right that [competitor] exists, but they focus on [difference]. AgentPayyKit is specifically built for the agent economy with sub-cent payments and AI framework integrations."
 
 ## 🎯 ProductHunt Launch
 
@@ -92,7 +92,7 @@ GitHub: https://github.com/agentpay/agentpay
 "Stripe for AI agents – monetize APIs with crypto payments"
 
 ### Description
-"AgentPay lets developers monetize any API endpoint with sub-cent stablecoin payments. Perfect for the agent economy where AI agents need to pay each other for services. One-line integration, smart wallet support, works on Layer 2s."
+"AgentPayy lets developers monetize any API endpoint with sub-cent stablecoin payments. Perfect for the agent economy where AI agents need to pay each other for services. One-line integration, smart wallet support, works on Layer 2s."
 
 ### Key Features
 - ⚡ Sub-cent payments ($0.001-$0.01 per call)
@@ -108,7 +108,7 @@ GitHub: https://github.com/agentpay/agentpay
 
 ### Twitter Thread
 ```
-🧵 1/8 Just launched AgentPay – privacy-first API payments! 
+🧵 1/8 Just launched AgentPayy – privacy-first API payments! 
 
 Finally, a way for agents to pay each other for services with sub-cent stablecoin payments.
 
@@ -127,7 +127,7 @@ It's either free (unsustainable) or traditional payments (too expensive for micr
 ```
 
 ```
-3/8 AgentPay solves this with:
+3/8 AgentPayy solves this with:
 
 ⚡ Sub-cent payments ($0.001-$0.01 per call)
 🤖 One-line integration 
@@ -185,9 +185,9 @@ Making it dead simple for developers to monetize APIs.
 ```
 8/8 This is just the beginning!
 
-The agent economy needs payment infrastructure. AgentPay is open source and ready for the community to build on.
+The agent economy needs payment infrastructure. AgentPayy is open source and ready for the community to build on.
 
-Try it: npm install @agentpay/sdk
+Try it: npm install @agentpayy/sdk
 
 What would you build with pay-per-call APIs? 🤔
 
@@ -197,10 +197,10 @@ What would you build with pay-per-call APIs? 🤔
 ### Discord/Telegram Posts
 
 **AI/Agent Communities:**
-"Hey everyone! Just launched AgentPay – a way to monetize APIs with crypto micro-payments. Perfect for AI agents that need to pay each other for services. One-line integration, works with CrewAI/LangChain. Would love feedback from this community! [link]"
+"Hey everyone! Just launched AgentPayy – a way to monetize APIs with crypto micro-payments. Perfect for AI agents that need to pay each other for services. One-line integration, works with CrewAI/LangChain. Would love feedback from this community! [link]"
 
 **Crypto Developer Communities:**
-"Built something for the intersection of AI and crypto: AgentPay lets you monetize any API with sub-cent stablecoin payments. Uses EIP-2612 permit(), works with smart wallets, deployed on Base/Arbitrum. Open source and ready for builders! [link]"
+"Built something for the intersection of AI and crypto: AgentPayy lets you monetize any API with sub-cent stablecoin payments. Uses EIP-2612 permit(), works with smart wallets, deployed on Base/Arbitrum. Open source and ready for builders! [link]"
 
 ## 📊 Success Metrics
 
