@@ -18,6 +18,9 @@ pnpm-debug.log*
 private-keys/
 secrets/
 
+# Development configuration
+.cursorrules
+
 # Foundry
 cache/
 out/
