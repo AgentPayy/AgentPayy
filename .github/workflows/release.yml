@@ -28,7 +28,12 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies and build
         run: |
           # Install semantic-release and plugins
           npm install -g semantic-release @semantic-release/changelog @semantic-release/git @semantic-release/exec @semantic-release/npm
