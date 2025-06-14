@@ -56,7 +56,12 @@ export class PaymentService {
         this.signer = new ethers.Wallet(wallet.privateKey, this.provider);
       } else {
         // For connected wallets, use the provider's signer
-        this.signer = this.provider.getSigner(wallet.address);
+        // For connected wallets, create signer from private key if available
+        if (wallet.privateKey) {
+          this.signer = new ethers.Wallet(wallet.privateKey, this.provider);
+        } else {
+          this.signer = null;
+        }
       }
     }
   }

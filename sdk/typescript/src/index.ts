@@ -477,36 +477,38 @@ export class AgentPayyKit {
 
 export default AgentPayyKit;
 
-// Core utilities and types
-export * from './core';
-
-// Modules
-export { ReputationModule } from './ReputationModule';
+// Core SDK
+export { AgentPayySDK } from './AgentPayySDK';
 export { AttributionModule } from './AttributionModule';
+export { ReputationModule } from './ReputationModule';
 
-// Specialized modules
-export { AgentPayyWall } from './paywall';
+// Core utilities
+export * from './core/crypto';
+export * from './core/types';
+export * from './core/validation';
+
+// Paywall
+export { AgentPayyWall } from './paywall/AgentPayyWall';
+
+// Registry
 export { APIRegistry } from './registry/APIRegistry';
-export { RegistryIndexer } from './registry/RegistryIndexer';
-
-// Wallet Infrastructure
-export { UniversalWalletAdapter } from './wallet/UniversalWalletAdapter';
-export { SmartWalletFactory } from './wallet/SmartWalletFactory';
 
 // Services
-export { PaymentService } from './services/PaymentService';
 export { BalanceService } from './services/BalanceService';
 
-// Additional Types
+// Wallet
+export { SmartWalletFactory } from './wallet/SmartWalletFactory';
+export { UniversalWalletAdapter } from './wallet/UniversalWalletAdapter';
+
+// Types
 export type {
-  WalletInfo,
-  WalletConnectionOptions,
-  WalletType,
-  ChainType
-} from './wallet/UniversalWalletAdapter';
+  PaymentOptions,
+  PaymentResult,
+  WalletConfig
+} from './AgentPayySDK';
 
 export type {
+  SmartAccountInfo,
   SmartAccountProvider,
-  SmartAccountFeature,
-  SmartAccountInfo
+  SmartAccountFeature
 } from './wallet/SmartWalletFactory'; 

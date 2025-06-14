@@ -118,7 +118,10 @@ export class RegistryIndexer {
       );
 
       for (const event of registeredEvents) {
-        await this.handleAPIRegistered(...(event.args || []));
+        const args = 'args' in event ? event.args : [];
+        if (args && args.length >= 7) {
+          await this.handleAPIRegistered(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+        }
       }
 
       // Get all APICallProcessed events for stats
@@ -129,7 +132,10 @@ export class RegistryIndexer {
       );
 
       for (const event of callEvents) {
-        await this.handleAPICallProcessed(...(event.args || []));
+        const args = 'args' in event ? event.args : [];
+        if (args && args.length >= 4) {
+          await this.handleAPICallProcessed(args[0], args[1], args[2], args[3]);
+        }
       }
 
       console.log(`✅ Indexed ${registeredEvents.length} APIs and ${callEvents.length} calls`);

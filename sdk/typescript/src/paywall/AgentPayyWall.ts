@@ -255,7 +255,7 @@ export class AgentPayyWall {
     const token = tokenAddress || getUSDCAddress(this.chain);
     const contractWithSigner = this.contract.connect(signerWallet);
     
-    const tx = await contractWithSigner.withdraw(token);
+    const tx = await contractWithSigner['withdraw'](token);
     return tx.hash;
   }
 

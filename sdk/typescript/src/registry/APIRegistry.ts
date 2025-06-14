@@ -220,7 +220,7 @@ export class APIRegistry {
     const contractWithSigner = this.contract.connect(signer);
     const tokenAddress = this.getUSDCAddress();
     
-    const tx = await contractWithSigner.registerModel(
+    const tx = await contractWithSigner['registerModel'](
       modelId,
       metadata.endpoint,
       ethers.parseUnits(metadata.price, 6), // USDC has 6 decimals
@@ -268,7 +268,8 @@ export class APIRegistry {
       const events = await this.contract.queryFilter(filter, -10000);
       
       for (const event of events) {
-        const [modelId, owner, price] = event.args || [];
+        const args = 'args' in event ? event.args : [];
+        const [modelId, owner, price] = args || [];
         
         if (!this.cache.has(modelId)) {
           // Get model details from contract
