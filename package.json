@@ -9,6 +9,11 @@
     "clean": "npm run clean --workspaces",
     "start": "cd gateway && npm start",
     
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces",
+    
     "test:all": "npm run test:contracts && npm run test:sdk && npm run test:gateway && npm run test:cli && npm run test:integration && npm run test:e2e",
     "test:contracts": "cd contracts && forge test",
     "test:contracts:verbose": "cd contracts && forge test -vvv",
@@ -35,9 +40,8 @@
     "test:multichain:local": "anvil --fork-url https://mainnet.base.org & npm run test:contracts && kill %1",
     "test:multichain:testnet": "npm run test:integration:contracts -- --network=testnet",
     
-    "lint": "npm run lint --workspaces",
-    "lint:fix": "npm run lint:fix --workspaces",
-    "type-check": "npm run type-check --workspaces"
+    "ci": "npm run type-check && npm run lint && npm run test:all",
+    "ci:quick": "npm run type-check && npm run test:contracts"
   },
   "workspaces": [
     "packages/core",
