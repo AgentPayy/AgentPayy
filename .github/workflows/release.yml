@@ -35,13 +35,14 @@ jobs:
           
           # Install Python build tools
           python -m pip install --upgrade pip build twine
+          
+          # Install workspace dependencies (includes TypeScript SDK)
+          npm ci
 
       - name: Build and test TypeScript SDK
         run: |
-          cd sdk/typescript
-          npm ci
-          npm run build
-          npm test
+          npm run build --workspace=sdk/typescript
+          npm run test --workspace=sdk/typescript
 
       - name: Build and test Python SDK
         run: |
