@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/AgentPayy/agentpayy/compare/v1.0.1...v1.0.2) (2025-06-14)
+
+
+### Bug Fixes
+
+* Update deployment documentation and contract addresses: ([a731a89](https://github.com/AgentPayy/agentpayy/commit/a731a891d7c90e0b8c3ddcc57d84f483cd2c2466))
+
 ## [1.0.1](https://github.com/AgentPayy/agentpayy/compare/v1.0.0...v1.0.1) (2025-06-14)
 
 
