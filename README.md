@@ -2,7 +2,7 @@
   <img src="./AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPayy Logo" width="200"/>
 </div>
 
-# AgentPayy Docs
+# AgentPayy
 
 **Privacy-first API payment protocol for the agent economy**
 
@@ -28,18 +28,18 @@ pip install agentpayy
 
 ### Pay for API Call
 ```typescript
-import { AgentPayyKit } from '@agentpayy/sdk';
+import { AgentPayySDK } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayyKit({
+const agentPay = new AgentPayySDK({
   network: 'base', // Connects to deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 
 // Pay for API call with automatic validation
-const result = await agentPay.callAPI(
-  'https://api.weather.com/v1/current',
+const result = await agentPay.pay(
+  'weather-api',
   { city: 'New York' },
-  'weather-api'
+  { price: '0.01' }
 );
 
 console.log(result); // Weather data + payment receipt
@@ -91,7 +91,7 @@ const balance = await agentPay.getUserBalance();
 console.log(`Balance: $${balance} USDC`);
 
 // Automatic balance usage (no wallet popups)
-const result = await agentPay.callAPI(endpoint, data, modelId);
+const result = await agentPay.pay('weather-api', data, { price: '0.01' });
 
 // Withdraw from prepaid balance (specific amount)
 await agentPay.withdrawBalance('5.0'); // Withdraw $5 from balance
@@ -158,10 +158,10 @@ from agentpayy import AgentPayyKit
 agentpay = AgentPayyKit(private_key="0x...", chain="base")
 
 def paid_market_data(symbol):
-    return agentpay.call_api(
-        "https://api.prices.com/v1/quote",
+    return agentpay.pay_and_call(
+        "market-data-api",
         {"symbol": symbol},
-        "market-data-api"
+        {"price": "0.02"}
     )
 
 trading_agent = Agent(
@@ -254,18 +254,18 @@ pip install agentpayy
 
 ### TypeScript
 ```typescript
-import { AgentPayyKit } from '@agentpayy/sdk';
+import { AgentPayySDK } from '@agentpayy/sdk';
 
-const agentPay = new AgentPayyKit({
+const agentPay = new AgentPayySDK({
   network: 'base', // Uses deployed AgentPayy contracts
   privateKey: process.env.PRIVATE_KEY
 });
 
 // Pay for API call
-const result = await agentPay.callAPI(
-  'https://api.example.com/weather',
+const result = await agentPay.pay(
+  'weather-api-v1',
   { city: 'New York' },
-  'weather-api-v1'
+  { price: '0.01' }
 );
 ```
 
@@ -279,10 +279,10 @@ agentpay = AgentPayyKit(
 )
 
 # Pay for API call
-result = agentpay.call_api(
-    "https://api.example.com/weather",
+result = agentpay.pay_and_call(
+    "weather-api-v1",
     {"city": "New York"},
-    "weather-api-v1"
+    {"price": "0.01"}
 )
 ```
 
