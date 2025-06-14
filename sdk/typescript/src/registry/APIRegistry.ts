@@ -312,7 +312,7 @@ export class APIRegistry {
     try {
       const response = await fetch(`${api.endpoint}/health`, {
         method: 'GET',
-        timeout: 5000
+        // timeout: 5000 // Removed - not supported in RequestInit
       });
       
       if (response.ok) {

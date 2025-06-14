@@ -407,7 +407,7 @@ export class RegistryIndexer {
       const start = Date.now();
       const response = await fetch(`${api.endpoint}/health`, {
         method: 'GET',
-        timeout: 5000
+        // timeout: 5000 // Removed - not supported in RequestInit
       });
       const responseTime = Date.now() - start;
 

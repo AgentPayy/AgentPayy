@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
-import { AttributionModule, type Attribution } from './AttributionModule';
-import { ReputationModule, type ReputationData } from './ReputationModule';
+import { AttributionModule } from './AttributionModule';
+import { ReputationModule } from './ReputationModule';
 
 /**
  * @fileoverview Main AgentPayy SDK - Orchestrates all payment and agent functionality
@@ -8,54 +8,51 @@ import { ReputationModule, type ReputationData } from './ReputationModule';
  * @version 2.0.0
  */
 
+export interface WalletConfig {
+  provider?: ethers.Provider;
+  smart?: boolean;
+}
+
 export interface PaymentOptions {
   price: string;
-  deadline?: number;
   mock?: boolean;
+  chain?: string;
   useBalance?: boolean;
   gasless?: boolean;
-  chain?: string;
-  attributions?: Attribution[];
+  deadline?: number;
+  attributions?: Array<{
+    recipient: string;
+    basisPoints: number;
+  }>;
 }
 
 export interface PaymentResult {
   success: boolean;
   txHash?: string;
   receipt?: any;
-  error?: string;
   gasUsed?: string;
-}
-
-export interface WalletConfig {
-  smart?: boolean;
-  provider?: ethers.Provider;
-  chainId?: number;
+  error?: string;
 }
 
 /**
  * Main AgentPayy SDK for payments, attribution, and reputation
  */
 export class AgentPayySDK {
-  private gatewayUrl: string;
   private wallet: ethers.HDNodeWallet | ethers.Wallet | null = null;
   private provider: ethers.Provider | null = null;
-
-  // Specialized modules
+  private gatewayUrl: string;
+  
   public attribution: AttributionModule;
   public reputation: ReputationModule;
 
   constructor(gatewayUrl: string = 'http://localhost:3000') {
-    this.gatewayUrl = gatewayUrl.replace(/\/$/, ''); // Remove trailing slash
-    
-    // Initialize modules
-    this.attribution = new AttributionModule(this.gatewayUrl);
-    this.reputation = new ReputationModule(this.gatewayUrl);
+    this.gatewayUrl = gatewayUrl;
+    this.attribution = new AttributionModule(gatewayUrl);
+    this.reputation = new ReputationModule(gatewayUrl);
   }
 
   /**
-   * Generate a new wallet for payments
-   * @param config - Wallet configuration
-   * @returns Generated wallet details
+   * Generate a new wallet
    */
   async generateWallet(config: WalletConfig = {}): Promise<{
     address: string;
@@ -63,12 +60,6 @@ export class AgentPayySDK {
     mnemonic?: string;
     smart: boolean;
   }> {
-    if (config.smart) {
-      // For smart wallets, we'd integrate with account abstraction
-      // For now, return a regular wallet with smart flag
-      console.log('🔄 Smart wallet support coming soon, using regular wallet');
-    }
-
     this.wallet = ethers.Wallet.createRandom();
     
     if (config.provider) {
@@ -96,9 +87,6 @@ export class AgentPayySDK {
 
   /**
    * Connect existing wallet
-   * @param privateKey - Wallet private key
-   * @param config - Wallet configuration
-   * @returns Connected wallet details
    */
   async connectWallet(privateKey: string, config: WalletConfig = {}): Promise<{
     address: string;
@@ -118,11 +106,7 @@ export class AgentPayySDK {
   }
 
   /**
-   * Pay for API access with basic payment
-   * @param modelId - API model identifier
-   * @param input - Input data for the API
-   * @param options - Payment options
-   * @returns Payment result
+   * Pay for API access
    */
   async pay(modelId: string, input: any, options: PaymentOptions): Promise<PaymentResult> {
     try {
@@ -130,27 +114,17 @@ export class AgentPayySDK {
         throw new Error('No wallet connected. Use generateWallet() or connectWallet()');
       }
 
-      // If attributions are specified, use attribution module
+      // Handle attribution payments
       if (options.attributions && options.attributions.length > 0) {
         const result = await this.attribution.payWithAttribution(modelId, input, options.attributions, options);
-        const paymentResult: PaymentResult = {
-          success: result.success
+        return {
+          success: result.success,
+          txHash: result.txHash,
+          error: result.error
         };
-        
-        if (result.txHash) {
-          paymentResult.txHash = result.txHash;
-        }
-        
-        if (result.error) {
-          paymentResult.error = result.error;
-        }
-        
-        return paymentResult;
       }
 
-      const inputHash = ethers.keccak256(ethers.toUtf8Bytes(JSON.stringify(input)));
-      const deadline = options.deadline || Math.floor(Date.now() / 1000) + 3600; // 1 hour
-
+      // Mock payment for testing
       if (options.mock) {
         return this.mockPayment(modelId, options.price);
       }
@@ -163,6 +137,9 @@ export class AgentPayySDK {
       }
 
       // Process payment through gateway
+      const inputHash = ethers.keccak256(ethers.toUtf8Bytes(JSON.stringify(input)));
+      const deadline = options.deadline || Math.floor(Date.now() / 1000) + 3600;
+
       const response = await fetch(`${this.gatewayUrl}/payment/process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -172,7 +149,7 @@ export class AgentPayySDK {
           inputHash,
           amount: options.price,
           deadline,
-          chain: options.chain || 'polygon',
+          chain: options.chain || 'base',
           useBalance: options.useBalance,
           gasless: options.gasless
         })
@@ -206,11 +183,6 @@ export class AgentPayySDK {
 
   /**
    * Validate payment before processing
-   * @param modelId - API model identifier
-   * @param payer - Payer address
-   * @param amount - Payment amount
-   * @param network - Target network
-   * @returns Validation result
    */
   async validatePayment(modelId: string, payer: string, amount: string, network?: string): Promise<{
     valid: boolean;
@@ -225,7 +197,7 @@ export class AgentPayySDK {
           modelId,
           payer,
           amount,
-          network: network || 'polygon'
+          network: network || 'base'
         })
       });
 
@@ -248,10 +220,7 @@ export class AgentPayySDK {
   }
 
   /**
-   * Get user balances across supported tokens
-   * @param address - User address (optional, uses connected wallet)
-   * @param network - Target network
-   * @returns Balance information
+   * Get user balances
    */
   async getBalances(address?: string, network?: string): Promise<{ [token: string]: string }> {
     try {
@@ -277,10 +246,7 @@ export class AgentPayySDK {
   }
 
   /**
-   * Get payment history for user
-   * @param address - User address (optional, uses connected wallet)
-   * @param limit - Maximum number of payments to return
-   * @returns Array of payment history
+   * Get payment history
    */
   async getPaymentHistory(address?: string, limit?: number): Promise<Array<{
     txHash: string;
@@ -318,10 +284,7 @@ export class AgentPayySDK {
   }
 
   /**
-   * Get information about an API model
-   * @param modelId - Model identifier
-   * @param network - Target network
-   * @returns Model information
+   * Get model information
    */
   async getModel(modelId: string, network?: string): Promise<{
     owner: string;
@@ -357,221 +320,7 @@ export class AgentPayySDK {
   }
 
   /**
-   * Mock payment for testing
-   * @param modelId - Model identifier
-   * @param amount - Payment amount
-   * @returns Mock payment result
-   */
-  private mockPayment(modelId: string, amount: string): Promise<PaymentResult> {
-    console.log(`🧪 MOCK: Payment of ${amount} tokens for model ${modelId}`);
-    console.log(`   ✅ Transaction simulated successfully`);
-    
-    return Promise.resolve({
-      success: true,
-      txHash: `0x${ethers.hexlify(ethers.randomBytes(32)).slice(2)}`,
-      gasUsed: '150000'
-    });
-  }
-
-  /**
-   * Get gateway health status
-   * @returns Gateway health information
-   */
-  async getHealth(): Promise<{
-    status: string;
-    timestamp: string;
-    version: string;
-    services: string[];
-  }> {
-    try {
-      const response = await fetch(`${this.gatewayUrl}/health`);
-      
-      if (!response.ok) {
-        throw new Error('Gateway unavailable');
-      }
-
-      return await response.json() as {
-        status: string;
-        timestamp: string;
-        version: string;
-        services: string[];
-      };
-    } catch (error) {
-      console.error('Health check error:', error);
-      return {
-        status: 'unavailable',
-        timestamp: new Date().toISOString(),
-        version: 'unknown',
-        services: []
-      };
-    }
-  }
-
-  /**
-   * Get platform analytics
-   * @returns Platform analytics data
-   */
-  async getAnalytics(): Promise<{
-    totalPayments: number;
-    totalRevenue: string;
-    uniqueUsers: number;
-    avgPaymentSize: string;
-    networks: any;
-  }> {
-    try {
-      const response = await fetch(`${this.gatewayUrl}/analytics`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to get analytics');
-      }
-
-      return await response.json() as {
-        totalPayments: number;
-        totalRevenue: string;
-        uniqueUsers: number;
-        avgPaymentSize: string;
-        networks: any;
-      };
-    } catch (error) {
-      console.error('Analytics error:', error);
-      return {
-        totalPayments: 0,
-        totalRevenue: '0',
-        uniqueUsers: 0,
-        avgPaymentSize: '0',
-        networks: {}
-      };
-    }
-  }
-
-  /**
-   * Get connected wallet address
-   * @returns Wallet address or null if not connected
-   */
-  getWalletAddress(): string | null {
-    return this.wallet ? this.wallet.address : null;
-  }
-
-  /**
-   * Check if wallet is connected
-   * @returns Whether a wallet is connected
-   */
-  isWalletConnected(): boolean {
-    return this.wallet !== null;
-  }
-
-  /**
-   * Disconnect wallet
-   */
-  disconnectWallet(): void {
-    this.wallet = null;
-    this.provider = null;
-    console.log('🔌 Wallet disconnected');
-  }
-
-  // === API DISCOVERY METHODS ===
-
-  /**
-   * Get APIs by category
-   * @param category - API category to filter by
-   * @returns Array of APIs in the specified category
-   */
-  async getAPIsByCategory(category: string): Promise<any[]> {
-    try {
-      const response = await fetch(`${this.gatewayUrl}/registry/category/${encodeURIComponent(category)}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to get APIs by category');
-      }
-
-      return await response.json() as any[];
-    } catch (error) {
-      console.error('Error getting APIs by category:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Search APIs by tag
-   * @param tag - Tag to search for
-   * @returns Array of APIs matching the tag
-   */
-  async searchAPIsByTag(tag: string): Promise<any[]> {
-    try {
-      const response = await fetch(`${this.gatewayUrl}/registry/search?tag=${encodeURIComponent(tag)}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to search APIs by tag');
-      }
-
-      return await response.json() as any[];
-    } catch (error) {
-      console.error('Error searching APIs by tag:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Get marketplace statistics
-   * @returns Marketplace statistics
-   */
-  async getMarketplaceStats(): Promise<{
-    totalAPIs: number;
-    totalCategories: number;
-    totalDevelopers: number;
-    totalCalls: number;
-    totalRevenue: string;
-  }> {
-    try {
-      const response = await fetch(`${this.gatewayUrl}/registry/stats`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to get marketplace stats');
-      }
-
-      return await response.json() as {
-        totalAPIs: number;
-        totalCategories: number;
-        totalDevelopers: number;
-        totalCalls: number;
-        totalRevenue: string;
-      };
-    } catch (error) {
-      console.error('Error getting marketplace stats:', error);
-      return {
-        totalAPIs: 0,
-        totalCategories: 0,
-        totalDevelopers: 0,
-        totalCalls: 0,
-        totalRevenue: '0'
-      };
-    }
-  }
-
-  /**
-   * Get trending APIs
-   * @param limit - Maximum number of APIs to return
-   * @returns Array of trending APIs
-   */
-  async getTrendingAPIs(limit: number = 10): Promise<any[]> {
-    try {
-      const response = await fetch(`${this.gatewayUrl}/registry/trending?limit=${limit}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to get trending APIs');
-      }
-
-      return await response.json() as any[];
-    } catch (error) {
-      console.error('Error getting trending APIs:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Register API model for discovery
-   * @param config - API configuration
-   * @returns Registration result
+   * Register API model
    */
   async registerModel(config: {
     modelId: string;
@@ -619,5 +368,186 @@ export class AgentPayySDK {
         error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
+  }
+
+  /**
+   * Get gateway health
+   */
+  async getHealth(): Promise<{
+    status: string;
+    timestamp: string;
+    version: string;
+    services: string[];
+  }> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/health`);
+      
+      if (!response.ok) {
+        throw new Error('Gateway unavailable');
+      }
+
+      return await response.json() as {
+        status: string;
+        timestamp: string;
+        version: string;
+        services: string[];
+      };
+    } catch (error) {
+      console.error('Health check error:', error);
+      return {
+        status: 'unavailable',
+        timestamp: new Date().toISOString(),
+        version: 'unknown',
+        services: []
+      };
+    }
+  }
+
+  /**
+   * Get platform analytics
+   */
+  async getAnalytics(): Promise<{
+    totalPayments: number;
+    totalRevenue: string;
+    uniqueUsers: number;
+    avgPaymentSize: string;
+    networks: any;
+  }> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/analytics`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get analytics');
+      }
+
+      return await response.json() as {
+        totalPayments: number;
+        totalRevenue: string;
+        uniqueUsers: number;
+        avgPaymentSize: string;
+        networks: any;
+      };
+    } catch (error) {
+      console.error('Analytics error:', error);
+      return {
+        totalPayments: 0,
+        totalRevenue: '0',
+        uniqueUsers: 0,
+        avgPaymentSize: '0',
+        networks: {}
+      };
+    }
+  }
+
+  /**
+   * API Discovery methods
+   */
+  async getAPIsByCategory(category: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/category/${encodeURIComponent(category)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get APIs by category');
+      }
+
+      return await response.json() as any[];
+    } catch (error) {
+      console.error('Error getting APIs by category:', error);
+      return [];
+    }
+  }
+
+  async searchAPIsByTag(tag: string): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/search?tag=${encodeURIComponent(tag)}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to search APIs by tag');
+      }
+
+      return await response.json() as any[];
+    } catch (error) {
+      console.error('Error searching APIs by tag:', error);
+      return [];
+    }
+  }
+
+  async getMarketplaceStats(): Promise<{
+    totalAPIs: number;
+    totalCategories: number;
+    totalDevelopers: number;
+    totalCalls: number;
+    totalRevenue: string;
+  }> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/stats`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get marketplace stats');
+      }
+
+      return await response.json() as {
+        totalAPIs: number;
+        totalCategories: number;
+        totalDevelopers: number;
+        totalCalls: number;
+        totalRevenue: string;
+      };
+    } catch (error) {
+      console.error('Error getting marketplace stats:', error);
+      return {
+        totalAPIs: 0,
+        totalCategories: 0,
+        totalDevelopers: 0,
+        totalCalls: 0,
+        totalRevenue: '0'
+      };
+    }
+  }
+
+  async getTrendingAPIs(limit: number = 10): Promise<any[]> {
+    try {
+      const response = await fetch(`${this.gatewayUrl}/registry/trending?limit=${limit}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to get trending APIs');
+      }
+
+      return await response.json() as any[];
+    } catch (error) {
+      console.error('Error getting trending APIs:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Wallet utility methods
+   */
+  getWalletAddress(): string | null {
+    return this.wallet ? this.wallet.address : null;
+  }
+
+  isWalletConnected(): boolean {
+    return this.wallet !== null;
+  }
+
+  disconnectWallet(): void {
+    this.wallet = null;
+    this.provider = null;
+    console.log('🔌 Wallet disconnected');
+  }
+
+  /**
+   * Mock payment for testing
+   */
+  private mockPayment(modelId: string, amount: string): Promise<PaymentResult> {
+    console.log(`🧪 MOCK: Payment of ${amount} tokens for model ${modelId}`);
+    console.log(`   ✅ Transaction simulated successfully`);
+    
+    return Promise.resolve({
+      success: true,
+      txHash: `0x${ethers.hexlify(ethers.randomBytes(32)).slice(2)}`,
+      gasUsed: '150000'
+    });
   }
 } 

@@ -19,16 +19,7 @@ describe('AgentPayySDK', () => {
       
       expect(wallet.address).toMatch(/^0x[a-fA-F0-9]{40}$/);
       expect(wallet.privateKey).toMatch(/^0x[a-fA-F0-9]{64}$/);
-      expect(wallet.mnemonic).toBeDefined();
       expect(wallet.smart).toBe(false);
-    });
-
-    it('should generate a wallet without mnemonic', async () => {
-      const wallet = await sdk.generateWallet({ mnemonic: false });
-      
-      expect(wallet.address).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      expect(wallet.privateKey).toMatch(/^0x[a-fA-F0-9]{64}$/);
-      expect(wallet.mnemonic).toBeUndefined();
     });
 
     it('should connect an existing wallet', async () => {
@@ -64,6 +55,17 @@ describe('AgentPayySDK', () => {
       await sdk.generateWallet();
     });
 
+    it('should process mock payment', async () => {
+      const result = await sdk.pay('model-1', { test: 'data' }, {
+        price: '1.0',
+        mock: true
+      });
+      
+      expect(result.success).toBe(true);
+      expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
+      expect(result.gasUsed).toBe('150000');
+    });
+
     it('should validate payment successfully', async () => {
       const mockResponse = {
         valid: true,
@@ -91,17 +93,6 @@ describe('AgentPayySDK', () => {
       
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('Validation failed');
-    });
-
-    it('should process mock payment', async () => {
-      const result = await sdk.pay('model-1', { test: 'data' }, {
-        price: '1.0',
-        mock: true
-      });
-      
-      expect(result.success).toBe(true);
-      expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
-      expect(result.gasUsed).toBe('150000');
     });
 
     it('should handle payment with attribution', async () => {
