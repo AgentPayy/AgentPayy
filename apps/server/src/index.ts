@@ -35,11 +35,11 @@ app.get('/', (c) => {
                 <span class="text-2xl font-bold tracking-tighter text-white">AgentPayy</span>
             </div>
             <div class="hidden md:flex gap-8 text-sm font-medium text-slate-400 uppercase tracking-widest">
-                <a href="#" class="hover:text-white transition">Protocol</a>
-                <a href="#" class="hover:text-white transition">SDK</a>
-                <a href="#" class="hover:text-white transition">Marketplace</a>
+                <a href="https://github.com/AgentPayy/agentpayy-platform#2-the-x402-protocol-specification" class="hover:text-white transition">Protocol</a>
+                <a href="https://github.com/AgentPayy/agentpayy-platform/tree/main/packages/sdk-python" class="hover:text-white transition">SDK</a>
+                <a href="#marketplace" class="hover:text-white transition">Marketplace</a>
             </div>
-            <button class="glass px-6 py-2 rounded-full border border-purple-500/30 text-sm font-semibold hover:bg-purple-500/10 transition">Launch App</button>
+            <button onclick="window.location.href='#marketplace'" class="glass px-6 py-2 rounded-full border border-purple-500/30 text-sm font-semibold hover:bg-purple-500/10 transition">Launch Hub</button>
         </nav>
 
         <!-- Hero Section -->
@@ -55,8 +55,8 @@ app.get('/', (c) => {
                 Enable your OpenClaw agents to earn, store, and spend USDC in milliseconds.
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-                <button class="bg-white text-slate-900 px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95">Read Whitepaper</button>
-                <button class="glass px-10 py-5 rounded-xl font-extrabold text-lg border border-slate-700 hover:border-slate-500 transition">Get Started</button>
+                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform/blob/main/AGENTS.md'" class="bg-white text-slate-900 px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95">Read Docs</button>
+                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform'" class="glass px-10 py-5 rounded-xl font-extrabold text-lg border border-slate-700 hover:border-slate-500 transition">GitHub</button>
             </div>
         </header>
 
