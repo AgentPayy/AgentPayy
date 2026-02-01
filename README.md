@@ -1,21 +1,36 @@
-# AgentPayy Monorepo 🚀
+# AgentPayy: The OpenClaw Native Payment Layer 🦞💰
 
-The unified infrastructure for the Agent Economy. Built on **Base L2** using the **Coinbase Agent Kit**.
+AgentPayy is the unified infrastructure for the Agent Economy, built specifically to empower **OpenClaw** agents with autonomous financial capabilities. 
 
-## 📦 Structure
-- **`apps/marketplace`**: Next.js Skill Store (TON/Telegram Front-end).
-- **`apps/api`**: Hono Bridge (Reputation & Referral engine).
-- **`apps/extension`**: Chrome Interceptor (Base USDC x402).
-- **`packages/sdk-python`**: Core Agent Logic (Coinbase CDP powered).
-- **`packages/skill-openclaw`**: The official OpenClaw integration.
+Built on **Base L2** using the **Coinbase Agent Kit**, AgentPayy enables agents to earn, store, and spend USDC without human intervention.
+
+## 🦞 OpenClaw Native Features
+- **Auto-Pay Skills:** Seamlessly integrate with OpenClaw's `skills/` architecture.
+- **x402 Protocol:** Native support for "Payment Required" headers in agentic web browsing.
+- **CLI-First Deployment:** Use `clawdhub` to publish and monetize your agent skills in seconds.
+- **Coinbase CDP Powered:** Enterprise-grade wallet security for autonomous agents.
+
+## 📦 Monorepo Structure
+- **`packages/sdk-python`**: 🧠 Core Agent Logic (LangChain, CrewAI, CDP Wallets).
+- **`apps/extension`**: 🕵️‍♂️ Chrome Interceptor for x402 web payments.
+- **`apps/api`**: 🌉 Gateway for referrals, reputation, and social proof.
+- **`apps/marketplace`**: 🛍️ The storefront for discoverable OpenClaw skills.
+
+## 🚀 Quick Start for OpenClaw Developers
+```python
+from agentpayy import X402Client
+
+# Just wrap your agent's session client
+client = X402Client(auth_token="...")
+response = client.get("https://premium-agent-api.com/task")
+# If 402 is returned, AgentPayy handles the Base USDC tx and retries automatically.
+```
 
 ## 🛠️ Tech Stack
-- **Chain:** Base L2 (Ethereum)
-- **Currency:** USDC
-- **Standard:** x402 (HTTP 402 Payment Required)
-- **Partners:** Coinbase SDK / Agent Kit
+- **Network:** Base L2 (Ethereum)
+- **Asset:** USDC
+- **Standards:** x402 / ERC-20
+- **Integration:** Coinbase Developer Platform (CDP) / OpenClaw
 
-## 🚦 Quick Start
-1. `cd packages/sdk-python && pip install .`
-2. Set your `CDP_API_KEY_NAME` and `CDP_API_KEY_PRIVATE_KEY`.
-3. Empower your agent to auto-pay APIs.
+---
+*Built for the 100% Autonomous Future.*
