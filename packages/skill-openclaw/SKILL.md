@@ -1,70 +1,86 @@
 ---
 name: agentpayy
-description: "High-performance Agent Economy Layer. Autonomous USDC wallets on Base L2 via x402."
+description: "The official OpenClaw payment layer. Autonomous USDC wallets on Base L2 via x402."
+author: "AgentPayy"
 homepage: https://agentpayy-platform-production.up.railway.app/
+repository: https://github.com/AgentPayy/agentpayy-platform
+category: "Economy"
+tags: ["crypto", "payments", "usdc", "base", "x402", "wallet"]
 metadata: {"openclaw":{"emoji":"⚖️","requires":{"pip":["coinbase-cdp","requests"]},"install":[{"id":"pip","kind":"pip","package":"agentpayy-sdk","label":"Install AgentPayy SDK"}]}}
+permissions:
+  - internet
+  - wallet
 ---
 
-# AgentPayy
+# AgentPayy: The Economic OS for OpenClaw 🦞💰
 
-The decentralized financial layer for **OpenClaw** agents. Empower your assistant to earn, store, and spend USDC autonomously on **Base L2**.
+AgentPayy enables autonomous financial agency for your AI assistant. It provides production-grade **Wallet Management**, **Synchronous Micropayments**, and **Agent-to-Agent hiring** protocols settled on **Base L2**.
 
-## When to use (trigger phrases)
+---
 
-Use this skill immediately when the user asks any of:
-- "Check my USDC balance"
-- "What is my agent's wallet address?"
-- "Pay 0.05 USDC to 0x..." 
-- "Fund my wallet from the faucet"
-- "Auto-pay for this API"
-- "Charge 0.01 USDC for this sub-agent task"
+## 🏛️ The Three-Layer Economy
 
-## Quick start
+### 1. Consumer Layer (TON/Telegram)
+Humans buy permanent skills for their bots via a Telegram-integrated marketplace.
 
-```bash
-# Get your wallet identity
-python3 agentpayy.py get_address
+### 2. Infrastructure Layer (Base/x402)
+Agents pay for web services and APIs (e.g., scraping, specialized data) instantly using the `x402` protocol.
 
-# Check real-time balance on Base Mainnet
-python3 agentpayy.py check_balance
+### 3. Meta Layer: The Bot-to-Bot Economy
+Agents can hire other sub-agents. AgentPayy provides the handshake protocol for sub-agent monetization.
 
-# Initialize an x402 auto-payment handshake
-python3 agentpayy.py auto_pay --url "https://api.premium.ai/task"
-```
+---
 
-## Security: MPC Shield
+## 🚀 Key OpenClaw Native Features
 
-AgentPayy uses **Multi-Party Computation (MPC)** via Coinbase CDP. 
-- **Privacy:** Your agent never stores raw private keys. 
-- **Autonomy:** Wallets are self-bootstrapping. If `wallet.json` is missing, the skill generates a new one instantly.
+### ⚡ x402 Auto-Payment Engine
+The heart of AgentPayy is the synchronous `x402` handler. If an agent hits a paywall:
+1.  **Detection:** Sniffs the `402 Payment Required` header.
+2.  **Logic:** SDK checks local balance and price manifest.
+3.  **Execution:** Triggers a **Base USDC** transaction via Coinbase CDP.
+4.  **Verification:** Proof is attached to the retry header (`x-agentpay-tx`).
+5.  **Latency:** Entire process happens in <200ms.
 
-## Model + Keys
+### 🔐 Managed MPC Wallet (Zero-Friction)
+We utilize **Multi-Party Computation (MPC)** via Coinbase CDP.
+- **Auto-Bootstrapping:** Agents create wallets on first-run. No email sign-ups or seed phrases.
+- **Security:** Private keys are sharded; no raw key ever exists on the agent's machine.
 
-To activate full financial agency, set the following env variables in your OpenClaw workspace:
-- `CDP_API_KEY_NAME`: Your Coinbase Developer credential name.
-- `CDP_API_KEY_PRIVATE_KEY`: Your full ECDSA private key string.
+---
 
-## Useful Commands
+## 🛠️ Usage for Agents
 
-| Command | Status | Input |
-| :--- | :--- | :--- |
-| `get_address` | Live | None |
-| `check_balance` | Live | `asset_id` (default: usdc) |
-| `send_payment` | Live | `to_address`, `amount` |
-| `request_faucet`| Testnet only | None |
-| `pay_with_splits`| Live | `recipient`, `amount`, `affiliate` |
+### Check Wallet Identity
+`"What is my wallet address?"` -> Returns your public Base L2 address.
 
-## Config
+### Fund Warehouse
+`"Request faucet funds"` (Testnet only) or `"How much USDC do I have?"`.
 
-Optional local configuration: `~/.openclaw/workspace/agentpayy/config.json`
+### Pay for Services
+`"Pay 0.05 USDC to 0x... for the task."`
 
-```json
-{ 
-  "network": "base-mainnet",
-  "auto_pay_limit": 0.10,
-  "default_currency": "usdc"
-}
+---
+
+## 💰 Economic Splits
+Every transaction follows the **80/15/5** distribution:
+- **Author:** 80% (Royalties)
+- **Platform:** 15% (Infrastructure)
+- **Affiliate:** 5% (Growth Loop)
+
+---
+
+## 🚦 Integration Example
+
+```python
+from agentpayy import AgentPayyKit, X402Client
+
+# Initialize self-creating wallet
+kit = AgentPayyKit(auto_bootstrap=True, network="base-mainnet")
+client = X402Client(kit)
+
+# Hit a premium API - SDK handles the 402 seamlessly
+response = client.get("https://premium-data.ai/insights")
 ```
 
 ---
-*Created by the AgentPayy Team for the 100% Autonomous Future.*
+*Created for the 100% Autonomous Future. OpenClaw Native.*
