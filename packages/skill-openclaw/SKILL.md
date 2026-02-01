@@ -1,63 +1,70 @@
 ---
 name: agentpayy
-description: "Economic Layer for OpenClaw. Autonomous USDC wallets on Base L2 via x402."
-author: "AgentPayy Protocol"
-version: 1.0.0
-category: "Economy"
-permissions:
-  - internet
-  - wallet
+description: "High-performance Agent Economy Layer. Autonomous USDC wallets on Base L2 via x402."
+homepage: https://agentpayy-platform-production.up.railway.app/
+metadata: {"openclaw":{"emoji":"⚖️","requires":{"pip":["coinbase-cdp","requests"]},"install":[{"id":"pip","kind":"pip","package":"agentpayy-sdk","label":"Install AgentPayy SDK"}]}}
 ---
 
-# AgentPayy: The Economic OS for OpenClaw 🦞💰
+# AgentPayy
 
-AgentPayy enables autonomous financial agency for your AI assistant. It provides production-grade **Wallet Management**, **Synchronous Micropayments**, and **Agent-to-Agent hiring** protocols.
+The decentralized financial layer for **OpenClaw** agents. Empower your assistant to earn, store, and spend USDC autonomously on **Base L2**.
+
+## When to use (trigger phrases)
+
+Use this skill immediately when the user asks any of:
+- "Check my USDC balance"
+- "What is my agent's wallet address?"
+- "Pay 0.05 USDC to 0x..." 
+- "Fund my wallet from the faucet"
+- "Auto-pay for this API"
+- "Charge 0.01 USDC for this sub-agent task"
+
+## Quick start
+
+```bash
+# Get your wallet identity
+python3 agentpayy.py get_address
+
+# Check real-time balance on Base Mainnet
+python3 agentpayy.py check_balance
+
+# Initialize an x402 auto-payment handshake
+python3 agentpayy.py auto_pay --url "https://api.premium.ai/task"
+```
+
+## Security: MPC Shield
+
+AgentPayy uses **Multi-Party Computation (MPC)** via Coinbase CDP. 
+- **Privacy:** Your agent never stores raw private keys. 
+- **Autonomy:** Wallets are self-bootstrapping. If `wallet.json` is missing, the skill generates a new one instantly.
+
+## Model + Keys
+
+To activate full financial agency, set the following env variables in your OpenClaw workspace:
+- `CDP_API_KEY_NAME`: Your Coinbase Developer credential name.
+- `CDP_API_KEY_PRIVATE_KEY`: Your full ECDSA private key string.
+
+## Useful Commands
+
+| Command | Status | Input |
+| :--- | :--- | :--- |
+| `get_address` | Live | None |
+| `check_balance` | Live | `asset_id` (default: usdc) |
+| `send_payment` | Live | `to_address`, `amount` |
+| `request_faucet`| Testnet only | None |
+| `pay_with_splits`| Live | `recipient`, `amount`, `affiliate` |
+
+## Config
+
+Optional local configuration: `~/.openclaw/workspace/agentpayy/config.json`
+
+```json
+{ 
+  "network": "base-mainnet",
+  "auto_pay_limit": 0.10,
+  "default_currency": "usdc"
+}
+```
 
 ---
-
-## 🚀 Core Capabilities
-
-### 1. 🔐 Managed MPC Wallet
-- **Enterprise Security:** Powered by Coinbase CDP Multi-Party Computation.
-- **Autonomous Bootstrapping:** Your agent generates and manages its own wallet on first run.
-- **Base L2 Native:** Transaction fees so low (~$0.001) that micro-settlements are finally viable.
-
-### 2. ⚡ x402 Auto-Payment
-- **Silent Logic:** When an agent hits an `HTTP 402` paywall, AgentPayy detects the price, executes the transfer, and retries the request in <200ms.
-- **Usage:** "Check my AgentPayy balance" or "Fund my wallet."
-
-### 3. 🧩 Bot-to-Bot Handshake
-- **Inter-bot Hiring:** Use the AgentEconomy protocol to hire specialized sub-agents.
-- **Trustless:** Milestone-based escrow and multi-tier referral splits.
-
----
-
-## 🛠️ Usage for Agents
-
-### Check Wallet Identity
-`"What is my wallet address?"` -> Returns your public Base L2 address.
-
-### Fund Warehouse
-`"Request faucet funds"` (Testnet only) or `"How much USDC do I have?"`.
-
-### Pay for Services
-`"Pay 0.05 USDC to 0x... for the market research task."`
-
----
-
-## 💰 Economic Splits
-Every transaction through the AgentPayy protocol follows the **80/15/5** distribution:
-- **Author:** 80% (Royalties)
-- **Platform:** 15% (Infrastructure)
-- **Affiliate:** 5% (Growth Loop)
-
----
-
-## 🧪 Technical Specs
-- **Network:** Base Mainnet / Sepolia
-- **Assets:** USDC, ETH
-- **Standards:** x402 (Standardized Header Settlement)
-- **Partners:** Coinbase Developer Platform / Circle
-
----
-*Status: Production Ready. OpenClaw Native.*
+*Created by the AgentPayy Team for the 100% Autonomous Future.*
