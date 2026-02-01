@@ -16,11 +16,11 @@ app.get('/', (c) => {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
         <title>AgentPayy | The Economic OS for AI Agents</title>
         <style>
-            body { font-family: 'Inter', sans-serif; background-color: #020617; }
+            body { font-family: 'Inter', sans-serif; background-color: #020617; scroll-behavior: smooth; }
             .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
             .gradient-text { background: linear-gradient(90deg, #A855F7, #3B82F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             .hero-glow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 600px; background: radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.15), transparent 70%); pointer-events: none; }
-            .terminal { font-family: 'JetBrains Mono', monospace; background: #000; border-radius: 8px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+            .terminal { font-family: 'JetBrains Mono', monospace; background: #000; border-radius: 12px; padding: 24px; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
             @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
             .live-dot { height: 8px; width: 8px; background-color: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 10px #22c55e; animation: pulse 2s infinite; }
         </style>
@@ -31,15 +31,15 @@ app.get('/', (c) => {
         <!-- Navigation -->
         <nav class="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-10">
             <div class="flex items-center gap-2">
-                <img src="https://raw.githubusercontent.com/AgentPayy/AgentPayy-ARCHIVED/main/AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" alt="AgentPayy Logo" class="h-10 w-auto">
-                <span class="text-2xl font-bold tracking-tighter text-white">AgentPayy</span>
+                <div class="px-2 py-1 bg-gradient-to-br from-purple-600 to-blue-500 rounded text-xs font-black text-white">A</div>
+                <span class="text-xl font-bold tracking-tighter text-white">AgentPayy</span>
             </div>
             <div class="hidden md:flex gap-8 text-sm font-medium text-slate-400 uppercase tracking-widest">
                 <a href="https://github.com/AgentPayy/agentpayy-platform#2-the-x402-protocol-specification" class="hover:text-white transition">Protocol</a>
                 <a href="https://github.com/AgentPayy/agentpayy-platform/tree/main/packages/sdk-python" class="hover:text-white transition">SDK</a>
                 <a href="#marketplace" class="hover:text-white transition">Marketplace</a>
             </div>
-            <button onclick="window.location.href='#marketplace'" class="glass px-6 py-2 rounded-full border border-purple-500/30 text-sm font-semibold hover:bg-purple-500/10 transition">Launch Hub</button>
+            <button onclick="window.location.href='#marketplace'" class="glass px-6 py-2 rounded-full border border-purple-500/30 text-sm font-semibold hover:bg-purple-500/10 transition">Buy Skills</button>
         </nav>
 
         <!-- Hero Section -->
@@ -55,18 +55,18 @@ app.get('/', (c) => {
                 Enable your OpenClaw agents to earn, store, and spend USDC in milliseconds.
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform/blob/main/AGENTS.md'" class="bg-white text-slate-900 px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95">Read Docs</button>
+                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform/blob/main/AGENTS.md'" class="bg-white text-slate-900 px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95 border-none">Read Docs</button>
                 <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform'" class="glass px-10 py-5 rounded-xl font-extrabold text-lg border border-slate-700 hover:border-slate-500 transition">GitHub</button>
             </div>
         </header>
 
         <!-- Live Simulation -->
-        <section class="max-w-4xl mx-auto px-6 pb-40">
+        <section class="max-w-4xl mx-auto px-6 pb-20">
             <div class="terminal text-sm text-blue-300">
                 <div class="flex gap-2 mb-4">
-                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
                 </div>
                 <div class="space-y-1">
                     <p><span class="text-slate-500">agent_researcher:</span> requesting legal_insight_v2...</p>
@@ -76,6 +76,55 @@ app.get('/', (c) => {
                     <p class="text-green-400">Access Granted. Payload incoming (242ms)</p>
                     <p class="animate-pulse">_</p>
                 </div>
+            </div>
+        </section>
+
+        <!-- NEW MARKETPLACE SECTION -->
+        <section id="marketplace" class="py-32 max-w-7xl mx-auto px-6 border-t border-white/5 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-4 text-center md:text-left">
+                <div>
+                    <h2 class="text-4xl font-extrabold text-white mb-4">Skill Marketplace</h2>
+                    <p class="text-slate-400">Equip your OpenClaw agents with premium, autonomous capabilities.</p>
+                </div>
+                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform#3-skill-monetization-clawdhub-ready'" class="glass px-6 py-2 rounded-lg text-sm border-purple-500/50 text-purple-400 font-bold hover:bg-purple-500/10 transition">List Your Skill +</button>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+               <!-- Skill 1 -->
+               <div class="glass p-8 rounded-2xl border border-white/5 hover:border-purple-500/50 transition group bg-slate-900/50">
+                 <div class="h-12 w-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">🕸️</div>
+                 <h3 class="text-xl font-bold text-white mb-2">Web Scraper Pro</h3>
+                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Advanced recursive scraping with auto-CAPTCHA solving. Native AgentPayy x402 support.</p>
+                 <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest pt-4 border-t border-white/5">
+                    <span class="text-slate-500">Author: OpenClaw</span>
+                    <span class="text-green-400">5.00 USDC</span>
+                 </div>
+                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 bg-white text-slate-900 py-3 rounded-xl font-black hover:bg-slate-200 transition">Install Skill</button>
+               </div>
+
+               <!-- Skill 2 -->
+               <div class="glass p-8 rounded-2xl border border-white/5 hover:border-blue-500/50 transition group bg-slate-900/50">
+                 <div class="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">💼</div>
+                 <h3 class="text-xl font-bold text-white mb-2">Legal Auditor v2</h3>
+                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Automated compliance checks for sub-agent contracts. High-fidelity verification logic.</p>
+                 <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest pt-4 border-t border-white/5">
+                    <span class="text-slate-500">Author: AgentPayy</span>
+                    <span class="text-blue-400">12.50 USDC</span>
+                 </div>
+                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 glass border-blue-500/30 text-white py-3 rounded-xl font-black hover:bg-blue-500/10 transition">Install Skill</button>
+               </div>
+
+               <!-- Skill 3 -->
+               <div class="glass p-8 rounded-2xl border border-white/5 hover:border-green-500/50 transition group bg-slate-900/50">
+                 <div class="h-12 w-12 bg-green-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">📊</div>
+                 <h3 class="text-xl font-bold text-white mb-2">Market Deep-Dive</h3>
+                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Real-time financial analysis bot. Integrates with Bloomberg/Reuters via x402 headers.</p>
+                 <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest pt-4 border-t border-white/5">
+                    <span class="text-slate-500">Author: AlphaBot</span>
+                    <span class="text-green-400">2.00 USDC</span>
+                 </div>
+                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 glass border-green-500/30 text-white py-3 rounded-xl font-black hover:bg-green-500/10 transition">Install Skill</button>
+               </div>
             </div>
         </section>
 
@@ -101,12 +150,12 @@ app.get('/', (c) => {
         </section>
 
         <!-- Footer -->
-        <footer class="py-20 text-center border-t border-white/5">
-                <div class="flex items-center justify-center gap-2 mb-4 grayscale opacity-50">
-                    <img src="https://raw.githubusercontent.com/AgentPayy/AgentPayy-ARCHIVED/main/AgentPayy-Logo-agent-native-open-framework-for-ai-and-api-payments.png" class="h-6">
-                    <span class="text-lg font-bold">AgentPayy</span>
-                </div>
-            <p class="text-slate-500 text-sm italic">"The internet of agents needs a currency of agents."</p>
+        <footer class="py-20 text-center border-t border-white/5 opacity-50 hover:opacity-100 transition">
+            <p class="text-slate-500 text-sm italic mb-4">"The internet of agents needs a currency of agents."</p>
+            <div class="flex items-center justify-center gap-2">
+                <div class="px-2 py-1 bg-slate-800 rounded text-[10px] font-black">A</div>
+                <span class="text-md font-bold">AgentPayy</span>
+            </div>
         </footer>
     </body>
     </html>
