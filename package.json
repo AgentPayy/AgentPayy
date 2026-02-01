@@ -2,8 +2,8 @@
   "name": "agentpayy-monorepo",
   "private": true,
   "scripts": {
-    "start": "cd apps/server && npm start",
-    "install": "cd apps/server && npm install"
+    "railway-build": "cd apps/server && npm install",
+    "start": "cd apps/server && npm start"
   },
   "workspaces": [
     "apps/*",
