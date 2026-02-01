@@ -16,6 +16,17 @@ app.get('/api/v1/wallet/status', async (c) => {
   return c.json({ status: "active", network: "base-mainnet", wallet: "initialized" });
 });
 
+// PRIVATE diagnostic route to check organizational growth
+app.get('/api/v1/admin/stats', async (c) => {
+  // In a real implementation with the full SDK loaded, we would call Wallet.list()
+  // For now, I will return the local 'db' count we are tracking in memory.
+  return c.json({ 
+    total_wallets: db.balances.size || 1, // Minimum 1 for the master
+    active_escrows: db.escrows.size,
+    total_referrals: db.referrals.size
+  });
+});
+
 app.get('/', (c) => {
   return c.html(`
     <!DOCTYPE html>
