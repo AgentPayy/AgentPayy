@@ -1,0 +1,8 @@
+{
+  "name": "agentpayy-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
