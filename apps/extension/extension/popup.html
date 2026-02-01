@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x402Pay</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="7" y="10" width="10" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+          <path d="M9 10V7C9 5.34315 10.3431 4 12 4C13.6569 4 15 5.34315 15 7V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="15.5" r="1.5" fill="currentColor"/>
+        </svg>
+        <h1>x402Pay</h1>
+      </div>
+      <p class="tagline">The web, unlocked</p>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="wallet">Wallet</button>
+      <button class="tab" data-tab="discovery">Discovery</button>
+    </nav>
+
+    <div id="wallet-tab" class="tab-content active">
+    <section class="balance-card">
+      <div class="balance-row">
+        <span class="label">Starter Credits</span>
+        <span class="value" id="starter-credits">$3.00</span>
+      </div>
+      <div class="balance-row">
+        <span class="label">Daily Spent</span>
+        <span class="value" id="daily-spent">$0.00</span>
+      </div>
+      <div class="balance-row">
+        <span class="label">Daily Cap</span>
+        <span class="value" id="daily-cap">$1.00</span>
+      </div>
+    </section>
+
+    <section class="settings">
+      <div class="setting-row">
+        <label for="auto-pay">
+          <span>Auto-Pay</span>
+          <small>Automatically unlock content</small>
+        </label>
+        <input type="checkbox" id="auto-pay" class="toggle">
+      </div>
+      <div class="setting-row">
+        <label for="max-transaction">
+          <span>Max Per Transaction</span>
+          <small>Maximum auto-pay amount</small>
+        </label>
+        <select id="max-transaction">
+          <option value="0.10">$0.10</option>
+          <option value="0.25">$0.25</option>
+          <option value="0.50" selected>$0.50</option>
+          <option value="1.00">$1.00</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="receipts">
+      <h2>Recent Unlocks</h2>
+      <div id="receipts-list" class="receipts-list">
+        <div class="empty-state">No unlocks yet. Browse the web!</div>
+      </div>
+    </section>
+
+    <footer>
+      <button id="manage-wallet" class="btn-primary">Manage Wallet</button>
+      <a href="#" id="view-all">View all receipts →</a>
+      <a href="logs.html" id="view-logs" style="display:block;margin-top:8px;font-size:12px;color:#999;">🐛 Debug Logs</a>
+    </footer>
+    </div>
+
+    <div id="discovery-tab" class="tab-content">
+      <section class="discovery-header">
+        <h2>📡 Discover x402 APIs</h2>
+        <p>Browse and test payment-enabled endpoints</p>
+      </section>
+
+      <div id="bazaar-loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading endpoints...</p>
+      </div>
+
+      <div id="bazaar-error" class="error-state" style="display: none;">
+        <p>Failed to load endpoints</p>
+        <button id="retry-bazaar" class="btn-secondary">Retry</button>
+      </div>
+
+      <div id="endpoints-list" class="endpoints-list"></div>
+    </div>
+  </div>
+
+  <!-- Wallet Management Modal -->
+  <div id="wallet-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Manage Wallet</h2>
+        <button id="close-wallet-modal" class="btn-close">×</button>
+      </div>
+
+      <div class="wallet-section">
+        <h3>Network</h3>
+        <div class="network-selector">
+          <button class="network-option active" data-network="base-sepolia">
+            <div class="network-badge testnet">Testnet</div>
+            <div class="network-name">Base Sepolia</div>
+            <div class="network-desc">For testing with free credits</div>
+          </button>
+          <button class="network-option" data-network="base">
+            <div class="network-badge mainnet">Mainnet</div>
+            <div class="network-name">Base</div>
+            <div class="network-desc">Real payments with USDC</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="wallet-section">
+        <h3>Wallet Connection</h3>
+        <div id="wallet-status" class="wallet-status">
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span class="status-text">No wallet connected</span>
+          </div>
+          <div id="wallet-address" class="wallet-address" style="display: none;"></div>
+        </div>
+
+        <div class="wallet-providers">
+          <button class="provider-btn" data-provider="coinbase">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="12" r="10"/>
+              <rect x="8" y="8" width="8" height="8" fill="white"/>
+            </svg>
+            <span>Coinbase Wallet</span>
+          </button>
+          <button class="provider-btn" data-provider="metamask">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L2 7v10l10 5 10-5V7l-10-5z"/>
+            </svg>
+            <span>MetaMask</span>
+          </button>
+          <button class="provider-btn" data-provider="generated">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            <span>Generate Wallet</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="wallet-section">
+        <h3>Add Funds</h3>
+        <div id="funding-testnet" class="funding-options">
+          <div class="funding-card">
+            <h4>🚰 Get Test USDC</h4>
+            <p>Free testnet USDC for testing x402Pay</p>
+            <button id="get-test-usdc" class="btn-secondary">Get from Faucet</button>
+          </div>
+          <div class="funding-card">
+            <h4>💰 Already Have USDC?</h4>
+            <p>Bridge USDC to Base Sepolia testnet</p>
+            <button id="bridge-testnet" class="btn-secondary">Bridge Assets</button>
+          </div>
+        </div>
+        <div id="funding-mainnet" class="funding-options" style="display: none;">
+          <div class="funding-card">
+            <h4>💳 Buy USDC on Coinbase</h4>
+            <p>Purchase USDC and send to Base network</p>
+            <button id="buy-usdc-coinbase" class="btn-secondary">Buy on Coinbase</button>
+          </div>
+          <div class="funding-card">
+            <h4>🌉 Bridge from Ethereum</h4>
+            <p>Bridge USDC from Ethereum to Base</p>
+            <button id="bridge-mainnet" class="btn-secondary">Bridge Assets</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wallet-section">
+        <h3>Balance</h3>
+        <div class="balance-display">
+          <div class="balance-amount" id="wallet-balance">$0.00</div>
+          <div class="balance-label">USDC Available</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Modal -->
+  <div id="onboarding-modal" class="onboarding-modal" style="display: none;">
+    <div class="onboarding-content">
+      <!-- Slide 1: Welcome -->
+      <div class="onboarding-slide active" data-slide="1">
+        <div class="onboarding-icon">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="10" width="10" height="11" rx="2" stroke="currentColor" stroke-width="2"/>
+            <path d="M9 10V7C9 5.34315 10.3431 4 12 4C13.6569 4 15 5.34315 15 7V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="15.5" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <h2>Welcome to x402Pay</h2>
+        <p>The first browser wallet for instant micropayments on the web.</p>
+        <p class="highlight">Pay pennies for premium content instead of $10/month subscriptions.</p>
+      </div>
+
+      <!-- Slide 2: How It Works -->
+      <div class="onboarding-slide" data-slide="2">
+        <div class="onboarding-steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Browse Normally</h3>
+              <p>Visit any site with premium content</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>See the Price</h3>
+              <p>x402Pay shows the cost ($0.01 - $0.50)</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Click to Pay</h3>
+              <p>Content unlocks instantly—no redirects</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Get Started -->
+      <div class="onboarding-slide" data-slide="3">
+        <div class="onboarding-credits">
+          <div class="credits-badge">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="credits-amount">$3.00</div>
+          </div>
+          <h2>You've Got Credits!</h2>
+          <p>Start with <strong>$3 free credits</strong> to try the system risk-free.</p>
+          <p class="subtext">That's 30+ articles, 300+ API calls, or mix and match.</p>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="onboarding-nav">
+        <button id="onboarding-skip" class="btn-skip">Skip</button>
+        <div class="onboarding-dots">
+          <span class="dot active" data-slide="1"></span>
+          <span class="dot" data-slide="2"></span>
+          <span class="dot" data-slide="3"></span>
+        </div>
+        <button id="onboarding-next" class="btn-next">Next</button>
+        <button id="onboarding-demo" class="btn-demo" style="display: none;">Try Demo Site</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+

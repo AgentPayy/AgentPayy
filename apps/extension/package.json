@@ -1,0 +1,32 @@
+{
+  "name": "unlock-x402",
+  "version": "0.1.0",
+  "description": "Universal micropayments for the web via x402 protocol",
+  "private": true,
+  "workspaces": [
+    "extension",
+    "publisher-sdk",
+    "demo-server"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:server": "npm run dev -w demo-server",
+    "build:extension": "npm run build -w extension",
+    "test": "npm test --workspaces"
+  },
+  "keywords": [
+    "x402",
+    "micropayments",
+    "browser-extension",
+    "usdc",
+    "base"
+  ],
+  "author": "Unlock",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@noble/curves": "^1.9.7"
+  }
+}

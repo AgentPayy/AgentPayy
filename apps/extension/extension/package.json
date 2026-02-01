@@ -1,0 +1,27 @@
+{
+  "name": "unlock-extension",
+  "version": "0.2.0",
+  "description": "Unlock browser extension for x402 micropayments (Official x402 Integration)",
+  "type": "module",
+  "scripts": {
+    "bundle": "esbuild src/background.js --bundle --outfile=background.js --format=esm --platform=browser",
+    "bundle:content": "esbuild src/content.js --bundle --outfile=content.js --format=iife --platform=browser",
+    "build": "npm run bundle && npm run bundle:content && mkdir -p build && cp -r *.js *.html *.css icons manifest.json build/",
+    "pack": "npm run build && cd build && zip -r ../unlock-extension.zip .",
+    "dev": "npm run bundle && npm run bundle:content"
+  },
+  "keywords": [
+    "x402",
+    "micropayments",
+    "chrome-extension"
+  ],
+  "author": "Unlock",
+  "license": "MIT",
+  "dependencies": {
+    "x402": "^0.7.1",
+    "x402-fetch": "^0.7.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.12"
+  }
+}

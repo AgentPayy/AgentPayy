@@ -1,0 +1,6 @@
+build/
+*.zip
+background.js
+content.js
+node_modules/
+
