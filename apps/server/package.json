@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "tsx src/index.ts"
+    "start": "npx tsx src/index.ts",
+    "build": "echo 'No build step required for Hono'"
   },
   "dependencies": {
     "hono": "^4.0.0",
