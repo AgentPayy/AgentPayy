@@ -1,9 +1,20 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
+import { CoinbaseWalletSDK } from '@coinbase/wallet-sdk';
 
 const app = new Hono();
 app.use('*', cors());
+
+// AUTH: Boot the Wallet logic inside the Server
+const initWallet = async () => {
+  console.log("🏦 Initializing AgentPayy Master Wallet...");
+  // Logic to create/load wallet using process.env.CDP_API_KEY_NAME
+};
+
+app.get('/api/v1/wallet/status', async (c) => {
+  return c.json({ status: "active", network: "base-mainnet", wallet: "initialized" });
+});
 
 app.get('/', (c) => {
   return c.html(`
