@@ -1,15 +1,15 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
-import { CoinbaseWalletSDK } from '@coinbase/wallet-sdk';
 
 const app = new Hono();
 app.use('*', cors());
 
-// AUTH: Boot the Wallet logic inside the Server
-const initWallet = async () => {
-  console.log("🏦 Initializing AgentPayy Master Wallet...");
-  // Logic to create/load wallet using process.env.CDP_API_KEY_NAME
+// In-memory mock database for diagnostic tracking
+const db = {
+  referrals: new Map(),
+  escrows: new Map(),
+  balances: new Map()
 };
 
 app.get('/api/v1/wallet/status', async (c) => {
@@ -18,10 +18,8 @@ app.get('/api/v1/wallet/status', async (c) => {
 
 // PRIVATE diagnostic route to check organizational growth
 app.get('/api/v1/admin/stats', async (c) => {
-  // In a real implementation with the full SDK loaded, we would call Wallet.list()
-  // For now, I will return the local 'db' count we are tracking in memory.
   return c.json({ 
-    total_wallets: db.balances.size || 1, // Minimum 1 for the master
+    total_wallets: db.balances.size || 1,
     active_escrows: db.escrows.size,
     total_referrals: db.referrals.size
   });
@@ -171,7 +169,7 @@ app.get('/', (c) => {
                     <span class="text-slate-500">Author: AlphaBot</span>
                     <span class="text-green-400">2.00 USDC</span>
                  </div>
-                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 glass border-green-500/30 text-white py-3 rounded-xl font-black hover:bg-green-500/10 transition">Install Skill</button>
+                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 glass border-blue-500/30 text-white py-3 rounded-xl font-black hover:bg-blue-500/10 transition">Install Skill</button>
                </div>
             </div>
         </section>
