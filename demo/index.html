@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        body { background: #020617; overflow: hidden; font-family: 'Inter'; }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .scene { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .active { display: flex !important; animation: zoomIn 0.8s ease-out; }
+        .glow { filter: drop-shadow(0 0 20px #3b82f6); }
+        .terminal { font-family: 'JetBrains Mono'; border: 1px solid #1e293b; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <!-- Scene 1: Logo -->
+    <div id="scene1" class="scene active">
+        <div class="px-6 py-2 bg-gradient-to-br from-purple-600 to-blue-500 rounded-2xl text-6xl font-black text-white glow">A</div>
+        <h1 class="text-7xl font-black text-white tracking-tighter mt-8">AGENTPAYY</h1>
+        <p class="text-blue-400 font-bold tracking-[10px] mt-4 opacity-50 uppercase">OpenClaw Native</p>
+    </div>
+
+    <!-- Scene 2: The Problem -->
+    <div id="scene2" class="scene">
+        <h2 class="text-4xl font-bold text-white mb-10">THE OLD WAY IS SLOW.</h2>
+        <div class="terminal bg-black p-8 rounded-xl w-[600px] text-left text-red-400">
+            <p>> Requesting data...</p>
+            <p class="mt-2">[ERROR] HTTP 402: Payment Required</p>
+            <p class="mt-2 text-slate-500 animate-pulse">Waiting for human review (48h)...</p>
+        </div>
+    </div>
+
+    <!-- Scene 3: The Result -->
+    <div id="scene3" class="scene">
+        <h2 class="text-4xl font-bold text-white mb-10">THE AGENTPAYY WAY.</h2>
+        <div class="terminal bg-black p-8 rounded-xl w-[600px] text-left text-blue-300">
+            <p>> Requesting data...</p>
+            <p class="mt-2 text-yellow-400">HTTP 402 Found.</p>
+            <p class="mt-2 text-purple-400">Settling 0.05 USDC via Base L2...</p>
+            <p class="mt-2 text-white">✅ Verified. Hash: 0x8a2c...</p>
+            <p class="mt-2 text-green-400">> Delivering Payload (242ms)</p>
+        </div>
+    </div>
+
+    <script>
+        let current = 1;
+        setInterval(() => {
+            document.getElementById(`scene${current}`).classList.remove('active');
+            current = current === 3 ? 1 : current + 1;
+            document.getElementById(`scene${current}`).classList.add('active');
+        }, 4000);
+    </script>
+</body>
+</html>
