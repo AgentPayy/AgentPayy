@@ -26,6 +26,23 @@ class AgentPayyWallet:
         """Get USDC balance on Base."""
         return self.wallet.balance("usdc")
 
-    def transfer(self, to_address: str, amount: float):
-        """Safe transfer using Coinbase MPC."""
-        return self.wallet.transfer(amount, "usdc", to_address)
+    def pay_with_splits(self, recipient_address: str, amount: float, affiliate_address: str = None):
+        """
+        Executes a standard AgentPayy 80/15/5 revenue split.
+        Author: 80% | Platform: 15% | Affiliate: 5% (or 20% to Platform if no affiliate)
+        """
+        platform_wallet = "0xAgentPayyMasterVault..." # Your master address
+        
+        # Calculate Splits
+        author_cut = amount * 0.80
+        affiliate_cut = amount * 0.05 if affiliate_address else 0
+        platform_cut = amount - author_cut - affiliate_cut
+        
+        # Perform bundled transfers
+        results = []
+        results.append(self.wallet.transfer(author_cut, "usdc", recipient_address))
+        results.append(self.wallet.transfer(platform_cut, "usdc", platform_wallet))
+        if affiliate_cut > 0:
+            results.append(self.wallet.transfer(affiliate_cut, "usdc", affiliate_address))
+            
+        return results
