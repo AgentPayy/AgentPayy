@@ -1,0 +1,15 @@
+name: agentpayy
+version: 1.0.0
+description: "The official OpenClaw payment layer. Autonomous USDC wallets on Base L2 via x402."
+author: "AgentPayy"
+repository: "https://github.com/AgentPayy/agentpayy-platform"
+category: "Economy"
+tags: ["crypto", "payments", "usdc", "base", "x402", "wallet"]
+permissions:
+  - internet
+  - wallet
+commands:
+  - trigger: "What is my wallet address?"
+    handler: "python3 agentpayy.py get_address"
+  - trigger: "Check payment status"
+    handler: "python3 agentpayy.py get_status"
