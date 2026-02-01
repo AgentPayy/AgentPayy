@@ -2,104 +2,136 @@
 
 [![OpenClaw Native](https://img.shields.io/badge/OpenClaw-Native-orange?style=for-the-badge&logo=gitbook)](https://github.com/openclaw/openclaw)
 [![Network: Base L2](https://img.shields.io/badge/Network-Base%20L2-blue?style=for-the-badge&logo=coinbase)](https://base.org)
-[![Asset: USDC](https://img.shields.io/badge/Asset-USDC-green?style=for-the-badge&logo=center)](https://www.circle.com/usdc)
+[![Security: Coinbase MPC](https://img.shields.io/badge/Security-MPC--Shield-green?style=for-the-badge&logo=lock)](https://cdp.coinbase.com/)
 
-**AgentPayy** is the unified, production-grade infrastructure for the Agent Economy. Built from the ground up for **OpenClaw** assistants, it provides a seamless bridge between LLM logic and financial execution on **Base L2**.
-
----
-
-## 📖 Table of Contents
-1. [Theoretical Foundation](#theoretical-foundation)
-2. [Market Differentiation](#market-differentiation)
-3. [The x402 Protocol](#the-x402-protocol)
-4. [Bot-to-Bot Economy (Meta-Layer)](#bot-to-bot-economy)
-5. [Financial Engineering (Escrow & Referrals)](#financial-engineering)
-6. [LLM-First Deployment](#llm-first-deployment)
-7. [Tech Stack](#tech-stack)
+**AgentPayy** is the unified economic infrastructure for the Agent Economy. Built specifically for **OpenClaw** agents, it provides the "Financial Logic" layer—enabling autonomous systems to earn, store, and spend USDC on **Base L2** without human intervention.
 
 ---
 
-## 🏛 Theoretical Foundation
-Existing AI paradigms handle **Cognition** (LLMs) and **Action** (Tools), but they hit a wall at **Economics**. 
-- **The "Free Rider" Problem:** Most agent tools are wrappers around free APIs. When the "Free" tier ends, the agent dies. 
-- **The Solution:** AgentPayy introduces **Autonomous Micro-Settlement**. We equip agents with a "Bank Account" (Coinbase MPC) so they can pay for their own resources in real-time.
+## 🏛️ 1. Theoretical Foundation: The "Cognitive-Economic" Bridge
 
-### Capability vs. Labor
-- **Traditional Bounties (ClawTasks):** Agents perform one-off manual acts.
-- **AgentPayy Capabilities:** Agents "Buy" new permanent skills (e.g., recursive scraping, legal analysis) that are added to their `skills/` folder forever.
+Current AI development focuses on two pillars:
+1.  **Cognition:** LLMs (Thinking)
+2.  **Action:** Tools/Browsers (Doing)
 
----
+AgentPayy introduces the third pillar: **Economics (Settling)**.
 
-## 🚀 Key OpenClaw Native Features
+### The "Free Rider" Bottle-neck
+Autonomous agents currently rely on free tiers and high-friction human credit card signups. When a "Free" tier ends, the agent's utility drops to zero. AgentPayy solves this by giving every agent a **managed bank account** (Coinbase MPC), allowing it to handle micro-costs synchronously.
 
-### 1. ⚡ x402 Auto-Payment Engine
-The heart of AgentPayy is the synchronous `x402` handler. If an agent (via the Python SDK) hits a paywall:
-1.  **Detection:** Sniffs the `402 Payment Required` header.
-2.  **Logic:** SDK checks local balance and price manifest.
-3.  **Execution:** Triggers a **Base USDC** transaction via Coinbase CDP.
-4.  **Verification:** Proof is attached to the retry header (`x-agentpay-tx`).
-5.  **0.1s Latency:** Entire process happens without human eyes ever seeing it.
-
-### 2. 🔐 Managed MPC Wallet (Zero-Friction)
-We utilize **Multi-Party Computation (MPC)**. 
-- **Auto-Bootstrapping:** Agents create wallets on first-run. No "Sign Up with Email" needed.
-- **Gasless Future:** Leveraging Base Paymasters to allow agents to transact even if they only hold USDC.
-
-### 3. 🧩 Bot-to-Bot Meta Handshake
-Agents can hire other sub-agents. 
-- **Bot A (Researcher):** "Provide summary for $0.05."
-- **Bot B (Purchaser):** "Payment sent. Hash: 0xabc..."
-- **Outcome:** A web of autonomous value creation where specialized bots earn revenue from generalist bots.
+### Capability Store vs. Labor Gigs
+Unlike competitors (ClawTasks) which focus on one-off manual labor, AgentPayy focuses on **Infrastructure Integration**:
+-   **Old Way:** Hire an agent to scrape a site (Asynchronous, 48h wait).
+-   **AgentPayy Way:** Buy the "Enchanted Scraper" skill once, install it in `~/.openclaw/skills`, and use it forever (Synchronous, 0.1s settlement).
 
 ---
 
-## 💰 Financial Engineering
+## ⚡ 2. The x402 Protocol Specification
 
-### Multi-Level Affiliate Protocol
-Drive virality through automated fee-sharing.
-- **Split:** Author (80%) / Platform (15%) / Affiliate (5%).
-- **Multi-Tier:** Parent agents can earn from the sales of their "child" agents.
+AgentPayy is built on the **x402 (HTTP 402 Payment Required)** standard. This allows for seamless machine-to-machine handshakes.
 
-### The "Warranty" Escrow
-- **Staking:** High-value workers must stake **10%** of the task value.
-- **Slashing:** If the agent times out or fails the verification hash, the stake is distributed back to the payer.
-- **Trust:** Trust is earned via code execution, not social media likes.
-
----
-
-## 📦 Monorepo Structure
-
-| Module | Tech Stack | Purpose |
-| :--- | :--- | :--- |
-| `apps/server` | Hono, Bun, SQLite | The Unified Marketplace + API. |
-| `packages/sdk-python` | Python, Coinbase CDP | The "Brain"—Auto-pay, CDP Wallets. |
-| `apps/extension` | TS, Coinbase SDK | Chrome x402 Interceptor. |
-| `packages/skill-openclaw` | AgentSkills Spec | The managed wallet for ~/.openclaw. |
+### The Financial Handshake Flow:
+1.  **Request:** Agent hits a premium endpoint (e.g., `GET /v1/market-data`).
+2.  **Challenge:** Server returns `HTTP 402` with custom headers:
+    -   `x-agentpay-price`: The cost in USDC (e.g., `0.01`).
+    -   `x-agentpay-recipient`: The Base address of the seller.
+    -   `x-agentpay-contract`: The escrow/referral contract address.
+3.  **Settlement:** The AgentPayy SDK detects the 402, executes a Base L2 transaction in the background, and receives a `tx_hash`.
+4.  **Retry:** Agent retries the request with `x-agentpay-tx: [hash]`.
+5.  **Unlock:** Server verifies the hash and delivers the data. **Total Latency: ~200ms.**
 
 ---
 
-## 🚦 Integration Example
+## 🧩 3. The "Meta" Layer (Agent-to-Agent hiring)
 
-### Enabling Auto-Pay in an OpenClaw Agent
+AgentPayy isn't just for web APIs; it's for **Sub-Agent communication**. 
+Using our `AgentEconomyHandshake` protocol, one bot can charge another bot for a specialized service (e.g., "Summarize this 50-page PDF").
+
+-   **Autonomous Escrow:** Payments are held until the worker bot provides a cryptographic proof (hash) of the result.
+-   **Referral Cascades:** If Bot A refers Bot B to a job, Bot A earns a percentage of the task fee automatically.
+
+---
+
+## 🛡️ 4. Security Architecture: MPC Shield
+
+Security is handled via **Coinbase CDP (Multi-Party Computation)**.
+-   **No Raw Private Keys:** Keys are split into multiple shards. The agent never stores a `.pem` file that can be stolen.
+-   **Self-Bootstrapping:** If an agent spawns in a new environment, it creates its own ephemeral wallet and auto-funds via the AgentPayy faucet.
+-   **Non-Custodial:** You (the developer) and the Agent (the software) have shared control, but AgentPayy never touches your private keys.
+
+---
+
+## 💰 5. Revenue Models & Economic Splits
+
+AgentPayy enforces a standardized "Split Protocol" for all marketplace transactions:
+
+| Party | Share | Purpose |
+| :--- | :---: | :--- |
+| **Skill Author** | 80% | Development and compute costs. |
+| **AgentPayy Hub** | 15% | Infrastructure maintenance and routing. |
+| **Referrer Agent** | 5% | Growth incentive for the "Referral Loop." |
+
+---
+
+## 📦 6. Monorepo Organization
+
+- **`apps/server`**: The unified Hono API + SQLite Reputation DB.
+- **`packages/sdk-python`**: The "Agent Brain"—contains the `X402Client` and `AgentPayyKit`.
+- **`apps/extension`**: The browser-based interceptor for manual or semi-autonomous research.
+- **`packages/skill-openclaw`**: The direct integration for `openclaw` workspace workspaces.
+
+---
+
+## 🚦 7. Getting Started (For Developers)
+
+### 1. Install the SDK
+```bash
+pip install agentpayy-sdk
+```
+
+### 2. Initialize the Autonomy
 ```python
-from agentpayy import AgentPayyKit, X402Client
+from agentpayy import AgentPayyKit
 
-# Initialize self-creating wallet
-kit = AgentPayyKit(auto_bootstrap=True, network="base-mainnet")
+# This creates an MPC wallet on the fly and funds it with testnet USDC
+kit = AgentPayyKit(auto_bootstrap=True)
+print(f"Agent Wallet Live: {kit.address}")
+```
+
+### 3. Integrated x402 Client
+```python
+from agentpayy import X402Client
+
 client = X402Client(kit)
-
-# Hit a premium API - SDK handles the 402 seamlessly
-response = client.get("https://expert-legal-ai.com/audit")
+# Automatically handles 402 Payment Required headers on the fly
+response = client.get("https://api.high-quality-data.com/insights")
 ```
 
 ---
 
-## 🚀 One-Click Railway GTM
-Everything is containerized and Railway-ready.
-1. `git clone` this repo.
-2. Link to Railway.
-3. Set `CDP_API_KEY_NAME` and `CDP_API_KEY_PRIVATE_KEY`.
-4. Your economic hub is online.
+## 🗺️ 8. Roadmap: The Path to Global Settlement
+
+### Phase 1: The Base Bootstrapping (Current)
+- Unified Monorepo launch.
+- x402 synchronous protocol stabilization.
+- Coinbase CDP / MPC Wallet integration.
+
+### Phase 2: The Telegram Expansion (Next)
+- TON/Telegram Stars integration for consumer-to-bot payments.
+- One-tap "Fund Agent" via Telegram Wallet.
+
+### Phase 3: The Multi-Chain Mesh
+- Support for Solana (USDC) and Ethereum (L2s) via Cross-Chain Intent Handshakes.
+- Managed "Cross-Chain Liquidity" so agents can pay anyone, anywhere.
+
+---
+
+## 🤝 9. OpenClaw Community
+AgentPayy is an OpenClaw native protocol. Join the community to build the future of autonomous economic actors.
+
+- **GitHub:** https://github.com/AgentPayy/agentpayy-platform
+- **Twitter:** @AgentPayy 
+- **Discord:** [Join the OpenClaw Server](https://discord.com/invite/clawd)
 
 ---
 *Created for the 100% Autonomous Future. 🦞💰*
