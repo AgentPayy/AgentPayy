@@ -43,9 +43,61 @@ app.get('/', (c) => {
   `);
 });
 
-// API: Referral and Reputation (SQLite backend soon)
-app.get('/api/v1/skills', (c) => {
-  return c.json([{ id: 'scraper-1', name: 'Web Scraper Pro', price: '5.00' }]);
+// API: Multi-level Referral and Escrow Logic
+const db = {
+  referrals: new Map(), // userId -> referrerId
+  escrows: new Map(),   // taskId -> Task object
+  balances: new Map()   // address -> balance
+};
+
+// MULTI-LEVEL REFERRALS: Ported from Legacy
+app.post('/api/v1/referrals/link', async (c) => {
+  const { userId, referrerId, subReferrerId } = await c.req.json();
+  db.referrals.set(userId, { parent: referrerId, grandParent: subReferrerId });
+  return c.json({ status: 'linked', structure: 'multi-tier active' });
+});
+
+// ESCROW: Pay on Completion with 10% Stake
+app.post('/api/v1/escrow/create', async (c) => {
+  const { payer, worker, amount, timeout } = await c.req.json();
+  const taskId = crypto.randomUUID();
+  const stakeAmount = amount * 0.10; // 10% Stake Required
+  
+  const task = {
+    id: taskId,
+    payer,
+    worker,
+    amount,
+    stake: stakeAmount,
+    status: 'locked',
+    deadline: Date.now() + (timeout || 3600) * 1000
+  };
+  
+  db.escrows.set(taskId, task);
+  return c.json({ status: 'escrow_locked', taskId, stakeRequired: stakeAmount });
+});
+
+app.post('/api/v1/escrow/release', async (c) => {
+  const { taskId, proof } = await c.req.json();
+  const task = db.escrows.get(taskId);
+  
+  if (!task) return c.json({ error: 'Task not found' }, 404);
+  
+  // REVENUE SPLIT MATH: 80 / 15 / 5 structure
+  const total = task.amount + task.stake;
+  const authorShare = task.amount * 0.80;
+  const platformShare = task.amount * 0.15;
+  const affiliateShare = task.amount * 0.05;
+  
+  task.status = 'released';
+  return c.json({ 
+    status: 'success', 
+    payout: { 
+      worker: authorShare + task.stake, // Worker gets their stake back + 80%
+      platform: platformShare,
+      affiliate: affiliateShare
+    }
+  });
 });
 
 // x402 Gateway: The core logic
