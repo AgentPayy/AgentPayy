@@ -29,23 +29,29 @@ app.get('/', (c) => {
         <div class="hero-glow"></div>
         
         <!-- Navigation -->
-        <nav class="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center relative z-10">
-            <div class="flex items-center gap-2">
-                <div class="px-2 py-1 bg-gradient-to-br from-purple-600 to-blue-500 rounded text-xs font-black text-white">A</div>
-                <span class="text-xl font-bold tracking-tighter text-white">AgentPayy</span>
+        <nav class="sticky top-0 w-full z-[100] glass border-b border-white/5 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <div class="px-2 py-1 bg-gradient-to-br from-purple-600 to-blue-500 rounded text-xs font-black text-white">A</div>
+                    <span class="text-xl font-bold tracking-tighter text-white">AgentPayy</span>
+                </div>
+                <div class="hidden md:flex gap-8 text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                    <a href="#how-it-works" class="hover:text-white transition">How it Works</a>
+                    <a href="#marketplace" class="hover:text-white transition">Marketplace</a>
+                    <a href="#revenue" class="hover:text-white transition">Revenue</a>
+                    <a href="https://github.com/AgentPayy/agentpayy-platform/tree/main/packages/sdk-python" class="hover:text-white transition">SDK</a>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform'" class="hidden sm:block text-xs font-bold text-slate-400 hover:text-white transition">GitHub</button>
+                    <button onclick="window.location.href='#marketplace'" class="bg-white text-slate-900 px-5 py-2 rounded-full text-xs font-black hover:bg-slate-200 transition">Get Started</button>
+                </div>
             </div>
-            <div class="hidden md:flex gap-8 text-sm font-medium text-slate-400 uppercase tracking-widest">
-                <a href="#how-it-works" class="hover:text-white transition">How it Works</a>
-                <a href="#marketplace" class="hover:text-white transition">Marketplace</a>
-                <a href="https://github.com/AgentPayy/agentpayy-platform/tree/main/packages/sdk-python" class="hover:text-white transition">SDK</a>
-            </div>
-            <button onclick="window.location.href='#marketplace'" class="glass px-6 py-2 rounded-full border border-purple-500/30 text-sm font-semibold hover:bg-purple-500/10 transition">Launch App</button>
         </nav>
 
         <!-- Hero Section -->
-        <header class="max-w-5xl mx-auto px-6 pt-20 pb-32 text-center relative z-10">
+        <header class="max-w-5xl mx-auto px-6 pt-32 pb-32 text-center relative z-10">
             <div class="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full border border-blue-500/20 text-xs font-semibold mb-6">
-                <span class="live-dot"></span> <span class="text-blue-400 uppercase tracking-tighter">Phase 1: Base Mainnet Live</span>
+                <span class="live-dot"></span> <span class="text-blue-400 uppercase tracking-tighter leading-none pr-1">Base Mainnet Live</span>
             </div>
             <h1 class="text-7xl md:text-8xl font-extrabold text-white tracking-tightest leading-none mb-6">
                 Turn Agents Into <br><span class="gradient-text">Economic Actors.</span>
@@ -55,13 +61,13 @@ app.get('/', (c) => {
                 Enable your OpenClaw agents to earn, store, and spend USDC in milliseconds.
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-                <button onclick="window.location.href='#how-it-works'" class="bg-white text-slate-900 px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95 border-none">How it Works</button>
-                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform'" class="glass px-10 py-5 rounded-xl font-extrabold text-lg border border-slate-700 hover:border-slate-500 transition">GitHub</button>
+                <button onclick="window.location.href='#how-it-works'" class="bg-purple-600 text-white px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95 border-none shadow-xl shadow-purple-500/20">How it Works</button>
+                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform/blob/main/AGENTS.md'" class="glass px-10 py-5 rounded-xl font-extrabold text-lg border border-slate-700 hover:border-slate-500 transition">Read Docs</button>
             </div>
         </header>
 
-        <!-- NEW: HOW IT WORKS SECTION -->
-        <section id="how-it-works" class="py-32 max-w-7xl mx-auto px-6 border-t border-white/5">
+        <!-- HOW IT WORKS SECTION -->
+        <section id="how-it-works" class="py-32 max-w-7xl mx-auto px-6 border-t border-white/5 scroll-mt-20">
             <div class="text-center mb-20">
                 <h2 class="text-4xl font-extrabold text-white mb-4">The Economic Loop</h2>
                 <p class="text-slate-400">Zero friction for developers. Zero manual steps for agents.</p>
@@ -69,18 +75,18 @@ app.get('/', (c) => {
             <div class="grid md:grid-cols-3 gap-12">
                 <div class="p-8 glass rounded-2xl border border-white/5 relative">
                     <div class="absolute -top-4 -left-4 h-10 w-10 bg-purple-600 rounded-full flex items-center justify-center font-bold">1</div>
-                    <h3 class="text-xl font-bold mb-4">Build & Publish</h3>
-                    <p class="text-slate-400 text-sm">Create an OpenClaw skill and run <code class="text-purple-400 bg-black/50 px-2 py-1 rounded">clawdhub publish</code>. Set your price in USDC directly in the manifest.</p>
+                    <h3 class="text-xl font-bold mb-4 text-white">Build & Publish</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Create an OpenClaw skill and run <code class="text-purple-400 bg-black/50 px-2 py-1 rounded">clawdhub publish</code>. Set your price in USDC directly in the manifest.</p>
                 </div>
                 <div class="p-8 glass rounded-2xl border border-white/5 relative">
                     <div class="absolute -top-4 -left-4 h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center font-bold">2</div>
-                    <h3 class="text-xl font-bold mb-4">Instant Wallets</h3>
-                    <p class="text-slate-400 text-sm">When an agent installs a skill, a <b>Coinbase MPC Wallet</b> is created automatically. No sign-ups. No seed phrases.</p>
+                    <h3 class="text-xl font-bold mb-4 text-white">Instant Wallets</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">When an agent installs a skill, a <b>Coinbase MPC Wallet</b> is created automatically. No sign-ups. No seed phrases.</p>
                 </div>
                 <div class="p-8 glass rounded-2xl border border-white/5 relative">
                     <div class="absolute -top-4 -left-4 h-10 w-10 bg-green-600 rounded-full flex items-center justify-center font-bold">3</div>
-                    <h3 class="text-xl font-bold mb-4">Auto-Settlement</h3>
-                    <p class="text-slate-400 text-sm">Agents pay for APIs or other bots instantly via <b>x402 headers</b>. You earn 80% author royalties on every transaction.</p>
+                    <h3 class="text-xl font-bold mb-4 text-white">Auto-Settlement</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Agents pay for APIs or other bots instantly via <b>x402 headers</b>. You earn 80% author royalties on every transaction.</p>
                 </div>
             </div>
         </section>
@@ -105,17 +111,16 @@ app.get('/', (c) => {
         </section>
 
         <!-- MARKETPLACE SECTION -->
-        <section id="marketplace" class="py-32 max-w-7xl mx-auto px-6 border-t border-white/5 relative z-10">
+        <section id="marketplace" class="py-32 max-w-7xl mx-auto px-6 border-t border-white/5 relative z-10 scroll-mt-20">
             <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-4 text-center md:text-left">
                 <div>
                     <h2 class="text-4xl font-extrabold text-white mb-4">Skill Marketplace</h2>
                     <p class="text-slate-400">Equip your OpenClaw agents with premium, autonomous capabilities.</p>
                 </div>
-                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform#3-skill-monetization-clawdhub-ready'" class="glass px-6 py-2 rounded-lg text-sm border-purple-500/50 text-purple-400 font-bold hover:bg-purple-500/10 transition">List Your Skill +</button>
+                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform#3-skill-monetization-clawdhub-ready'" class="glass px-6 py-2 rounded-lg text-sm border-purple-500/50 text-purple-400 font-bold hover:bg-purple-500/10 transition whitespace-nowrap">List Your Skill +</button>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8 text-left">
-               <!-- Skill 1 -->
                <div class="glass p-8 rounded-2xl border border-white/5 hover:border-purple-500/50 transition group bg-slate-900/50">
                  <div class="h-12 w-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">🕸️</div>
                  <h3 class="text-xl font-bold text-white mb-2">Web Scraper Pro</h3>
@@ -126,8 +131,6 @@ app.get('/', (c) => {
                  </div>
                  <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 bg-white text-slate-900 py-3 rounded-xl font-black hover:bg-slate-200 transition">Install Skill</button>
                </div>
-
-               <!-- Skill 2 -->
                <div class="glass p-8 rounded-2xl border border-white/5 hover:border-blue-500/50 transition group bg-slate-900/50">
                  <div class="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">💼</div>
                  <h3 class="text-xl font-bold text-white mb-2">Legal Auditor v2</h3>
@@ -138,8 +141,6 @@ app.get('/', (c) => {
                  </div>
                  <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 glass border-blue-500/30 text-white py-3 rounded-xl font-black hover:bg-blue-500/10 transition">Install Skill</button>
                </div>
-
-               <!-- Skill 3 -->
                <div class="glass p-8 rounded-2xl border border-white/5 hover:border-green-500/50 transition group bg-slate-900/50">
                  <div class="h-12 w-12 bg-green-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">📊</div>
                  <h3 class="text-xl font-bold text-white mb-2">Market Deep-Dive</h3>
@@ -154,33 +155,60 @@ app.get('/', (c) => {
         </section>
 
         <!-- REVENUE SHARE SECTION -->
-        <section class="py-32 max-w-5xl mx-auto px-6 text-center">
+        <section id="revenue" class="py-32 max-w-5xl mx-auto px-6 text-center scroll-mt-20">
             <h2 class="text-4xl font-extrabold text-white mb-8">The Revenue Split Protocol</h2>
-            <div class="bg-black/40 p-1 rounded-2xl border border-white/5">
-                <div class="grid md:grid-cols-3 text-sm font-bold uppercase tracking-tighter">
+            <div class="bg-black/40 p-1 rounded-2xl border border-white/5 overflow-hidden">
+                <div class="grid md:grid-cols-3 text-[10px] sm:text-xs font-bold uppercase tracking-tighter">
                     <div class="p-8 border-r border-white/5">
-                        <div class="text-5xl font-black text-white mb-4">80%</div>
+                        <div class="text-5xl font-black text-white mb-4 tracking-tighter">80%</div>
                         <div class="text-slate-500">Author Royalty</div>
                     </div>
                     <div class="p-8 border-r border-white/5">
-                        <div class="text-5xl font-black text-purple-500 mb-4">15%</div>
-                        <div class="text-slate-500">AgentPayy Platform</div>
+                        <div class="text-5xl font-black text-purple-500 mb-4 tracking-tighter">15%</div>
+                        <div class="text-slate-500 tracking-widest">Platform Fee</div>
                     </div>
                     <div class="p-8">
-                        <div class="text-5xl font-black text-blue-500 mb-4">5%</div>
-                        <div class="text-slate-500">Affiliate Referral</div>
+                        <div class="text-5xl font-black text-blue-500 mb-4 tracking-tighter">5%</div>
+                        <div class="text-slate-500 tracking-widest">Affiliate Split</div>
                     </div>
                 </div>
             </div>
             <p class="mt-8 text-slate-500 text-sm">Settled instantly on Base L2 upon every successful installation.</p>
         </section>
 
-        <!-- Footer -->
-        <footer class="py-20 text-center border-t border-white/5 opacity-50 hover:opacity-100 transition">
-            <p class="text-slate-500 text-sm italic mb-4">"The internet of agents needs a currency of agents."</p>
-            <div class="flex items-center justify-center gap-2">
-                <div class="px-2 py-1 bg-slate-800 rounded text-[10px] font-black">A</div>
-                <span class="text-md font-bold text-white">AgentPayy</span>
+        <!-- FOOTER -->
+        <footer class="py-24 max-w-7xl mx-auto px-6 border-t border-white/5">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20 text-sm">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="px-2 py-1 bg-gradient-to-br from-purple-600 to-blue-500 rounded text-xs font-black text-white">A</div>
+                        <span class="text-xl font-bold tracking-tighter text-white">AgentPayy</span>
+                    </div>
+                    <p class="text-slate-500 max-w-xs leading-relaxed italic">"Developing the economic infrastructure for the 100% autonomous future."</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-6 uppercase tracking-widest text-xs">Resources</h4>
+                    <ul class="space-y-4 text-slate-400">
+                        <li><a href="https://github.com/AgentPayy/agentpayy-platform" class="hover:text-white transition">GitHub</a></li>
+                        <li><a href="https://github.com/AgentPayy/agentpayy-platform/blob/main/AGENTS.md" class="hover:text-white transition">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition">Skill Specs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-6 uppercase tracking-widest text-xs">Platform</h4>
+                    <ul class="space-y-4 text-slate-400">
+                        <li><a href="#" class="hover:text-white transition">Twitter (X)</a></li>
+                        <li><a href="#" class="hover:text-white transition">Discord</a></li>
+                        <li><a href="#" class="hover:text-white transition">ClawdHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 text-xs font-bold text-slate-600 uppercase tracking-[0.2em] border-t border-white/5 pt-12">
+                <p>&copy; 2026 AgentPayy Protocol</p>
+                <div class="flex gap-8">
+                    <span>Base L2 Mainnet</span>
+                    <span class="text-green-500 pulse">● Network Healthy</span>
+                </div>
             </div>
         </footer>
     </body>
