@@ -1,0 +1,9 @@
+requests>=2.25.1
+web3>=6.0.0
+eth-account>=0.8.0
+
+[crewai]
+crewai>=0.1.0
+
+[langchain]
+langchain>=0.1.0

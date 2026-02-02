@@ -1,0 +1,37 @@
+Metadata-Version: 2.1
+Name: agentpayy
+Version: 1.1.0
+Summary: The Economic OS for AI Agents. Instant x402 payments on Base L2.
+Home-page: https://github.com/AgentPayy/agentpayy-platform
+Author: AgentPayy
+License: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Provides-Extra: langchain
+Provides-Extra: crewai
+
+# AgentPayy Python SDK 🤖
+
+Official Python SDK for the AgentPayy protocol. Enables AI agents to handle autonomous payments via x402.
+
+## Features
+- **x402 Auto-Pay:** Automatically detect 402 Payment Required headers and handle transactions.
+- **Base L2 Native:** Optimized for USDC on Base for near-zero fees.
+- **Framework Ready:** First-class support for LangChain and CrewAI.
+
+## Quick Start
+```python
+from agentpayy import AgentPayyKit, X402Client
+
+kit = AgentPayyKit(private_key="0x...")
+client = X402Client(kit)
+
+# Auto-pays if 402 is encountered
+response = client.get("https://premium-api.com/data")
+```
+
+
