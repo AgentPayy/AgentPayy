@@ -34,7 +34,9 @@ app.get('/', (c) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
-        <title>AgentPayy | The Economic OS for AI Agents</title>
+        <title>AgentPayy | Handle HTTP 402 with x402 on Base L2</title>
+        <meta name="description" content="AgentPayy is the native economic layer for OpenClaw. Handle HTTP 402 Payment Required triggers programmatically in 242ms with Coinbase MPC on Base L2.">
+        <meta name="keywords" content="x402, HTTP 402, Base L2, Agent Payments, AI Agent Wallet, MPC, OpenClaw, Autonomous economic agency">
         <style>
             body { font-family: 'Inter', sans-serif; background-color: #020617; scroll-behavior: smooth; }
             .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
@@ -56,9 +58,10 @@ app.get('/', (c) => {
                     <span class="text-xl font-bold tracking-tighter text-white">AgentPayy</span>
                 </div>
                 <div class="hidden md:flex gap-8 text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                    <a href="/docs" class="hover:text-white transition">Docs</a>
+                    <a href="/blog" class="hover:text-white transition">Blog</a>
                     <a href="#how-it-works" class="hover:text-white transition">How it Works</a>
                     <a href="#marketplace" class="hover:text-white transition">Marketplace</a>
-                    <a href="#revenue" class="hover:text-white transition">Revenue</a>
                     <a href="https://github.com/AgentPayy/agentpayy-platform/tree/main/packages/sdk-python" class="hover:text-white transition">SDK</a>
                 </div>
                 <div class="flex gap-4">
