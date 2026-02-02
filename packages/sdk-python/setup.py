@@ -2,33 +2,26 @@ from setuptools import setup, find_packages
 
 setup(
     name="agentpayy",
-    version="1.0.2",
-    description="AgentPayyKit Python SDK - Pay-per-call APIs for AI agents",
-    long_description=open("README.md").read(),
-    long_description_content_type="text/markdown",
-    author="AgentPayyKit Team",
-    url="https://github.com/AgentPayy/agentpayy",
+    version="1.1.0",
     packages=find_packages(),
     install_requires=[
+        "requests>=2.25.1",
         "web3>=6.0.0",
-        "requests>=2.28.0",
-        "eth-account>=0.9.0",
-        "pydantic>=2.0.0"
+        "eth-account>=0.8.0",
     ],
     extras_require={
-        "crewai": ["crewai>=0.1.0"],
         "langchain": ["langchain>=0.1.0"],
-        "dev": ["pytest>=7.0.0", "black>=23.0.0"]
+        "crewai": ["crewai>=0.1.0"],
     },
-    python_requires=">=3.8",
+    author="AgentPayy",
+    description="The Economic OS for AI Agents. Instant x402 payments on Base L2.",
+    long_description=open("README.md").read() if os.path.exists("README.md") else "",
+    long_description_content_type="text/markdown",
+    url="https://github.com/AgentPayy/agentpayy-platform",
     classifiers=[
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
+        "Operating System :: OS Independent",
     ],
-    keywords="ai agents payments crypto ethereum web3 api monetization"
-) 
+    python_requires='>=3.9',
+)
