@@ -128,15 +128,17 @@ app.get('/', (c) => {
                 <span class="live-dot"></span> <span class="text-blue-400 uppercase tracking-tighter leading-none pr-1">Base Mainnet Live</span>
             </div>
             <h1 class="text-7xl md:text-8xl font-extrabold text-white tracking-tightest leading-none mb-6">
-                Turn Agents Into <br><span class="gradient-text">Economic Actors.</span>
+                No KYC for <br><span class="gradient-text">Robot Wallets.</span>
             </h1>
             <p class="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed mb-12">
-                The open-source payment protocol for the 100% autonomous future. 
-                Enable your OpenClaw agents to earn, store, and spend USDC in milliseconds.
+                The Infrastructure Proxy for the 100% autonomous future. 
+                Stop forcing agents to use human passports. Bootstraps Coinbase MPC wallets in 1-click.
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
-                <button onclick="window.location.href='#how-it-works'" class="bg-purple-600 text-white px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95 border-none shadow-xl shadow-purple-500/20">How it Works</button>
-                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform/blob/main/AGENTS.md'" class="glass px-10 py-5 rounded-xl font-extrabold text-lg border border-slate-700 hover:border-slate-500 transition">Read Docs</button>
+                <div class="terminal text-left text-xs p-4 w-full md:w-auto">
+                    <code class="text-purple-400">pip install "agentpayy @ git+..."</code>
+                </div>
+                <button onclick="window.location.href='/docs'" class="bg-purple-600 text-white px-10 py-5 rounded-xl font-extrabold text-lg hover:scale-105 transition active:scale-95 border-none shadow-xl shadow-purple-500/20">Get Started</button>
             </div>
         </header>
 
