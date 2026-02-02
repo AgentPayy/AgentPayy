@@ -190,42 +190,64 @@ app.get('/', (c) => {
         <section id="marketplace" class="py-32 max-w-7xl mx-auto px-6 border-t border-white/5 relative z-10 scroll-mt-20">
             <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-4 text-center md:text-left">
                 <div>
-                    <h2 class="text-4xl font-extrabold text-white mb-4">Skill Marketplace</h2>
-                    <p class="text-slate-400">Equip your OpenClaw agents with premium, autonomous capabilities.</p>
+                    <h2 class="text-4xl font-extrabold text-white mb-4 text-left">Deploy Agent Capability</h2>
+                    <p class="text-slate-400 text-left">Monetize your OpenClaw skills instantly with x402 micropayments.</p>
                 </div>
-                <button onclick="window.location.href='https://github.com/AgentPayy/agentpayy-platform#3-skill-monetization-clawdhub-ready'" class="glass px-6 py-2 rounded-lg text-sm border-purple-500/50 text-purple-400 font-bold hover:bg-purple-500/10 transition whitespace-nowrap">List Your Skill +</button>
+            </div>
+
+            <div class="terminal mb-12 p-8 border border-white/10 rounded-2xl bg-black/50">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="live-dot"></div>
+                    <span class="text-xs font-black uppercase tracking-[0.3em] text-white">One-Click Monetization</span>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <p class="text-slate-500 text-xs mb-2 uppercase font-bold tracking-widest">1. Wrap your Skill</p>
+                        <code class="text-purple-400 text-sm block bg-black p-3 rounded-lg border border-white/5">from agentpayy import monetized_skill</code>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs mb-2 uppercase font-bold tracking-widest">2. Set Price (USDC)</p>
+                        <code class="text-blue-400 text-sm block bg-black p-3 rounded-lg border border-white/5">@monetized_skill(price="0.05", currency="USDC")</code>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 text-xs mb-2 uppercase font-bold tracking-widest">3. Deployment (Base L2)</p>
+                        <button onclick="window.open('https://github.com/AgentPayy/agentpayy-platform/tree/main/packages/sdk-python', '_blank')" class="w-full bg-white text-slate-900 py-4 rounded-xl font-black hover:bg-slate-200 transition text-sm uppercase tracking-tighter">Download x402 Deployment Kit</button>
+                    </div>
+                </div>
             </div>
 
             <div class="grid md:grid-cols-3 gap-8 text-left">
                <div class="glass p-8 rounded-2xl border border-white/5 hover:border-purple-500/50 transition group bg-slate-900/50">
                  <div class="h-12 w-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">🕸️</div>
                  <h3 class="text-xl font-bold text-white mb-2">Web Scraper Pro</h3>
-                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Advanced recursive scraping with auto-CAPTCHA solving. Native AgentPayy x402 support.</p>
+                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Advanced recursive scraping. Native x402 support.</p>
                  <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest pt-4 border-t border-white/5">
                     <span class="text-slate-500">Author: OpenClaw</span>
                     <span class="text-green-400">5.00 USDC</span>
                  </div>
-                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 bg-white text-slate-900 py-3 rounded-xl font-black hover:bg-slate-200 transition">Install Skill</button>
+                 <button onclick="window.location.href='/docs'" class="w-full mt-6 bg-white/5 text-white border border-white/10 py-3 rounded-xl font-black hover:bg-white/10 transition">View Integration</button>
                </div>
+               
                <div class="glass p-8 rounded-2xl border border-white/5 hover:border-blue-500/50 transition group bg-slate-900/50">
                  <div class="h-12 w-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">💼</div>
-                 <h3 class="text-xl font-bold text-white mb-2">Legal Auditor v2</h3>
-                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Automated compliance checks for sub-agent contracts. High-fidelity verification logic.</p>
+                 <h3 class="text-xl font-bold text-white mb-2">Legal Auditor</h3>
+                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Automated compliance checks for bot contracts.</p>
                  <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest pt-4 border-t border-white/5">
                     <span class="text-slate-500">Author: AgentPayy</span>
                     <span class="text-blue-400">12.50 USDC</span>
                  </div>
-                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 glass border-blue-500/30 text-white py-3 rounded-xl font-black hover:bg-blue-500/10 transition">Install Skill</button>
+                 <button onclick="window.location.href='/docs'" class="w-full mt-6 bg-white/5 text-white border border-white/10 py-3 rounded-xl font-black hover:bg-white/10 transition">View Integration</button>
                </div>
+
                <div class="glass p-8 rounded-2xl border border-white/5 hover:border-green-500/50 transition group bg-slate-900/50">
                  <div class="h-12 w-12 bg-green-500/10 rounded-xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition">📊</div>
-                 <h3 class="text-xl font-bold text-white mb-2">Market Deep-Dive</h3>
-                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Real-time financial analysis bot. Integrates with Bloomberg/Reuters via x402 headers.</p>
+                 <h3 class="text-xl font-bold text-white mb-2">Market Data</h3>
+                 <p class="text-slate-400 text-sm mb-6 leading-relaxed">Real-time financial analysis bot feed.</p>
                  <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest pt-4 border-t border-white/5">
                     <span class="text-slate-500">Author: AlphaBot</span>
                     <span class="text-green-400">2.00 USDC</span>
                  </div>
-                 <button onclick="alert('Proceeding to Checkout via Base L2...')" class="w-full mt-6 glass border-blue-500/30 text-white py-3 rounded-xl font-black hover:bg-blue-500/10 transition">Install Skill</button>
+                 <button onclick="window.location.href='/docs'" class="w-full mt-6 bg-white/5 text-white border border-white/10 py-3 rounded-xl font-black hover:bg-white/10 transition">View Integration</button>
                </div>
             </div>
         </section>
